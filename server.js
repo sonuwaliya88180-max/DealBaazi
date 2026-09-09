@@ -5,7 +5,9 @@ const path = require("path");
 const Database = require("better-sqlite3");
 
 const app = express();
-const PORT = 3000;
+
+/* Render PORT + Local PC fallback */
+const PORT = process.env.PORT || 3000;
 
 /* =========================
    BASIC SETUP
@@ -34,6 +36,7 @@ const storage = multer.diskStorage({
 
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
+
     const name =
       Date.now() +
       "-" +
@@ -61,7 +64,11 @@ const upload = multer({
     if (allowed.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Only JPG, PNG and WEBP images are allowed."));
+      cb(
+        new Error(
+          "Only JPG, PNG and WEBP images are allowed."
+        )
+      );
     }
   }
 });
@@ -159,9 +166,13 @@ db.prepare(`
 ========================= */
 
 function addColumnIfMissing(table, column, definition) {
-  const columns = db.prepare(`PRAGMA table_info(${table})`).all();
+  const columns = db
+    .prepare(`PRAGMA table_info(${table})`)
+    .all();
 
-  const exists = columns.some(col => col.name === column);
+  const exists = columns.some(
+    col => col.name === column
+  );
 
   if (!exists) {
     db.prepare(
@@ -214,7 +225,8 @@ if (categoryCount.count === 0) {
   ];
 
   const insertCategory = db.prepare(`
-    INSERT INTO categories (name, sort_order, active)
+    INSERT INTO categories
+    (name, sort_order, active)
     VALUES (?, ?, 1)
   `);
 
@@ -253,7 +265,11 @@ function getDiscountPercent(discount) {
   );
 }
 
-function calculateDealScore(product, reviewCount, avgRating) {
+function calculateDealScore(
+  product,
+  reviewCount,
+  avgRating
+) {
   const discountPercent =
     getDiscountPercent(product.discount);
 
@@ -261,10 +277,17 @@ function calculateDealScore(product, reviewCount, avgRating) {
     Math.min(discountPercent, 40);
 
   const ratingScore =
-    (Number(avgRating || product.rating || 0) / 5) * 30;
+    (Number(
+      avgRating ||
+      product.rating ||
+      0
+    ) / 5) * 30;
 
   const reviewScore =
-    (Math.min(Number(reviewCount || 0), 20) / 20) * 20;
+    (Math.min(
+      Number(reviewCount || 0),
+      20
+    ) / 20) * 20;
 
   let priceScore = 0;
 
@@ -273,9 +296,13 @@ function calculateDealScore(product, reviewCount, avgRating) {
     Number(product.price) > 0
   ) {
     const saving =
-      ((Number(product.original_price) - Number(product.price)) /
-        Number(product.original_price)) *
-      100;
+      (
+        (
+          Number(product.original_price) -
+          Number(product.price)
+        ) /
+        Number(product.original_price)
+      ) * 100;
 
     priceScore = Math.min(
       Math.max(saving / 10, 0),
@@ -299,7 +326,10 @@ function calculateDealScore(product, reviewCount, avgRating) {
   );
 }
 
-function getProductImages(productId, fallbackImage) {
+function getProductImages(
+  productId,
+  fallbackImage
+) {
   const images = db.prepare(`
     SELECT image_url
     FROM product_images
@@ -308,7 +338,9 @@ function getProductImages(productId, fallbackImage) {
   `).all(productId);
 
   if (images.length > 0) {
-    return images.map(img => img.image_url);
+    return images.map(
+      img => img.image_url
+    );
   }
 
   if (fallbackImage) {
@@ -318,7 +350,10 @@ function getProductImages(productId, fallbackImage) {
   return [];
 }
 
-function getReviewStats(productId, productRating) {
+function getReviewStats(
+  productId,
+  productRating
+) {
   const stats = db.prepare(`
     SELECT
       COUNT(*) AS count,
@@ -333,8 +368,12 @@ function getReviewStats(productId, productRating) {
 
     average:
       stats.average !== null
-        ? Number(stats.average).toFixed(1)
-        : Number(productRating || 0).toFixed(1)
+        ? Number(
+            stats.average
+          ).toFixed(1)
+        : Number(
+            productRating || 0
+          ).toFixed(1)
   };
 }
 
@@ -373,20 +412,25 @@ app.get("/", (req, res) => {
     ORDER BY sort_order ASC, id ASC
   `).all();
 
-  const topPicks = products.filter(
-    product => product.featured
-  );
+  const topPicks =
+    products.filter(
+      product => product.featured
+    );
 
-  const hotDeals = products.filter(
-    product => product.hot_deal
-  );
+  const hotDeals =
+    products.filter(
+      product => product.hot_deal
+    );
 
-  const topRated = [...products]
-    .sort((a, b) => {
-      return Number(b.rating || 0) -
-        Number(a.rating || 0);
-    })
-    .slice(0, 10);
+  const topRated =
+    [...products]
+      .sort((a, b) => {
+        return (
+          Number(b.rating || 0) -
+          Number(a.rating || 0)
+        );
+      })
+      .slice(0, 10);
 
   res.render("index", {
     products,
@@ -402,402 +446,464 @@ app.get("/", (req, res) => {
    CATEGORY
 ========================= */
 
-app.get("/category/:id", (req, res) => {
+app.get(
+  "/category/:id",
+  (req, res) => {
 
-  const categoryId = Number(req.params.id);
+    const categoryId =
+      Number(req.params.id);
 
-  const category = db.prepare(`
-    SELECT *
-    FROM categories
-    WHERE id = ?
-      AND active = 1
-  `).get(categoryId);
+    const category = db.prepare(`
+      SELECT *
+      FROM categories
+      WHERE id = ?
+        AND active = 1
+    `).get(categoryId);
 
-  if (!category) {
-    return res.redirect("/");
+    if (!category) {
+      return res.redirect("/");
+    }
+
+    const products = db.prepare(`
+      SELECT
+        p.*,
+        c.name AS category_name
+      FROM products p
+      LEFT JOIN categories c
+        ON p.category_id = c.id
+      WHERE p.visible = 1
+        AND p.category_id = ?
+        AND (
+          p.expiry_date IS NULL
+          OR p.expiry_date = ''
+          OR p.expiry_date >= date('now')
+        )
+      ORDER BY p.created_at DESC
+    `).all(categoryId);
+
+    const categories = db.prepare(`
+      SELECT *
+      FROM categories
+      WHERE active = 1
+      ORDER BY sort_order ASC, id ASC
+    `).all();
+
+    res.render("index", {
+      products,
+      categories,
+      selectedCategory: category,
+      topPicks: [],
+      hotDeals: [],
+      topRated: []
+    });
   }
-
-  const products = db.prepare(`
-    SELECT
-      p.*,
-      c.name AS category_name
-    FROM products p
-    LEFT JOIN categories c
-      ON p.category_id = c.id
-    WHERE p.visible = 1
-      AND p.category_id = ?
-      AND (
-        p.expiry_date IS NULL
-        OR p.expiry_date = ''
-        OR p.expiry_date >= date('now')
-      )
-    ORDER BY p.created_at DESC
-  `).all(categoryId);
-
-  const categories = db.prepare(`
-    SELECT *
-    FROM categories
-    WHERE active = 1
-    ORDER BY sort_order ASC, id ASC
-  `).all();
-
-  res.render("index", {
-    products,
-    categories,
-    selectedCategory: category,
-    topPicks: [],
-    hotDeals: [],
-    topRated: []
-  });
-});
+);
 
 /* =========================
    PRODUCT DETAIL
 ========================= */
 
-app.get("/product/:id", (req, res) => {
+app.get(
+  "/product/:id",
+  (req, res) => {
 
-  const id = Number(req.params.id);
+    const id =
+      Number(req.params.id);
 
-  const product = db.prepare(`
-    SELECT
-      p.*,
-      c.name AS category_name
-    FROM products p
-    LEFT JOIN categories c
-      ON p.category_id = c.id
-    WHERE p.id = ?
-  `).get(id);
+    const product = db.prepare(`
+      SELECT
+        p.*,
+        c.name AS category_name
+      FROM products p
+      LEFT JOIN categories c
+        ON p.category_id = c.id
+      WHERE p.id = ?
+    `).get(id);
 
-  if (!product) {
-    return res.status(404).send("Product not found");
-  }
+    if (!product) {
+      return res
+        .status(404)
+        .send("Product not found");
+    }
 
-  const images = getProductImages(
-    product.id,
-    product.image_url
-  );
+    const images =
+      getProductImages(
+        product.id,
+        product.image_url
+      );
 
-  const reviews = db.prepare(`
-    SELECT *
-    FROM reviews
-    WHERE product_id = ?
-      AND approved = 1
-    ORDER BY created_at DESC
-  `).all(id);
+    const reviews = db.prepare(`
+      SELECT *
+      FROM reviews
+      WHERE product_id = ?
+        AND approved = 1
+      ORDER BY created_at DESC
+    `).all(id);
 
-  const reviewStats =
-    getReviewStats(id, product.rating);
+    const reviewStats =
+      getReviewStats(
+        id,
+        product.rating
+      );
 
-  const dealScore =
-    calculateDealScore(
+    const dealScore =
+      calculateDealScore(
+        product,
+        reviewStats.count,
+        reviewStats.average
+      );
+
+    res.render("product", {
       product,
-      reviewStats.count,
-      reviewStats.average
-    );
-
-  res.render("product", {
-    product,
-    images,
-    reviews,
-    reviewCount: reviewStats.count,
-    averageRating: reviewStats.average,
-    dealScore
-  });
-});
+      images,
+      reviews,
+      reviewCount: reviewStats.count,
+      averageRating: reviewStats.average,
+      dealScore
+    });
+  }
+);
 
 /* =========================
    BUY NOW
 ========================= */
 
-app.get("/buy/:id", (req, res) => {
+app.get(
+  "/buy/:id",
+  (req, res) => {
 
-  const id = Number(req.params.id);
+    const id =
+      Number(req.params.id);
 
-  const product = db.prepare(`
-    SELECT *
-    FROM products
-    WHERE id = ?
-      AND visible = 1
-  `).get(id);
+    const product = db.prepare(`
+      SELECT *
+      FROM products
+      WHERE id = ?
+        AND visible = 1
+    `).get(id);
 
-  if (!product) {
-    return res.redirect("/");
+    if (!product) {
+      return res.redirect("/");
+    }
+
+    db.prepare(`
+      UPDATE products
+      SET clicks = clicks + 1
+      WHERE id = ?
+    `).run(id);
+
+    res.redirect(
+      product.affiliate_url
+    );
   }
-
-  db.prepare(`
-    UPDATE products
-    SET clicks = clicks + 1
-    WHERE id = ?
-  `).run(id);
-
-  res.redirect(product.affiliate_url);
-});
+);
 
 /* =========================
    PUBLIC REVIEW
 ========================= */
 
-app.post("/product/:id/review", (req, res) => {
+app.post(
+  "/product/:id/review",
+  (req, res) => {
 
-  const productId = Number(req.params.id);
+    const productId =
+      Number(req.params.id);
 
-  const product = db.prepare(`
-    SELECT id
-    FROM products
-    WHERE id = ?
-  `).get(productId);
+    const product = db.prepare(`
+      SELECT id
+      FROM products
+      WHERE id = ?
+    `).get(productId);
 
-  if (!product) {
-    return res.status(404).send("Product not found");
-  }
+    if (!product) {
+      return res
+        .status(404)
+        .send("Product not found");
+    }
 
-  const name =
-    String(req.body.name || "").trim();
+    const name =
+      String(
+        req.body.name || ""
+      ).trim();
 
-  const comment =
-    String(req.body.comment || "").trim();
+    const comment =
+      String(
+        req.body.comment || ""
+      ).trim();
 
-  const rating =
-    Number(req.body.rating);
+    const rating =
+      Number(req.body.rating);
 
-  if (
-    !name ||
-    !comment ||
-    !Number.isInteger(rating) ||
-    rating < 1 ||
-    rating > 5
-  ) {
-    return res.redirect(
+    if (
+      !name ||
+      !comment ||
+      !Number.isInteger(rating) ||
+      rating < 1 ||
+      rating > 5
+    ) {
+      return res.redirect(
+        `/product/${productId}#reviews`
+      );
+    }
+
+    db.prepare(`
+      INSERT INTO reviews
+      (
+        product_id,
+        name,
+        rating,
+        comment,
+        approved
+      )
+      VALUES (?, ?, ?, ?, 1)
+    `).run(
+      productId,
+      name,
+      rating,
+      comment
+    );
+
+    res.redirect(
       `/product/${productId}#reviews`
     );
   }
-
-  db.prepare(`
-    INSERT INTO reviews
-    (
-      product_id,
-      name,
-      rating,
-      comment,
-      approved
-    )
-    VALUES (?, ?, ?, ?, 1)
-  `).run(
-    productId,
-    name,
-    rating,
-    comment
-  );
-
-  res.redirect(
-    `/product/${productId}#reviews`
-  );
-});
+);
 
 /* =========================
    LOGIN PAGE
 ========================= */
 
-app.get("/login", (req, res) => {
-  res.render("login", {
-    error: null
-  });
-});
-
-app.post("/login", (req, res) => {
-
-  const {
-    username,
-    password
-  } = req.body;
-
-  const admin = db.prepare(`
-    SELECT *
-    FROM admin
-    WHERE username = ?
-      AND password = ?
-  `).get(username, password);
-
-  if (!admin) {
-    return res.render("login", {
-      error: "Invalid username or password"
+app.get(
+  "/login",
+  (req, res) => {
+    res.render("login", {
+      error: null
     });
   }
+);
 
-  loggedIn = true;
+app.post(
+  "/login",
+  (req, res) => {
 
-  res.redirect("/admin");
-});
+    const {
+      username,
+      password
+    } = req.body;
+
+    const admin = db.prepare(`
+      SELECT *
+      FROM admin
+      WHERE username = ?
+        AND password = ?
+    `).get(
+      username,
+      password
+    );
+
+    if (!admin) {
+      return res.render("login", {
+        error:
+          "Invalid username or password"
+      });
+    }
+
+    loggedIn = true;
+
+    res.redirect("/admin");
+  }
+);
 
 /* =========================
    ADMIN
 ========================= */
 
-app.get("/admin", (req, res) => {
+app.get(
+  "/admin",
+  (req, res) => {
 
-  if (!loggedIn) {
-    return res.redirect("/login");
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
+
+    const products = db.prepare(`
+      SELECT
+        p.*,
+        c.name AS category_name
+      FROM products p
+      LEFT JOIN categories c
+        ON p.category_id = c.id
+      ORDER BY p.created_at DESC
+    `).all();
+
+    const categories = db.prepare(`
+      SELECT *
+      FROM categories
+      ORDER BY sort_order ASC, id ASC
+    `).all();
+
+    const reviews = db.prepare(`
+      SELECT
+        r.*,
+        p.name AS product_name
+      FROM reviews r
+      LEFT JOIN products p
+        ON r.product_id = p.id
+      ORDER BY r.created_at DESC
+    `).all();
+
+    res.render("admin", {
+      products,
+      categories,
+      reviews
+    });
   }
-
-  const products = db.prepare(`
-    SELECT
-      p.*,
-      c.name AS category_name
-    FROM products p
-    LEFT JOIN categories c
-      ON p.category_id = c.id
-    ORDER BY p.created_at DESC
-  `).all();
-
-  const categories = db.prepare(`
-    SELECT *
-    FROM categories
-    ORDER BY sort_order ASC, id ASC
-  `).all();
-
-  const reviews = db.prepare(`
-    SELECT
-      r.*,
-      p.name AS product_name
-    FROM reviews r
-    LEFT JOIN products p
-      ON r.product_id = p.id
-    ORDER BY r.created_at DESC
-  `).all();
-
-  res.render("admin", {
-    products,
-    categories,
-    reviews
-  });
-});
+);
 
 /* =========================
    ADD CATEGORY
 ========================= */
 
-app.post("/admin/categories/add", (req, res) => {
+app.post(
+  "/admin/categories/add",
+  (req, res) => {
 
-  if (!loggedIn) {
-    return res.redirect("/login");
-  }
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
 
-  const name =
-    String(req.body.name || "").trim();
+    const name =
+      String(
+        req.body.name || ""
+      ).trim();
 
-  const sortOrder =
-    Number(req.body.sort_order || 0);
+    const sortOrder =
+      Number(
+        req.body.sort_order || 0
+      );
 
-  const active =
-    req.body.active ? 1 : 0;
+    const active =
+      req.body.active ? 1 : 0;
 
-  if (!name) {
-    return res.redirect("/admin");
-  }
+    if (!name) {
+      return res.redirect("/admin");
+    }
 
-  try {
+    try {
 
-    db.prepare(`
-      INSERT INTO categories
-      (
+      db.prepare(`
+        INSERT INTO categories
+        (
+          name,
+          sort_order,
+          active
+        )
+        VALUES (?, ?, ?)
+      `).run(
         name,
-        sort_order,
+        sortOrder,
         active
-      )
-      VALUES (?, ?, ?)
-    `).run(
-      name,
-      sortOrder,
-      active
-    );
+      );
 
-  } catch (error) {
+    } catch (error) {
 
-    console.log(error.message);
+      console.log(
+        error.message
+      );
+    }
 
+    res.redirect("/admin");
   }
-
-  res.redirect("/admin");
-});
+);
 
 /* =========================
    EDIT CATEGORY
 ========================= */
 
-app.post("/admin/categories/edit/:id", (req, res) => {
+app.post(
+  "/admin/categories/edit/:id",
+  (req, res) => {
 
-  if (!loggedIn) {
-    return res.redirect("/login");
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
+
+    const id =
+      Number(req.params.id);
+
+    const name =
+      String(
+        req.body.name || ""
+      ).trim();
+
+    const sortOrder =
+      Number(
+        req.body.sort_order || 0
+      );
+
+    const active =
+      req.body.active ? 1 : 0;
+
+    if (!name) {
+      return res.redirect("/admin");
+    }
+
+    try {
+
+      db.prepare(`
+        UPDATE categories
+        SET
+          name = ?,
+          sort_order = ?,
+          active = ?
+        WHERE id = ?
+      `).run(
+        name,
+        sortOrder,
+        active,
+        id
+      );
+
+    } catch (error) {
+
+      console.log(
+        error.message
+      );
+    }
+
+    res.redirect("/admin");
   }
-
-  const id =
-    Number(req.params.id);
-
-  const name =
-    String(req.body.name || "").trim();
-
-  const sortOrder =
-    Number(req.body.sort_order || 0);
-
-  const active =
-    req.body.active ? 1 : 0;
-
-  if (!name) {
-    return res.redirect("/admin");
-  }
-
-  try {
-
-    db.prepare(`
-      UPDATE categories
-      SET
-        name = ?,
-        sort_order = ?,
-        active = ?
-      WHERE id = ?
-    `).run(
-      name,
-      sortOrder,
-      active,
-      id
-    );
-
-  } catch (error) {
-
-    console.log(error.message);
-
-  }
-
-  res.redirect("/admin");
-});
+);
 
 /* =========================
    DELETE CATEGORY
 ========================= */
 
-app.post("/admin/categories/delete/:id", (req, res) => {
+app.post(
+  "/admin/categories/delete/:id",
+  (req, res) => {
 
-  if (!loggedIn) {
-    return res.redirect("/login");
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
+
+    const id =
+      Number(req.params.id);
+
+    db.prepare(`
+      UPDATE products
+      SET category_id = NULL
+      WHERE category_id = ?
+    `).run(id);
+
+    db.prepare(`
+      DELETE FROM categories
+      WHERE id = ?
+    `).run(id);
+
+    res.redirect("/admin");
   }
-
-  const id =
-    Number(req.params.id);
-
-  db.prepare(`
-    UPDATE products
-    SET category_id = NULL
-    WHERE category_id = ?
-  `).run(id);
-
-  db.prepare(`
-    DELETE FROM categories
-    WHERE id = ?
-  `).run(id);
-
-  res.redirect("/admin");
-});
+);
 
 /* =========================
    ADD PRODUCT
@@ -816,22 +922,34 @@ app.post(
       getUploadedImages(req);
 
     const name =
-      String(req.body.name || "").trim();
+      String(
+        req.body.name || ""
+      ).trim();
 
     const price =
-      Number(req.body.price || 0);
+      Number(
+        req.body.price || 0
+      );
 
     const originalPrice =
-      Number(req.body.original_price || 0);
+      Number(
+        req.body.original_price || 0
+      );
 
     const discount =
-      String(req.body.discount || "").trim();
+      String(
+        req.body.discount || ""
+      ).trim();
 
     const rating =
-      Number(req.body.rating || 0);
+      Number(
+        req.body.rating || 0
+      );
 
     const affiliateUrl =
-      String(req.body.affiliate_url || "").trim();
+      String(
+        req.body.affiliate_url || ""
+      ).trim();
 
     const categoryId =
       req.body.category_id
@@ -842,7 +960,9 @@ app.post(
       req.body.expiry_date || null;
 
     const description =
-      String(req.body.description || "").trim();
+      String(
+        req.body.description || ""
+      ).trim();
 
     const featured =
       req.body.featured ? 1 : 0;
@@ -860,7 +980,8 @@ app.post(
 
     if (files.length > 0) {
       imageUrl =
-        "/uploads/" + files[0].filename;
+        "/uploads/" +
+        files[0].filename;
     }
 
     const result = db.prepare(`
@@ -912,15 +1033,17 @@ app.post(
       VALUES (?, ?, ?)
     `);
 
-    files.forEach((file, index) => {
+    files.forEach(
+      (file, index) => {
 
-      insertImage.run(
-        productId,
-        "/uploads/" + file.filename,
-        index + 1
-      );
-
-    });
+        insertImage.run(
+          productId,
+          "/uploads/" +
+            file.filename,
+          index + 1
+        );
+      }
+    );
 
     res.redirect("/admin");
   }
@@ -930,45 +1053,48 @@ app.post(
    EDIT PAGE
 ========================= */
 
-app.get("/admin/edit/:id", (req, res) => {
+app.get(
+  "/admin/edit/:id",
+  (req, res) => {
 
-  if (!loggedIn) {
-    return res.redirect("/login");
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
+
+    const id =
+      Number(req.params.id);
+
+    const product =
+      db.prepare(`
+        SELECT *
+        FROM products
+        WHERE id = ?
+      `).get(id);
+
+    if (!product) {
+      return res.redirect("/admin");
+    }
+
+    const categories =
+      db.prepare(`
+        SELECT *
+        FROM categories
+        ORDER BY sort_order ASC, id ASC
+      `).all();
+
+    const images =
+      getProductImages(
+        product.id,
+        product.image_url
+      );
+
+    res.render("edit", {
+      product,
+      categories,
+      images
+    });
   }
-
-  const id =
-    Number(req.params.id);
-
-  const product =
-    db.prepare(`
-      SELECT *
-      FROM products
-      WHERE id = ?
-    `).get(id);
-
-  if (!product) {
-    return res.redirect("/admin");
-  }
-
-  const categories =
-    db.prepare(`
-      SELECT *
-      FROM categories
-      ORDER BY sort_order ASC, id ASC
-    `).all();
-
-  const images =
-    getProductImages(
-      product.id,
-      product.image_url
-    );
-
-  res.render("edit", {
-    product,
-    categories,
-    images
-  });
-});
+);
 
 /* =========================
    EDIT PRODUCT
@@ -1001,22 +1127,34 @@ app.post(
       getUploadedImages(req);
 
     const name =
-      String(req.body.name || "").trim();
+      String(
+        req.body.name || ""
+      ).trim();
 
     const price =
-      Number(req.body.price || 0);
+      Number(
+        req.body.price || 0
+      );
 
     const originalPrice =
-      Number(req.body.original_price || 0);
+      Number(
+        req.body.original_price || 0
+      );
 
     const discount =
-      String(req.body.discount || "").trim();
+      String(
+        req.body.discount || ""
+      ).trim();
 
     const rating =
-      Number(req.body.rating || 0);
+      Number(
+        req.body.rating || 0
+      );
 
     const affiliateUrl =
-      String(req.body.affiliate_url || "").trim();
+      String(
+        req.body.affiliate_url || ""
+      ).trim();
 
     const categoryId =
       req.body.category_id
@@ -1027,7 +1165,9 @@ app.post(
       req.body.expiry_date || null;
 
     const description =
-      String(req.body.description || "").trim();
+      String(
+        req.body.description || ""
+      ).trim();
 
     const featured =
       req.body.featured ? 1 : 0;
@@ -1108,15 +1248,17 @@ app.post(
         VALUES (?, ?, ?)
       `);
 
-      files.forEach((file, index) => {
+      files.forEach(
+        (file, index) => {
 
-        insertImage.run(
-          id,
-          "/uploads/" + file.filename,
-          index + 1
-        );
-
-      });
+          insertImage.run(
+            id,
+            "/uploads/" +
+              file.filename,
+            index + 1
+          );
+        }
+      );
     }
 
     res.redirect("/admin");
@@ -1127,168 +1269,222 @@ app.post(
    DELETE PRODUCT
 ========================= */
 
-app.post("/admin/delete/:id", (req, res) => {
+app.post(
+  "/admin/delete/:id",
+  (req, res) => {
 
-  if (!loggedIn) {
-    return res.redirect("/login");
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
+
+    const id =
+      Number(req.params.id);
+
+    db.prepare(`
+      DELETE FROM product_images
+      WHERE product_id = ?
+    `).run(id);
+
+    db.prepare(`
+      DELETE FROM reviews
+      WHERE product_id = ?
+    `).run(id);
+
+    db.prepare(`
+      DELETE FROM products
+      WHERE id = ?
+    `).run(id);
+
+    res.redirect("/admin");
   }
-
-  const id =
-    Number(req.params.id);
-
-  db.prepare(`
-    DELETE FROM product_images
-    WHERE product_id = ?
-  `).run(id);
-
-  db.prepare(`
-    DELETE FROM reviews
-    WHERE product_id = ?
-  `).run(id);
-
-  db.prepare(`
-    DELETE FROM products
-    WHERE id = ?
-  `).run(id);
-
-  res.redirect("/admin");
-});
+);
 
 /* =========================
    DELETE REVIEW
 ========================= */
 
-app.post("/admin/reviews/delete/:id", (req, res) => {
+app.post(
+  "/admin/reviews/delete/:id",
+  (req, res) => {
 
-  if (!loggedIn) {
-    return res.redirect("/login");
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
+
+    const id =
+      Number(req.params.id);
+
+    db.prepare(`
+      DELETE FROM reviews
+      WHERE id = ?
+    `).run(id);
+
+    res.redirect("/admin");
   }
-
-  const id =
-    Number(req.params.id);
-
-  db.prepare(`
-    DELETE FROM reviews
-    WHERE id = ?
-  `).run(id);
-
-  res.redirect("/admin");
-});
+);
 
 /* =========================
    LOGOUT
 ========================= */
 
-app.get("/logout", (req, res) => {
+app.get(
+  "/logout",
+  (req, res) => {
 
-  loggedIn = false;
+    loggedIn = false;
 
-  res.redirect("/login");
-});
+    res.redirect("/login");
+  }
+);
 
 /* =========================
    CHANGE PASSWORD
 ========================= */
 
-app.get("/password", (req, res) => {
+app.get(
+  "/password",
+  (req, res) => {
 
-  if (!loggedIn) {
-    return res.redirect("/login");
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
+
+    res.render("password", {
+      error: null,
+      success: null
+    });
   }
+);
 
-  res.render("password", {
-    error: null,
-    success: null
-  });
-});
+app.post(
+  "/password",
+  (req, res) => {
 
-app.post("/password", (req, res) => {
+    if (!loggedIn) {
+      return res.redirect("/login");
+    }
 
-  if (!loggedIn) {
-    return res.redirect("/login");
-  }
+    const oldPassword =
+      String(
+        req.body.old_password || ""
+      );
 
-  const oldPassword =
-    String(req.body.old_password || "");
+    const newPassword =
+      String(
+        req.body.new_password || ""
+      );
 
-  const newPassword =
-    String(req.body.new_password || "");
+    const confirmPassword =
+      String(
+        req.body.confirm_password || ""
+      );
 
-  const confirmPassword =
-    String(req.body.confirm_password || "");
+    const admin =
+      db.prepare(`
+        SELECT *
+        FROM admin
+        LIMIT 1
+      `).get();
 
-  const admin =
+    if (
+      !admin ||
+      admin.password !== oldPassword
+    ) {
+
+      return res.render(
+        "password",
+        {
+          error:
+            "Old password is incorrect.",
+          success: null
+        }
+      );
+    }
+
+    if (
+      !newPassword ||
+      newPassword !== confirmPassword
+    ) {
+
+      return res.render(
+        "password",
+        {
+          error:
+            "New passwords do not match.",
+          success: null
+        }
+      );
+    }
+
     db.prepare(`
-      SELECT *
-      FROM admin
-      LIMIT 1
-    `).get();
+      UPDATE admin
+      SET password = ?
+      WHERE id = ?
+    `).run(
+      newPassword,
+      admin.id
+    );
 
-  if (!admin || admin.password !== oldPassword) {
-
-    return res.render("password", {
-      error: "Old password is incorrect.",
-      success: null
-    });
+    res.render(
+      "password",
+      {
+        error: null,
+        success:
+          "Password changed successfully."
+      }
+    );
   }
-
-  if (
-    !newPassword ||
-    newPassword !== confirmPassword
-  ) {
-
-    return res.render("password", {
-      error: "New passwords do not match.",
-      success: null
-    });
-  }
-
-  db.prepare(`
-    UPDATE admin
-    SET password = ?
-    WHERE id = ?
-  `).run(
-    newPassword,
-    admin.id
-  );
-
-  res.render("password", {
-    error: null,
-    success: "Password changed successfully."
-  });
-});
+);
 
 /* =========================
    ERROR HANDLER
 ========================= */
 
-app.use((err, req, res, next) => {
+app.use(
+  (err, req, res, next) => {
 
-  console.error(err);
+    console.error(err);
 
-  if (
-    err instanceof multer.MulterError
-  ) {
+    if (
+      err instanceof multer.MulterError
+    ) {
 
-    return res.status(400).send(
-      "Image upload error: " +
-      err.message
-    );
+      return res
+        .status(400)
+        .send(
+          "Image upload error: " +
+          err.message
+        );
+    }
+
+    res
+      .status(500)
+      .send(
+        "Something went wrong."
+      );
   }
-
-  res.status(500).send(
-    "Something went wrong."
-  );
-});
+);
 
 /* =========================
    SERVER
 ========================= */
 
-app.listen(PORT, () => {
+/*
+  Render ke liye:
+  - process.env.PORT use hoga
+  - 0.0.0.0 par server listen karega
 
-  console.log(
-    `DealBaazi running at http://localhost:${PORT}`
-  );
+  Local PC par:
+  - PORT na mile to 3000 use hoga
+*/
 
-});
+app.listen(
+  PORT,
+  "0.0.0.0",
+  () => {
+
+    console.log(
+      `DealBaazi running on port ${PORT}`
+    );
+  }
+);
