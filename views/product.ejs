@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= product.name %> - DealBaazi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f6f8;color:#222}
+header{background:#fff;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px #0001;position:sticky;top:0;z-index:10}
+.logo{height:48px;max-width:180px;object-fit:contain}
+.back{color:#333;text-decoration:none;font-weight:bold}
+.container{max-width:1200px;margin:25px auto;padding:0 18px}
+.product-box{background:#fff;border-radius:18px;padding:25px;display:grid;grid-template-columns:1fr 1fr;gap:35px;box-shadow:0 3px 15px #00000010}
+.gallery{width:100%}
+.main-image{height:430px;border-radius:15px;background:#f7f7f7;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.main-image img{width:100%;height:100%;object-fit:contain}
+.arrow{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 10px #0003;font-size:25px;cursor:pointer;z-index:2}
+.prev{left:12px}.next{right:12px}
+.thumbs{display:flex;gap:10px;margin-top:12px;overflow-x:auto}
+.thumb{width:75px;height:75px;border:2px solid transparent;border-radius:10px;object-fit:cover;cursor:pointer;background:#eee}
+.thumb.active{border-color:#ff4b2b}
+.category{display:inline-block;background:#fff0ed;color:#ff4b2b;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:bold;margin-bottom:12px}
+h1{font-size:30px;line-height:1.25;margin-bottom:12px}
+.rating{color:#f59e0b;font-size:18px;margin-bottom:18px}
+.price{font-size:34px;font-weight:bold;color:#111}
+.old{font-size:18px;color:#999;text-decoration:line-through;margin-left:10px}
+.discount{display:inline-block;background:#e7f8ed;color:#16853b;padding:6px 10px;border-radius:6px;font-weight:bold;margin:12px 0}
+.score{background:linear-gradient(135deg,#fff2e9,#ffe7dc);padding:15px;border-radius:12px;margin:15px 0;font-weight:bold}
+.buy{display:block;width:100%;text-align:center;text-decoration:none;background:#ff4b2b;color:#fff;padding:17px;border-radius:10px;font-size:18px;font-weight:bold;margin-top:20px}
+.buy:hover{background:#e83d20}
+.description{background:#fff;margin-top:22px;padding:25px;border-radius:18px;box-shadow:0 3px 15px #00000010}
+.description h2,.reviews h2{margin-bottom:15px}
+.desc-text{white-space:pre-wrap;line-height:1.7;color:#555}
+.reviews{background:#fff;margin-top:22px;padding:25px;border-radius:18px;box-shadow:0 3px 15px #00000010}
+.review{border-bottom:1px solid #eee;padding:15px 0}
+.review:last-child{border-bottom:0}
+.review-name{font-weight:bold}
+.review-stars{color:#f59e0b;margin:5px 0}
+.review-date{font-size:12px;color:#999}
+form{margin-top:20px;background:#f8f8f8;padding:18px;border-radius:12px}
+input,select,textarea{width:100%;padding:12px;margin:7px 0 12px;border:1px solid #ddd;border-radius:8px;font-size:15px}
+textarea{min-height:100px;resize:vertical}
+.submit{background:#222;color:#fff;border:0;padding:12px 22px;border-radius:8px;cursor:pointer;font-weight:bold}
+@media(max-width:768px){
+header{padding:10px 15px}.logo{height:40px;max-width:145px}
+.container{margin:15px auto;padding:0 10px}
+.product-box{grid-template-columns:1fr;padding:15px;gap:20px}
+.main-image{height:330px}
+h1{font-size:23px}
+.price{font-size:28px}
+.description,.reviews{padding:18px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<a href="/" class="back">← Back</a>
+<img src="/images/logo.png" class="logo" alt="DealBaazi">
+</header>
+
+<div class="container">
+
+<div class="product-box">
+
+<div class="gallery">
+<div class="main-image" id="mainImage">
+<img id="productImage" src="<%= images[0] %>" alt="<%= product.name %>">
+<button class="arrow prev" onclick="changeImage(-1)">‹</button>
+<button class="arrow next" onclick="changeImage(1)">›</button>
+</div>
+
+<div class="thumbs">
+<% images.forEach((img,index)=>{ %>
+<img class="thumb <%= index===0?'active':'' %>"
+src="<%= img %>"
+onclick="showImage(<%= index %>)"
+alt="Product image">
+<% }) %>
+</div>
+</div>
+
+<div class="info">
+<div class="category"><%= product.category_name || 'Deal' %></div>
+
+<h1><%= product.name %></h1>
+
+<div class="rating">
+⭐ <%= Number(averageRating || 0).toFixed(1) %>/5
+&nbsp; (<%= reviewCount || 0 %> reviews)
+</div>
+
+<div>
+<span class="price">₹<%= Number(product.price).toLocaleString('en-IN') %></span>
+
+<% if(product.original_price && Number(product.original_price)>Number(product.price)){ %>
+<span class="old">₹<%= Number(product.original_price).toLocaleString('en-IN') %></span>
+<% } %>
+</div>
+
+<% if(product.original_price && Number(product.original_price)>Number(product.price)){ %>
+<div class="discount">
+<%= Math.round(((product.original_price-product.price)/product.original_price)*100) %>% OFF
+</div>
+<% } %>
+
+<div class="score">
+🔥 DealBaazi Deal Score: <%= dealScore %>/100
+</div>
+
+<a href="/buy/<%= product.id %>" class="buy">🛒 BUY NOW</a>
+</div>
+
+</div>
+
+<div class="description">
+<h2>📋 Product Description</h2>
+<div class="desc-text"><%= product.description || 'Is product ki detailed information jald available hogi.' %></div>
+</div>
+
+<div class="reviews">
+<h2>⭐ Customer Reviews</h2>
+
+<% if(reviews && reviews.length){ %>
+<% reviews.forEach(review=>{ %>
+<div class="review">
+<div class="review-name"><%= review.name %></div>
+<div class="review-stars">
+<%= '★'.repeat(review.rating) %><%= '☆'.repeat(5-review.rating) %>
+</div>
+<div><%= review.comment %></div>
+<div class="review-date"><%= review.created_at %></div>
+</div>
+<% }) %>
+<% } else { %>
+<p>Abhi koi review nahi hai. Pehla review aap karein ❤️</p>
+<% } %>
+
+<form action="/product/<%= product.id %>/review" method="POST">
+<h3>Apna Review Dein</h3>
+
+<input type="text" name="name" placeholder="Aapka naam" required>
+
+<select name="rating" required>
+<option value="">Rating select karein</option>
+<option value="5">⭐⭐⭐⭐⭐ 5 - Excellent</option>
+<option value="4">⭐⭐⭐⭐ 4 - Very Good</option>
+<option value="3">⭐⭐⭐ 3 - Good</option>
+<option value="2">⭐⭐ 2 - Average</option>
+<option value="1">⭐ 1 - Poor</option>
+</select>
+
+<textarea name="comment" placeholder="Apna experience likhein..." required></textarea>
+
+<button class="submit" type="submit">Submit Review</button>
+</form>
+
+</div>
+
+</div>
+
+<script>
+const images = <%- JSON.stringify(images) %>;
+let current = 0;
+
+function showImage(index){
+current=index;
+document.getElementById('productImage').src=images[current];
+
+document.querySelectorAll('.thumb').forEach((el,i)=>{
+el.classList.toggle('active',i===current);
+});
+}
+
+function changeImage(direction){
+if(images.length<=1)return;
+current=(current+direction+images.length)%images.length;
+showImage(current);
+}
+
+let startX=0;
+
+document.getElementById('mainImage').addEventListener('touchstart',function(e){
+startX=e.touches[0].clientX;
+},{passive:true});
+
+document.getElementById('mainImage').addEventListener('touchend',function(e){
+let endX=e.changedTouches[0].clientX;
+let difference=startX-endX;
+
+if(Math.abs(difference)>50){
+if(difference>0) changeImage(1);
+else changeImage(-1);
+}
+},{passive:true});
+
+document.addEventListener('keydown',function(e){
+if(e.key==='ArrowLeft') changeImage(-1);
+if(e.key==='ArrowRight') changeImage(1);
+});
+</script>
+
+</body>
+</html>

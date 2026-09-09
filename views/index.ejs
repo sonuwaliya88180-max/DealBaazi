@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>DealBaazi - Best Deals & Offers</title>
+
+  <meta
+    name="description"
+    content="DealBaazi par pao best deals, offers aur trending products."
+  >
+
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+      background: #f5f6f8;
+      color: #171717;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    /* =====================================================
+       TOP BAR
+    ===================================================== */
+
+    .top-bar {
+      background: #111827;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .top-bar-inner {
+      max-width: 1400px;
+      margin: auto;
+      min-height: 32px;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .top-bar-left {
+      opacity: .9;
+    }
+
+    .top-bar-right {
+      display: flex;
+      gap: 18px;
+      opacity: .9;
+    }
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .header {
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    .header-main {
+      max-width: 1400px;
+      min-height: 76px;
+      margin: auto;
+      padding: 10px 22px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .logo img {
+      width: 160px;
+      max-height: 55px;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* =====================================================
+       SEARCH
+    ===================================================== */
+
+    .search-box {
+      flex: 1;
+      max-width: 680px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      border: 1px solid #dfe3e8;
+      background: #f7f8fa;
+      border-radius: 9px;
+      overflow: hidden;
+      transition: .2s;
+    }
+
+    .search-box:focus-within {
+      border-color: #ff6a00;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(255,106,0,.08);
+    }
+
+    .search-box input {
+      flex: 1;
+      height: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      padding: 0 16px;
+      font-size: 14px;
+      color: #222;
+    }
+
+    .search-box input::placeholder {
+      color: #8b929b;
+    }
+
+    .search-box button {
+      width: 54px;
+      height: 100%;
+      border: 0;
+      background: #ff6a00;
+      color: #fff;
+      cursor: pointer;
+      font-size: 18px;
+      transition: .2s;
+    }
+
+    .search-box button:hover {
+      background: #e85c00;
+    }
+
+    /* =====================================================
+       HEADER LINKS
+    ===================================================== */
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-left: auto;
+    }
+
+    .header-link {
+      font-size: 13px;
+      font-weight: 700;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .header-link:hover {
+      color: #ff6a00;
+    }
+
+    /* =====================================================
+       CATEGORY NAV
+    ===================================================== */
+
+    .nav {
+      background: #fff;
+      border-top: 1px solid #f0f0f0;
+      border-bottom: 1px solid #e9e9e9;
+    }
+
+    .nav-inner {
+      max-width: 1400px;
+      height: 47px;
+      margin: auto;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      gap: 27px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-inner::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav a {
+      height: 47px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      color: #4b4b4b;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .nav a:hover {
+      color: #ff6a00;
+    }
+
+    .nav a.active {
+      color: #ff6a00;
+    }
+
+    .nav a.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: #ff6a00;
+      border-radius: 3px 3px 0 0;
+    }
+
+    /* =====================================================
+       MAIN
+    ===================================================== */
+
+    .main {
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+
+    .hero {
+      padding: 22px;
+    }
+
+    .hero-box {
+      min-height: 270px;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      background:
+        linear-gradient(
+          120deg,
+          #ff7a00 0%,
+          #ff5b00 48%,
+          #e94700 100%
+        );
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 55px;
+      box-shadow:
+        0 12px 30px rgba(255,91,0,.18);
+    }
+
+    .hero-box::before {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      right: 90px;
+      top: -150px;
+      background: rgba(255,255,255,.08);
+    }
+
+    .hero-box::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      right: -50px;
+      bottom: -100px;
+      background: rgba(255,255,255,.07);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+    }
+
+    .hero-small {
+      display: inline-block;
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.22);
+      padding: 7px 12px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .hero-content h1 {
+      font-size: 38px;
+      line-height: 1.15;
+      margin-bottom: 12px;
+      letter-spacing: -.5px;
+    }
+
+    .hero-content p {
+      font-size: 15px;
+      line-height: 24px;
+      opacity: .94;
+      max-width: 590px;
+      margin-bottom: 22px;
+    }
+
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      color: #e85d00;
+      padding: 12px 19px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 5px 15px rgba(0,0,0,.12);
+      transition: .2s;
+    }
+
+    .hero-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,.16);
+    }
+
+    .hero-art {
+      position: relative;
+      z-index: 2;
+      width: 270px;
+      height: 210px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-circle {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .hero-rupee {
+      font-size: 105px;
+      font-weight: 900;
+      color: rgba(255,255,255,.88);
+      transform: rotate(-8deg);
+    }
+
+    /* =====================================================
+       QUICK FEATURES
+    ===================================================== */
+
+    .features {
+      padding: 0 22px;
+      margin-bottom: 8px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .feature {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .feature-icon {
+      width: 39px;
+      height: 39px;
+      flex-shrink: 0;
+      border-radius: 9px;
+      background: #fff2e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+    }
+
+    .feature strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .feature span {
+      font-size: 10px;
+      color: #858585;
+    }
+
+    /* =====================================================
+       SECTION
+    ===================================================== */
+
+    .section {
+      padding: 0 22px;
+      margin-top: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .section-left h2 {
+      font-size: 23px;
+      line-height: 30px;
+      font-weight: 800;
+      color: #202124;
+    }
+
+    .section-left h2 span {
+      color: #ff6a00;
+    }
+
+    .section-left p {
+      font-size: 12px;
+      color: #888;
+      margin-top: 3px;
+    }
+
+    .view-all {
+      color: #ff6a00;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .view-all:hover {
+      text-decoration: underline;
+    }
+
+    /* =====================================================
+       PRODUCT GRID
+    ===================================================== */
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+    }
+
+    /* =====================================================
+       PRODUCT CARD
+    ===================================================== */
+
+    .product-card {
+      position: relative;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 11px;
+      overflow: hidden;
+      transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+      min-width: 0;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      border-color: #dedede;
+      box-shadow:
+        0 12px 28px rgba(0,0,0,.10);
+    }
+
+    /* =====================================================
+       DISCOUNT
+    ===================================================== */
+
+    .discount {
+      position: absolute;
+      z-index: 5;
+      top: 10px;
+      left: 10px;
+      background: #008a45;
+      color: #fff;
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 800;
+      box-shadow: 0 2px 6px rgba(0,0,0,.12);
+    }
+
+    /* =====================================================
+       IMAGE
+    ===================================================== */
+
+    .product-image {
+      width: 100%;
+      height: 225px;
+      background: #fff;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #f1f1f1;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      transition: transform .25s ease;
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.04);
+    }
+
+    .no-image {
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #aaa;
+    }
+
+    /* =====================================================
+       PRODUCT INFO
+    ===================================================== */
+
+    .product-info {
+      padding: 13px;
+    }
+
+    .category-badge {
+      display: inline-block;
+      max-width: 100%;
+      background: #fff2e9;
+      color: #e85d00;
+      padding: 4px 7px;
+      border-radius: 4px;
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 800;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-title {
+      font-size: 13px;
+      line-height: 19px;
+      font-weight: 600;
+      height: 38px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      color: #272727;
+      margin-bottom: 9px;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+      margin-bottom: 9px;
+    }
+
+    .rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: #168a4a;
+      color: #fff;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .rating-text {
+      color: #999;
+      font-size: 10px;
+    }
+
+    /* =====================================================
+       PRICE
+    ===================================================== */
+
+    .price-row {
+      min-height: 37px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .price {
+      color: #111;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .original-price {
+      color: #999;
+      font-size: 11px;
+      text-decoration: line-through;
+    }
+
+    .save-text {
+      color: #008a45;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+
+    .product-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .details-btn {
+      width: 38%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      color: #444;
+      font-size: 10px;
+      font-weight: 800;
+      background: #fff;
+    }
+
+    .details-btn:hover {
+      border-color: #ff6a00;
+      color: #ff6a00;
+    }
+
+    .buy-btn {
+      width: 62%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      background: #ff6a00;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 900;
+      transition: .2s;
+    }
+
+    .buy-btn:hover {
+      background: #e85d00;
+      transform: translateY(-1px);
+    }
+
+    /* =====================================================
+       SEARCH EMPTY
+    ===================================================== */
+
+    .search-empty {
+      display: none;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      text-align: center;
+      padding: 55px 20px;
+      margin-top: 15px;
+    }
+
+    .search-empty-icon {
+      font-size: 45px;
+      margin-bottom: 12px;
+    }
+
+    .search-empty h3 {
+      font-size: 20px;
+      margin-bottom: 7px;
+    }
+
+    .search-empty p {
+      color: #888;
+      font-size: 13px;
+    }
+
+    /* =====================================================
+       EMPTY
+    ===================================================== */
+
+    .empty {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      text-align: center;
+      padding: 65px 20px;
+    }
+
+    .empty .emoji {
+      font-size: 55px;
+      margin-bottom: 12px;
+    }
+
+    .empty h3 {
+      font-size: 23px;
+      margin-bottom: 7px;
+      color: #333;
+    }
+
+    .empty p {
+      font-size: 13px;
+      color: #888;
+    }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    .footer {
+      margin-top: 55px;
+      background: #16191d;
+      color: #ddd;
+    }
+
+    .footer-inner {
+      max-width: 1400px;
+      margin: auto;
+      padding: 45px 22px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 45px;
+    }
+
+    .footer-logo img {
+      width: 150px;
+      max-height: 55px;
+      object-fit: contain;
+      background: #fff;
+      padding: 5px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    .footer-description {
+      max-width: 420px;
+      color: #999;
+      font-size: 12px;
+      line-height: 21px;
+    }
+
+    .footer h3 {
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .footer a {
+      display: block;
+      color: #999;
+      font-size: 12px;
+      margin-bottom: 11px;
+      transition: .2s;
+    }
+
+    .footer a:hover {
+      color: #ff7a00;
+    }
+
+    .footer-note {
+      color: #777;
+      font-size: 11px;
+      line-height: 19px;
+    }
+
+    .copyright {
+      border-top: 1px solid #292d32;
+      text-align: center;
+      padding: 17px 15px;
+      color: #777;
+      font-size: 11px;
+    }
+
+    /* =====================================================
+       TABLET
+    ===================================================== */
+
+    @media (max-width: 1150px) {
+
+      .products {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .header-main {
+        gap: 18px;
+      }
+
+      .hero-content h1 {
+        font-size: 32px;
+      }
+
+      .hero-art {
+        width: 220px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 2fr 1fr 1fr;
+      }
+
+    }
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 768px) {
+
+      .top-bar {
+        display: none;
+      }
+
+      .header-main {
+        min-height: auto;
+        padding: 9px 12px 11px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 9px;
+      }
+
+      .logo img {
+        width: 125px;
+        max-height: 45px;
+      }
+
+      .header-links {
+        gap: 10px;
+      }
+
+      .header-link {
+        font-size: 11px;
+      }
+
+      .search-box {
+        grid-column: 1 / -1;
+        width: 100%;
+        max-width: none;
+        height: 42px;
+      }
+
+      .search-box input {
+        font-size: 13px;
+      }
+
+      .search-box button {
+        width: 47px;
+      }
+
+      .nav-inner {
+        height: 43px;
+        padding: 0 12px;
+        gap: 21px;
+      }
+
+      .nav a {
+        height: 43px;
+        font-size: 11px;
+      }
+
+      .hero {
+        padding: 12px;
+      }
+
+      .hero-box {
+        min-height: 205px;
+        padding: 25px 21px;
+        border-radius: 14px;
+      }
+
+      .hero-content {
+        max-width: 100%;
+      }
+
+      .hero-small {
+        font-size: 9px;
+        padding: 6px 9px;
+      }
+
+      .hero-content h1 {
+        font-size: 24px;
+        line-height: 30px;
+        margin-bottom: 8px;
+      }
+
+      .hero-content p {
+        font-size: 12px;
+        line-height: 19px;
+        margin-bottom: 15px;
+      }
+
+      .hero-btn {
+        font-size: 11px;
+        padding: 10px 14px;
+      }
+
+      .hero-art {
+        display: none;
+      }
+
+      .features {
+        padding: 0 12px;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .feature {
+        padding: 10px;
+        gap: 8px;
+      }
+
+      .feature-icon {
+        width: 33px;
+        height: 33px;
+        font-size: 15px;
+      }
+
+      .feature strong {
+        font-size: 10px;
+      }
+
+      .feature span {
+        font-size: 8px;
+      }
+
+      .section {
+        padding: 0 12px;
+        margin-top: 24px;
+      }
+
+      .section-header {
+        margin-bottom: 11px;
+      }
+
+      .section-left h2 {
+        font-size: 18px;
+        line-height: 24px;
+      }
+
+      .section-left p {
+        font-size: 10px;
+      }
+
+      .view-all {
+        font-size: 10px;
+      }
+
+      .products {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 9px;
+      }
+
+      .product-image {
+        height: 175px;
+        padding: 10px;
+      }
+
+      .product-info {
+        padding: 10px;
+      }
+
+      .discount {
+        top: 7px;
+        left: 7px;
+        font-size: 8px;
+        padding: 4px 6px;
+      }
+
+      .category-badge {
+        font-size: 8px;
+        padding: 4px 5px;
+      }
+
+      .product-title {
+        font-size: 11px;
+        line-height: 16px;
+        height: 32px;
+        margin-bottom: 7px;
+      }
+
+      .rating {
+        font-size: 8px;
+        padding: 4px 5px;
+      }
+
+      .rating-text {
+        display: none;
+      }
+
+      .price-row {
+        min-height: 31px;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+
+      .price {
+        font-size: 16px;
+      }
+
+      .original-price {
+        font-size: 9px;
+      }
+
+      .save-text {
+        display: none;
+      }
+
+      .product-actions {
+        gap: 5px;
+      }
+
+      .details-btn {
+        width: 35%;
+        min-height: 35px;
+        font-size: 8px;
+      }
+
+      .buy-btn {
+        width: 65%;
+        min-height: 35px;
+        font-size: 9px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 28px 20px;
+        padding: 35px 15px;
+      }
+
+      .footer-main {
+        grid-column: 1 / -1;
+      }
+
+    }
+
+    /* =====================================================
+       SMALL MOBILE
+    ===================================================== */
+
+    @media (max-width: 390px) {
+
+      .logo img {
+        width: 110px;
+      }
+
+      .header-link {
+        font-size: 10px;
+      }
+
+      .products {
+        gap: 7px;
+      }
+
+      .product-image {
+        height: 155px;
+      }
+
+      .product-info {
+        padding: 8px;
+      }
+
+      .price {
+        font-size: 15px;
+      }
+
+      .buy-btn,
+      .details-btn {
+        min-height: 33px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- =====================================================
+       TOP BAR
+  ===================================================== -->
+
+  <div class="top-bar">
+
+    <div class="top-bar-inner">
+
+      <div class="top-bar-left">
+        🛍️ Smart Shopping Starts With DealBaazi
+      </div>
+
+      <div class="top-bar-right">
+        <span>🔥 Best Deals</span>
+        <span>⭐ Top Rated</span>
+        <span>💰 Great Prices</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       HEADER
+  ===================================================== -->
+
+  <header class="header">
+
+    <div class="header-main">
+
+
+      <!-- LOGO -->
+
+      <a
+        href="/"
+        class="logo"
+      >
+
+        <img
+          src="/images/logo.png"
+          alt="DealBaazi"
+        >
+
+      </a>
+
+
+      <!-- SEARCH -->
+
+      <form
+        class="search-box"
+        action="/"
+        method="GET"
+        id="searchForm"
+      >
+
+        <input
+          type="text"
+          name="search"
+          id="searchInput"
+          placeholder="Search products, deals & offers..."
+          autocomplete="off"
+        >
+
+        <button type="submit">
+          🔍
+        </button>
+
+      </form>
+
+
+      <!-- HEADER LINKS -->
+
+      <div class="header-links">
+
+        <a
+          href="/"
+          class="header-link"
+        >
+          🏠 Home
+        </a>
+
+        <a
+          href="#deals"
+          class="header-link"
+        >
+          🔥 Deals
+        </a>
+
+      </div>
+
+
+    </div>
+
+
+    <!-- ===================================================
+         CATEGORY NAV
+    =================================================== -->
+
+    <nav class="nav">
+
+      <div class="nav-inner">
+
+
+        <a
+          href="/"
+          class="<%= !selectedCategory ? 'active' : '' %>"
+        >
+          All Deals
+        </a>
+
+
+        <% if (categories && categories.length > 0) { %>
+
+          <% categories.forEach(category => { %>
+
+            <a
+              href="/category/<%= category.id %>"
+              class="<%= selectedCategory && selectedCategory.id === category.id ? 'active' : '' %>"
+            >
+              <%= category.name %>
+            </a>
+
+          <% }) %>
+
+        <% } %>
+
+
+      </div>
+
+    </nav>
+
+  </header>
+
+
+  <!-- =====================================================
+       MAIN
+  ===================================================== -->
+
+  <main class="main">
+
+
+    <!-- ===================================================
+         HERO
+    =================================================== -->
+
+    <section class="hero">
+
+      <div class="hero-box">
+
+
+        <div class="hero-content">
+
+          <div class="hero-small">
+            🔥 DAILY DEALS & OFFERS
+          </div>
+
+          <h1>
+            Best Deals.<br>
+            Best Prices.
+          </h1>
+
+          <p>
+            DealBaazi par discover karo trending products,
+            amazing discounts aur hand-picked deals —
+            sab ek jagah.
+          </p>
+
+          <a
+            href="#deals"
+            class="hero-btn"
+          >
+            Explore Deals
+            <span>→</span>
+          </a>
+
+        </div>
+
+
+        <div class="hero-art">
+
+          <div class="hero-circle">
+
+            <div class="hero-rupee">
+              ₹
+            </div>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         FEATURES
+    =================================================== -->
+
+    <section class="features">
+
+      <div class="features-grid">
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            🔥
+          </div>
+
+          <div>
+
+            <strong>Hot Deals</strong>
+
+            <span>
+              Hand-picked offers
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            💰
+          </div>
+
+          <div>
+
+            <strong>Best Prices</strong>
+
+            <span>
+              Amazing value
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            ⭐
+          </div>
+
+          <div>
+
+            <strong>Top Rated</strong>
+
+            <span>
+              Popular products
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="feature">
+
+          <div class="feature-icon">
+            🛒
+          </div>
+
+          <div>
+
+            <strong>Easy Shopping</strong>
+
+            <span>
+              One click to buy
+            </span>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         CATEGORY PAGE
+    =================================================== -->
+
+    <% if (selectedCategory) { %>
+
+
+      <section
+        class="section"
+        id="deals"
+      >
+
+        <div class="section-header">
+
+          <div class="section-left">
+
+            <h2>
+              🗂️
+              <span>
+                <%= selectedCategory.name %>
+              </span>
+              Deals
+            </h2>
+
+            <p>
+              Is category ke best available deals
+            </p>
+
+          </div>
+
+          <a
+            href="/"
+            class="view-all"
+          >
+            ← All Deals
+          </a>
+
+        </div>
+
+
+        <% if (products && products.length > 0) { %>
+
+
+          <div class="products">
+
+
+            <% products.forEach(product => { %>
+
+              <div
+                class="product-card searchable-product"
+                data-name="<%= String(product.name || '').toLowerCase() %>"
+                data-category="<%= String(product.category_name || '').toLowerCase() %>"
+              >
+
+
+                <!-- DISCOUNT -->
+
+                <div class="discount">
+
+                  <%= product.discount || 'DEAL' %>
+
+                </div>
+
+
+                <!-- IMAGE -->
+
+                <div class="product-image">
+
+                  <% if (product.image_url) { %>
+
+                    <img
+                      src="<%= product.image_url %>"
+                      alt="<%= product.name %>"
+                      loading="lazy"
+                    >
+
+                  <% } else { %>
+
+                    <div class="no-image">
+                      🖼️
+                    </div>
+
+                  <% } %>
+
+                </div>
+
+
+                <!-- INFO -->
+
+                <div class="product-info">
+
+
+                  <% if (product.category_name) { %>
+
+                    <div class="category-badge">
+                      🗂️ <%= product.category_name %>
+                    </div>
+
+                  <% } %>
+
+
+                  <div class="product-title">
+
+                    <%= product.name %>
+
+                  </div>
+
+
+                  <div class="rating-row">
+
+                    <div class="rating">
+                      ⭐ <%= product.rating || "—" %>
+                    </div>
+
+                    <div class="rating-text">
+                      Customer Rating
+                    </div>
+
+                  </div>
+
+
+                  <div class="price-row">
+
+                    <span class="price">
+                      ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
+                    </span>
+
+
+                    <% if (Number(product.original_price || 0) > Number(product.price || 0)) { %>
+
+                      <span class="original-price">
+                        ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
+                      </span>
+
+                      <span class="save-text">
+                        Save
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+
+                  <div class="product-actions">
+
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      DETAILS
+                    </a>
+
+
+                    <!-- DIRECT AFFILIATE LINK -->
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      🛒 BUY NOW
+                    </a>
+
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+            <% }) %>
+
+
+          </div>
+
+
+          <div
+            class="search-empty"
+            id="searchEmpty"
+          >
+
+            <div class="search-empty-icon">
+              🔎
+            </div>
+
+            <h3>
+              No matching deals found
+            </h3>
+
+            <p>
+              Try another product or category name.
+            </p>
+
+          </div>
+
+
+        <% } else { %>
+
+
+          <div class="empty">
+
+            <div class="emoji">
+              😊
+            </div>
+
+            <h3>
+              Deals Coming Soon
+            </h3>
+
+            <p>
+              Is category mein deals bahut jald aayengi.
+            </p>
+
+          </div>
+
+
+        <% } %>
+
+
+      </section>
+
+
+    <% } else { %>
+
+
+      <!-- =================================================
+           HOME PAGE
+      ================================================= -->
+
+
+      <!-- ================================================
+           HOT DEALS
+      ================================================= -->
+
+      <% if (hotDeals && hotDeals.length > 0) { %>
+
+
+        <section
+          class="section"
+          id="deals"
+        >
+
+          <div class="section-header">
+
+            <div class="section-left">
+
+              <h2>
+                🔥 Hot <span>Deals</span>
+              </h2>
+
+              <p>
+                Sabse exciting deals jo abhi available hain
+              </p>
+
+            </div>
+
+            <a
+              href="#all-products"
+              class="view-all"
+            >
+              View All →
+            </a>
+
+          </div>
+
+
+          <div class="products">
+
+
+            <% hotDeals.forEach(product => { %>
+
+              <div
+                class="product-card searchable-product"
+                data-name="<%= String(product.name || '').toLowerCase() %>"
+                data-category="<%= String(product.category_name || '').toLowerCase() %>"
+              >
+
+
+                <div class="discount">
+                  <%= product.discount || 'HOT DEAL' %>
+                </div>
+
+
+                <div class="product-image">
+
+                  <% if (product.image_url) { %>
+
+                    <img
+                      src="<%= product.image_url %>"
+                      alt="<%= product.name %>"
+                      loading="lazy"
+                    >
+
+                  <% } else { %>
+
+                    <div class="no-image">
+                      🖼️
+                    </div>
+
+                  <% } %>
+
+                </div>
+
+
+                <div class="product-info">
+
+
+                  <% if (product.category_name) { %>
+
+                    <div class="category-badge">
+                      🗂️ <%= product.category_name %>
+                    </div>
+
+                  <% } %>
+
+
+                  <div class="product-title">
+                    <%= product.name %>
+                  </div>
+
+
+                  <div class="rating-row">
+
+                    <div class="rating">
+                      ⭐ <%= product.rating || "—" %>
+                    </div>
+
+                    <div class="rating-text">
+                      Top Deal
+                    </div>
+
+                  </div>
+
+
+                  <div class="price-row">
+
+                    <span class="price">
+                      ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
+                    </span>
+
+
+                    <% if (Number(product.original_price || 0) > Number(product.price || 0)) { %>
+
+                      <span class="original-price">
+                        ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+
+                  <div class="product-actions">
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      DETAILS
+                    </a>
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      🛒 BUY NOW
+                    </a>
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+            <% }) %>
+
+
+          </div>
+
+        </section>
+
+
+      <% } %>
+
+
+      <!-- ================================================
+           TOP PICKS
+      ================================================= -->
+
+      <% if (topPicks && topPicks.length > 0) { %>
+
+
+        <section class="section">
+
+
+          <div class="section-header">
+
+            <div class="section-left">
+
+              <h2>
+                ⭐ Top <span>Picks</span>
+              </h2>
+
+              <p>
+                Hamare specially selected products
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="products">
+
+
+            <% topPicks.forEach(product => { %>
+
+              <div
+                class="product-card searchable-product"
+                data-name="<%= String(product.name || '').toLowerCase() %>"
+                data-category="<%= String(product.category_name || '').toLowerCase() %>"
+              >
+
+
+                <div class="discount">
+                  <%= product.discount || 'TOP PICK' %>
+                </div>
+
+
+                <div class="product-image">
+
+                  <% if (product.image_url) { %>
+
+                    <img
+                      src="<%= product.image_url %>"
+                      alt="<%= product.name %>"
+                      loading="lazy"
+                    >
+
+                  <% } else { %>
+
+                    <div class="no-image">
+                      🖼️
+                    </div>
+
+                  <% } %>
+
+                </div>
+
+
+                <div class="product-info">
+
+
+                  <% if (product.category_name) { %>
+
+                    <div class="category-badge">
+                      🗂️ <%= product.category_name %>
+                    </div>
+
+                  <% } %>
+
+
+                  <div class="product-title">
+                    <%= product.name %>
+                  </div>
+
+
+                  <div class="rating-row">
+
+                    <div class="rating">
+                      ⭐ <%= product.rating || "—" %>
+                    </div>
+
+                    <div class="rating-text">
+                      Recommended
+                    </div>
+
+                  </div>
+
+
+                  <div class="price-row">
+
+                    <span class="price">
+                      ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
+                    </span>
+
+
+                    <% if (Number(product.original_price || 0) > Number(product.price || 0)) { %>
+
+                      <span class="original-price">
+                        ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+
+                  <div class="product-actions">
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      DETAILS
+                    </a>
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      🛒 BUY NOW
+                    </a>
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+            <% }) %>
+
+
+          </div>
+
+
+        </section>
+
+
+      <% } %>
+
+
+      <!-- ================================================
+           TOP RATED
+      ================================================= -->
+
+      <% if (topRated && topRated.length > 0) { %>
+
+
+        <section class="section">
+
+
+          <div class="section-header">
+
+            <div class="section-left">
+
+              <h2>
+                ⭐ Top <span>Rated</span>
+              </h2>
+
+              <p>
+                Customers ke favourite products
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="products">
+
+
+            <% topRated.forEach(product => { %>
+
+              <div
+                class="product-card searchable-product"
+                data-name="<%= String(product.name || '').toLowerCase() %>"
+                data-category="<%= String(product.category_name || '').toLowerCase() %>"
+              >
+
+
+                <div class="discount">
+                  <%= product.discount || 'DEAL' %>
+                </div>
+
+
+                <div class="product-image">
+
+                  <% if (product.image_url) { %>
+
+                    <img
+                      src="<%= product.image_url %>"
+                      alt="<%= product.name %>"
+                      loading="lazy"
+                    >
+
+                  <% } else { %>
+
+                    <div class="no-image">
+                      🖼️
+                    </div>
+
+                  <% } %>
+
+                </div>
+
+
+                <div class="product-info">
+
+
+                  <% if (product.category_name) { %>
+
+                    <div class="category-badge">
+                      🗂️ <%= product.category_name %>
+                    </div>
+
+                  <% } %>
+
+
+                  <div class="product-title">
+                    <%= product.name %>
+                  </div>
+
+
+                  <div class="rating-row">
+
+                    <div class="rating">
+                      ⭐ <%= product.rating || "—" %>
+                    </div>
+
+                    <div class="rating-text">
+                      Highly Rated
+                    </div>
+
+                  </div>
+
+
+                  <div class="price-row">
+
+                    <span class="price">
+                      ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
+                    </span>
+
+
+                    <% if (Number(product.original_price || 0) > Number(product.price || 0)) { %>
+
+                      <span class="original-price">
+                        ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+
+                  <div class="product-actions">
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      DETAILS
+                    </a>
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      🛒 BUY NOW
+                    </a>
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+            <% }) %>
+
+
+          </div>
+
+
+        </section>
+
+
+      <% } %>
+
+
+      <!-- ================================================
+           ALL PRODUCTS
+      ================================================= -->
+
+      <section
+        class="section"
+        id="all-products"
+      >
+
+
+        <div class="section-header">
+
+          <div class="section-left">
+
+            <h2>
+              🛍️ All <span>Deals</span>
+            </h2>
+
+            <p>
+              DealBaazi par available latest products
+            </p>
+
+          </div>
+
+
+          <a
+            href="#top"
+            class="view-all"
+          >
+            Back to Top ↑
+          </a>
+
+
+        </div>
+
+
+        <% if (products && products.length > 0) { %>
+
+
+          <div class="products">
+
+
+            <% products.forEach(product => { %>
+
+              <div
+                class="product-card searchable-product"
+                data-name="<%= String(product.name || '').toLowerCase() %>"
+                data-category="<%= String(product.category_name || '').toLowerCase() %>"
+              >
+
+
+                <!-- DISCOUNT -->
+
+                <div class="discount">
+
+                  <%= product.discount || 'DEAL' %>
+
+                </div>
+
+
+                <!-- IMAGE -->
+
+                <div class="product-image">
+
+                  <% if (product.image_url) { %>
+
+                    <img
+                      src="<%= product.image_url %>"
+                      alt="<%= product.name %>"
+                      loading="lazy"
+                    >
+
+                  <% } else { %>
+
+                    <div class="no-image">
+                      🖼️
+                    </div>
+
+                  <% } %>
+
+                </div>
+
+
+                <!-- INFO -->
+
+                <div class="product-info">
+
+
+                  <% if (product.category_name) { %>
+
+                    <div class="category-badge">
+
+                      🗂️
+                      <%= product.category_name %>
+
+                    </div>
+
+                  <% } %>
+
+
+                  <div class="product-title">
+
+                    <%= product.name %>
+
+                  </div>
+
+
+                  <div class="rating-row">
+
+                    <div class="rating">
+
+                      ⭐
+                      <%= product.rating || "—" %>
+
+                    </div>
+
+                    <div class="rating-text">
+                      Customer Rating
+                    </div>
+
+                  </div>
+
+
+                  <div class="price-row">
+
+                    <span class="price">
+
+                      ₹<%= Number(
+                        product.price || 0
+                      ).toLocaleString('en-IN') %>
+
+                    </span>
+
+
+                    <% if (
+                      Number(product.original_price || 0) >
+                      Number(product.price || 0)
+                    ) { %>
+
+                      <span class="original-price">
+
+                        ₹<%= Number(
+                          product.original_price
+                        ).toLocaleString('en-IN') %>
+
+                      </span>
+
+
+                      <span class="save-text">
+                        Save
+                      </span>
+
+                    <% } %>
+
+
+                  </div>
+
+
+                  <div class="product-actions">
+
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      DETAILS
+                    </a>
+
+
+                    <!--
+                      IMPORTANT:
+                      BUY NOW directly opens affiliate
+                      through /buy/:id
+                    -->
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      🛒 BUY NOW
+                    </a>
+
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+            <% }) %>
+
+
+          </div>
+
+
+          <!-- SEARCH EMPTY -->
+
+          <div
+            class="search-empty"
+            id="searchEmptyHome"
+          >
+
+            <div class="search-empty-icon">
+              🔎
+            </div>
+
+            <h3>
+              No matching deals found
+            </h3>
+
+            <p>
+              Product ya category ka naam change karke try karo.
+            </p>
+
+          </div>
+
+
+        <% } else { %>
+
+
+          <div class="empty">
+
+            <div class="emoji">
+              🛍️
+            </div>
+
+            <h3>
+              Deals Coming Soon
+            </h3>
+
+            <p>
+              Products add karte hi deals yahan show hongi.
+            </p>
+
+          </div>
+
+
+        <% } %>
+
+
+      </section>
+
+
+    <% } %>
+
+
+  </main>
+
+
+  <!-- =====================================================
+       FOOTER
+  ===================================================== -->
+
+  <footer class="footer">
+
+
+    <div class="footer-inner">
+
+
+      <!-- ABOUT -->
+
+      <div class="footer-main">
+
+        <div class="footer-logo">
+
+          <img
+            src="/images/logo.png"
+            alt="DealBaazi"
+          >
+
+        </div>
+
+
+        <p class="footer-description">
+
+          DealBaazi aapke liye best deals, offers aur
+          trending products ek jagah lekar aata hai.
+          Smart shopping ke liye daily naye deals discover karo.
+
+        </p>
+
+      </div>
+
+
+      <!-- QUICK LINKS -->
+
+      <div>
+
+        <h3>
+          Quick Links
+        </h3>
+
+        <a href="/">
+          🏠 Home
+        </a>
+
+        <a href="/#deals">
+          🔥 Hot Deals
+        </a>
+
+        <a href="/#all-products">
+          🛍️ All Products
+        </a>
+
+      </div>
+
+
+      <!-- CATEGORIES -->
+
+      <div>
+
+        <h3>
+          Categories
+        </h3>
+
+
+        <% if (categories && categories.length > 0) { %>
+
+
+          <% categories.slice(0, 7).forEach(category => { %>
+
+            <a
+              href="/category/<%= category.id %>"
+            >
+
+              <%= category.name %>
+
+            </a>
+
+          <% }) %>
+
+
+        <% } %>
+
+
+      </div>
+
+
+      <!-- INFO -->
+
+      <div>
+
+        <h3>
+          DealBaazi
+        </h3>
+
+        <p class="footer-note">
+
+          Best deals discover karo,
+          product compare karo aur
+          BUY NOW button se directly
+          shopping partner ke page par jao.
+
+        </p>
+
+      </div>
+
+
+    </div>
+
+
+    <div class="copyright">
+
+      © <%= new Date().getFullYear() %>
+      DealBaazi. All Rights Reserved.
+
+    </div>
+
+
+  </footer>
+
+
+  <!-- =====================================================
+       SEARCH SCRIPT
+  ===================================================== -->
+
+  <script>
+
+    const searchForm =
+      document.getElementById("searchForm");
+
+    const searchInput =
+      document.getElementById("searchInput");
+
+
+    if (searchForm && searchInput) {
+
+      searchForm.addEventListener(
+        "submit",
+        function(event) {
+
+          /*
+            Existing server search route abhi
+            implement nahi hai.
+
+            Isliye homepage par client-side
+            search use kar rahe hain.
+          */
+
+          const value =
+            searchInput.value
+              .trim()
+              .toLowerCase();
+
+          if (!value) {
+            return;
+          }
+
+          event.preventDefault();
+
+          const cards =
+            document.querySelectorAll(
+              ".searchable-product"
+            );
+
+          let found = 0;
+
+          cards.forEach(card => {
+
+            const name =
+              card.dataset.name || "";
+
+            const category =
+              card.dataset.category || "";
+
+            const match =
+              name.includes(value) ||
+              category.includes(value);
+
+            if (match) {
+
+              card.style.display = "";
+
+              found++;
+
+            } else {
+
+              card.style.display = "none";
+
+            }
+
+          });
+
+
+          const empty =
+            document.getElementById(
+              "searchEmptyHome"
+            ) ||
+            document.getElementById(
+              "searchEmpty"
+            );
+
+
+          if (empty) {
+
+            if (found === 0) {
+
+              empty.style.display =
+                "block";
+
+            } else {
+
+              empty.style.display =
+                "none";
+
+            }
+
+          }
+
+
+          const firstResult =
+            document.querySelector(
+              ".searchable-product:not([style*='display: none'])"
+            );
+
+
+          if (firstResult) {
+
+            firstResult.scrollIntoView({
+              behavior: "smooth",
+              block: "center"
+            });
+
+          }
+
+        }
+      );
+
+
+      searchInput.addEventListener(
+        "input",
+        function() {
+
+          if (
+            searchInput.value.trim() === ""
+          ) {
+
+            document
+              .querySelectorAll(
+                ".searchable-product"
+              )
+              .forEach(card => {
+
+                card.style.display = "";
+
+              });
+
+
+            const empty =
+              document.getElementById(
+                "searchEmptyHome"
+              ) ||
+              document.getElementById(
+                "searchEmpty"
+              );
+
+
+            if (empty) {
+
+              empty.style.display =
+                "none";
+
+            }
+
+          }
+
+        }
+      );
+
+    }
+
+  </script>
+
+
+</body>
+
+</html>

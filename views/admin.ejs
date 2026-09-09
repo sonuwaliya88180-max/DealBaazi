@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Admin Panel - DealBaazi</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f6fa;
+      color: #222;
+    }
+
+    .header {
+      background: linear-gradient(
+        135deg,
+        #ff6a00,
+        #ee0979
+      );
+
+      color: white;
+      padding: 18px 25px;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 15px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-logo {
+      width: 45px;
+      height: 45px;
+      object-fit: contain;
+      background: white;
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .top-btn {
+      background: white;
+      color: #e64d00;
+      text-decoration: none;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      margin-bottom: 25px;
+
+      box-shadow:
+        0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .card h2 {
+      margin-bottom: 18px;
+      font-size: 21px;
+    }
+
+    /* =====================
+       CATEGORY
+    ===================== */
+
+    .category-form {
+      display: grid;
+
+      grid-template-columns:
+        1fr 120px auto auto;
+
+      gap: 10px;
+
+      margin-bottom: 18px;
+    }
+
+    input,
+    textarea,
+    select {
+
+      width: 100%;
+
+      padding: 11px;
+
+      border: 1px solid #ddd;
+
+      border-radius: 8px;
+
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 130px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #ff5a00;
+    }
+
+    .category-list {
+      display: grid;
+
+      grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+
+      gap: 10px;
+    }
+
+    .category-item {
+
+      border: 1px solid #eee;
+
+      padding: 12px;
+
+      border-radius: 10px;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 10px;
+    }
+
+    .category-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    /* =====================
+       BUTTONS
+    ===================== */
+
+    button {
+
+      border: none;
+
+      cursor: pointer;
+
+      border-radius: 8px;
+
+      font-weight: bold;
+    }
+
+    .add-btn {
+
+      background: #ff5a00;
+
+      color: white;
+
+      padding: 11px 18px;
+    }
+
+    .edit-btn {
+
+      background: #2878ff;
+
+      color: white;
+
+      padding: 7px 11px;
+    }
+
+    .delete-btn {
+
+      background: #e53935;
+
+      color: white;
+
+      padding: 7px 11px;
+    }
+
+    /* =====================
+       PRODUCT FORM
+    ===================== */
+
+    .form-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 15px;
+    }
+
+    .field {
+
+      display: flex;
+
+      flex-direction: column;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+
+      font-weight: bold;
+
+      margin-bottom: 7px;
+    }
+
+    input[type="file"] {
+
+      padding: 9px;
+
+      background: #fafafa;
+
+      cursor: pointer;
+    }
+
+    .image-box {
+
+      border: 2px dashed #ddd;
+
+      border-radius: 10px;
+
+      padding: 15px;
+
+      background: #fafafa;
+    }
+
+    .image-preview {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(5, 1fr);
+
+      gap: 10px;
+
+      margin-top: 12px;
+    }
+
+    .image-preview img {
+
+      width: 100%;
+
+      aspect-ratio: 1;
+
+      object-fit: contain;
+
+      background: white;
+
+      border: 1px solid #ddd;
+
+      border-radius: 9px;
+    }
+
+    .help {
+
+      color: #777;
+
+      font-size: 12px;
+
+      margin-top: 7px;
+
+      line-height: 1.5;
+    }
+
+    .checks {
+
+      display: flex;
+
+      gap: 20px;
+
+      flex-wrap: wrap;
+
+      margin-top: 18px;
+    }
+
+    .checks label {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      font-weight: bold;
+    }
+
+    .checks input {
+      width: auto;
+    }
+
+    .submit-product {
+
+      margin-top: 20px;
+
+      background: #ff5a00;
+
+      color: white;
+
+      padding: 13px 25px;
+
+      font-size: 15px;
+    }
+
+    /* =====================
+       PRODUCT LIST
+    ===================== */
+
+    .products {
+
+      display: grid;
+
+      gap: 12px;
+    }
+
+    .product {
+
+      border: 1px solid #eee;
+
+      border-radius: 12px;
+
+      padding: 12px;
+
+      display: grid;
+
+      grid-template-columns:
+        90px 1fr auto;
+
+      gap: 15px;
+
+      align-items: center;
+    }
+
+    .product img {
+
+      width: 90px;
+
+      height: 90px;
+
+      object-fit: contain;
+
+      border-radius: 9px;
+
+      border: 1px solid #eee;
+
+      background: white;
+    }
+
+    .product-name {
+
+      font-weight: bold;
+
+      font-size: 16px;
+
+      margin-bottom: 5px;
+    }
+
+    .product-info {
+
+      color: #666;
+
+      font-size: 13px;
+
+      line-height: 1.7;
+    }
+
+    .product-actions {
+
+      display: flex;
+
+      gap: 7px;
+
+      flex-wrap: wrap;
+
+      justify-content: flex-end;
+    }
+
+    .product-actions a {
+
+      text-decoration: none;
+    }
+
+    .tag {
+
+      display: inline-block;
+
+      padding: 3px 7px;
+
+      border-radius: 5px;
+
+      font-size: 11px;
+
+      font-weight: bold;
+
+      margin-right: 4px;
+
+      background: #f0f0f0;
+    }
+
+    .tag.hot {
+      background: #ffe7df;
+      color: #f04400;
+    }
+
+    .tag.featured {
+      background: #fff2c7;
+      color: #9b7200;
+    }
+
+    .tag.trending {
+      background: #e9f0ff;
+      color: #2463d4;
+    }
+
+    /* =====================
+       REVIEWS
+    ===================== */
+
+    .review-list {
+
+      display: grid;
+
+      gap: 12px;
+    }
+
+    .review {
+
+      border: 1px solid #eee;
+
+      border-radius: 12px;
+
+      padding: 15px;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 15px;
+    }
+
+    .review-main {
+      flex: 1;
+    }
+
+    .review-name {
+
+      font-weight: bold;
+
+      margin-bottom: 5px;
+    }
+
+    .review-stars {
+
+      color: #ff9800;
+
+      margin-bottom: 6px;
+    }
+
+    .review-comment {
+
+      color: #555;
+
+      line-height: 1.5;
+
+      font-size: 14px;
+    }
+
+    .review-product {
+
+      font-size: 12px;
+
+      color: #ff5a00;
+
+      margin-bottom: 6px;
+
+      font-weight: bold;
+    }
+
+    .empty {
+
+      text-align: center;
+
+      color: #777;
+
+      padding: 25px;
+    }
+
+    /* =====================
+       MOBILE
+    ===================== */
+
+    @media (max-width: 750px) {
+
+      .header {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        text-align: center;
+      }
+
+      .header-left {
+
+        justify-content: center;
+      }
+
+      .header-right {
+
+        justify-content: center;
+      }
+
+      .category-form {
+
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+
+        grid-column: auto;
+      }
+
+      .image-preview {
+
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .product {
+
+        grid-template-columns: 70px 1fr;
+      }
+
+      .product img {
+
+        width: 70px;
+
+        height: 70px;
+      }
+
+      .product-actions {
+
+        grid-column: 1 / -1;
+
+        justify-content: flex-start;
+      }
+
+      .review {
+
+        flex-direction: column;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+
+  <!-- HEADER -->
+
+  <div class="header">
+
+    <div class="header-left">
+
+      <img
+        src="/images/logo.png"
+        class="header-logo"
+        alt="DealBaazi"
+      >
+
+      <h1>
+        DealBaazi Admin
+      </h1>
+
+    </div>
+
+
+    <div class="header-right">
+
+      <a
+        href="/"
+        class="top-btn"
+      >
+        🏠 Website
+      </a>
+
+      <a
+        href="/password"
+        class="top-btn"
+      >
+        🔐 Change Password
+      </a>
+
+      <a
+        href="/logout"
+        class="top-btn"
+      >
+        Logout
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <div class="container">
+
+
+    <!-- =========================
+         CATEGORY MANAGEMENT
+    ========================== -->
+
+    <div class="card">
+
+      <h2>
+        📂 Category Management
+      </h2>
+
+
+      <form
+        action="/admin/categories/add"
+        method="POST"
+        class="category-form"
+      >
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Category Name"
+          required
+        >
+
+        <input
+          type="number"
+          name="sort_order"
+          placeholder="Order"
+          value="0"
+        >
+
+        <label
+          style="
+            display:flex;
+            align-items:center;
+            gap:5px;
+            font-weight:bold;
+          "
+        >
+
+          <input
+            type="checkbox"
+            name="active"
+            checked
+            style="width:auto"
+          >
+
+          Active
+
+        </label>
+
+
+        <button
+          type="submit"
+          class="add-btn"
+        >
+          + Add Category
+        </button>
+
+      </form>
+
+
+      <div class="category-list">
+
+        <% if (categories && categories.length > 0) { %>
+
+          <% categories.forEach(category => { %>
+
+            <div class="category-item">
+
+              <div>
+
+                <strong>
+                  <%= category.name %>
+                </strong>
+
+                <div class="help">
+                  Order:
+                  <%= category.sort_order %>
+                  |
+                  <%= category.active ? "Active" : "Hidden" %>
+                </div>
+
+              </div>
+
+
+              <div class="category-actions">
+
+                <button
+                  type="button"
+                  class="edit-btn"
+                  onclick="editCategory(
+                    <%= category.id %>,
+                    '<%= category.name.replace(/'/g, "\\'") %>',
+                    <%= category.sort_order %>,
+                    <%= category.active %>
+                  )"
+                >
+                  Edit
+                </button>
+
+
+                <form
+                  action="/admin/categories/delete/<%= category.id %>"
+                  method="POST"
+                  onsubmit="return confirm(
+                    'Delete this category? Products will become uncategorized.'
+                  )"
+                >
+
+                  <button
+                    type="submit"
+                    class="delete-btn"
+                  >
+                    Delete
+                  </button>
+
+                </form>
+
+              </div>
+
+            </div>
+
+          <% }) %>
+
+        <% } else { %>
+
+          <div class="empty">
+            No categories found.
+          </div>
+
+        <% } %>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         ADD PRODUCT
+    ========================== -->
+
+    <div class="card">
+
+      <h2>
+        ➕ Add New Product
+      </h2>
+
+
+      <form
+        action="/admin/add"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+
+        <div class="form-grid">
+
+
+          <!-- NAME -->
+
+          <div class="field full">
+
+            <label>
+              Product Name
+            </label>
+
+            <input
+              type="text"
+              name="name"
+              placeholder="Product Name"
+              required
+            >
+
+          </div>
+
+
+          <!-- SELLING PRICE -->
+
+          <div class="field">
+
+            <label>
+              Selling Price
+            </label>
+
+            <input
+              type="number"
+              name="price"
+              min="0"
+              step="0.01"
+              placeholder="₹ Selling Price"
+            >
+
+          </div>
+
+
+          <!-- ORIGINAL PRICE -->
+
+          <div class="field">
+
+            <label>
+              Original Price
+            </label>
+
+            <input
+              type="number"
+              name="original_price"
+              min="0"
+              step="0.01"
+              placeholder="₹ Original Price"
+            >
+
+          </div>
+
+
+          <!-- DISCOUNT -->
+
+          <div class="field">
+
+            <label>
+              Discount
+            </label>
+
+            <input
+              type="text"
+              name="discount"
+              placeholder="50% OFF"
+            >
+
+          </div>
+
+
+          <!-- RATING -->
+
+          <div class="field">
+
+            <label>
+              Rating
+            </label>
+
+            <input
+              type="number"
+              name="rating"
+              min="0"
+              max="5"
+              step="0.1"
+              placeholder="4.5"
+            >
+
+          </div>
+
+
+          <!-- CATEGORY -->
+
+          <div class="field">
+
+            <label>
+              Category
+            </label>
+
+            <select
+              name="category_id"
+              required
+            >
+
+              <option value="">
+                Select Category
+              </option>
+
+              <% if (categories && categories.length > 0) { %>
+
+                <% categories.forEach(category => { %>
+
+                  <% if (category.active) { %>
+
+                    <option
+                      value="<%= category.id %>"
+                    >
+                      <%= category.name %>
+                    </option>
+
+                  <% } %>
+
+                <% }) %>
+
+              <% } %>
+
+            </select>
+
+          </div>
+
+
+          <!-- AFFILIATE URL -->
+
+          <div class="field">
+
+            <label>
+              Affiliate URL
+            </label>
+
+            <input
+              type="url"
+              name="affiliate_url"
+              placeholder="https://..."
+              required
+            >
+
+          </div>
+
+
+          <!-- EXPIRY -->
+
+          <div class="field">
+
+            <label>
+              Expiry Date
+            </label>
+
+            <input
+              type="date"
+              name="expiry_date"
+            >
+
+          </div>
+
+
+          <!-- DESCRIPTION -->
+
+          <div class="field full">
+
+            <label>
+              Product Description
+            </label>
+
+            <textarea
+              name="description"
+              placeholder="Product ke baare mein complete details likho..."
+            ></textarea>
+
+          </div>
+
+
+          <!-- IMAGES -->
+
+          <div class="field full">
+
+            <label>
+              Product Photos
+            </label>
+
+            <div class="image-box">
+
+              <input
+                type="file"
+                name="images"
+                id="imageInput"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                required
+              >
+
+              <div class="help">
+
+                Maximum <strong>5 photos</strong>.
+
+                JPG, PNG ya WEBP.
+
+                Maximum 5MB per image.
+
+              </div>
+
+
+              <div
+                id="imagePreview"
+                class="image-preview"
+              ></div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- CHECKBOXES -->
+
+        <div class="checks">
+
+
+          <label>
+
+            <input
+              type="checkbox"
+              name="featured"
+            >
+
+            ⭐ Featured / Top Pick
+
+          </label>
+
+
+          <label>
+
+            <input
+              type="checkbox"
+              name="trending"
+            >
+
+            📈 Trending
+
+          </label>
+
+
+          <label>
+
+            <input
+              type="checkbox"
+              name="hot_deal"
+            >
+
+            🔥 Hot Deal
+
+          </label>
+
+
+          <label>
+
+            <input
+              type="checkbox"
+              name="visible"
+              checked
+            >
+
+            👁️ Visible
+
+          </label>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="submit-product"
+        >
+          🚀 Add Product
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <!-- =========================
+         PRODUCTS
+    ========================== -->
+
+    <div class="card">
+
+      <h2>
+        🛍️ Products
+      </h2>
+
+
+      <div class="products">
+
+        <% if (products && products.length > 0) { %>
+
+          <% products.forEach(product => { %>
+
+            <div class="product">
+
+
+              <!-- IMAGE -->
+
+              <% if (product.image_url) { %>
+
+                <img
+                  src="<%= product.image_url %>"
+                  alt="<%= product.name %>"
+                >
+
+              <% } else { %>
+
+                <div
+                  style="
+                    width:90px;
+                    height:90px;
+                    border:1px solid #ddd;
+                    border-radius:9px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                  "
+                >
+                  📷
+                </div>
+
+              <% } %>
+
+
+              <!-- INFO -->
+
+              <div>
+
+                <div class="product-name">
+                  <%= product.name %>
+                </div>
+
+
+                <div class="product-info">
+
+                  <strong>
+                    ₹<%= product.price %>
+                  </strong>
+
+                  <% if (product.original_price) { %>
+
+                    |
+                    Original:
+                    ₹<%= product.original_price %>
+
+                  <% } %>
+
+                  |
+                  <%= product.discount || "No discount" %>
+
+                  |
+                  ⭐ <%= product.rating || 0 %>
+
+                  <br>
+
+
+                  Category:
+
+                  <strong>
+                    <%= product.category_name || "Uncategorized" %>
+                  </strong>
+
+                  |
+
+                  Clicks:
+                  <%= product.clicks || 0 %>
+
+                  <br>
+
+
+                  <span class="tag">
+                    Photos: <%= product.image_url ? "1+" : "0" %>
+                  </span>
+
+
+                  <% if (product.featured) { %>
+
+                    <span class="tag featured">
+                      ⭐ Top Pick
+                    </span>
+
+                  <% } %>
+
+
+                  <% if (product.trending) { %>
+
+                    <span class="tag trending">
+                      📈 Trending
+                    </span>
+
+                  <% } %>
+
+
+                  <% if (product.hot_deal) { %>
+
+                    <span class="tag hot">
+                      🔥 Hot Deal
+                    </span>
+
+                  <% } %>
+
+
+                  <% if (!product.visible) { %>
+
+                    <span class="tag">
+                      Hidden
+                    </span>
+
+                  <% } %>
+
+                </div>
+
+              </div>
+
+
+              <!-- ACTIONS -->
+
+              <div class="product-actions">
+
+                <a
+                  href="/product/<%= product.id %>"
+                  target="_blank"
+                >
+
+                  <button
+                    type="button"
+                    class="edit-btn"
+                  >
+                    👁️ View
+                  </button>
+
+                </a>
+
+
+                <a
+                  href="/admin/edit/<%= product.id %>"
+                >
+
+                  <button
+                    type="button"
+                    class="edit-btn"
+                  >
+                    ✏️ Edit
+                  </button>
+
+                </a>
+
+
+                <form
+                  action="/admin/delete/<%= product.id %>"
+                  method="POST"
+                  onsubmit="return confirm(
+                    'Delete this product permanently?'
+                  )"
+                >
+
+                  <button
+                    type="submit"
+                    class="delete-btn"
+                  >
+                    🗑️ Delete
+                  </button>
+
+                </form>
+
+              </div>
+
+            </div>
+
+          <% }) %>
+
+        <% } else { %>
+
+          <div class="empty">
+
+            <h3>
+              No Products Yet
+            </h3>
+
+            <p>
+              Upar se apna pehla product add karo.
+            </p>
+
+          </div>
+
+        <% } %>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         REVIEWS
+    ========================== -->
+
+    <div class="card">
+
+      <h2>
+        ⭐ Customer Reviews
+      </h2>
+
+
+      <div class="review-list">
+
+        <% if (reviews && reviews.length > 0) { %>
+
+          <% reviews.forEach(review => { %>
+
+            <div class="review">
+
+              <div class="review-main">
+
+                <div class="review-product">
+
+                  Product:
+                  <%= review.product_name || "Deleted Product" %>
+
+                </div>
+
+
+                <div class="review-name">
+
+                  👤 <%= review.name %>
+
+                </div>
+
+
+                <div class="review-stars">
+
+                  <%= "★".repeat(review.rating) %>
+                  <%= "☆".repeat(5 - review.rating) %>
+
+                </div>
+
+
+                <div class="review-comment">
+
+                  <%= review.comment %>
+
+                </div>
+
+              </div>
+
+
+              <form
+                action="/admin/reviews/delete/<%= review.id %>"
+                method="POST"
+                onsubmit="return confirm(
+                  'Delete this review?'
+                )"
+              >
+
+                <button
+                  type="submit"
+                  class="delete-btn"
+                >
+                  🗑️ Delete
+                </button>
+
+              </form>
+
+            </div>
+
+          <% }) %>
+
+        <% } else { %>
+
+          <div class="empty">
+
+            😊 Abhi koi customer review nahi hai.
+
+          </div>
+
+        <% } %>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       CATEGORY EDIT POPUP
+  ========================== -->
+
+  <div
+    id="categoryModal"
+    style="
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      z-index:9999;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    "
+  >
+
+    <div
+      style="
+        background:white;
+        width:100%;
+        max-width:420px;
+        padding:22px;
+        border-radius:15px;
+      "
+    >
+
+      <h2 style="margin-bottom:15px;">
+        ✏️ Edit Category
+      </h2>
+
+
+      <form
+        id="categoryEditForm"
+        method="POST"
+      >
+
+        <input
+          type="text"
+          id="editCategoryName"
+          name="name"
+          required
+          placeholder="Category Name"
+          style="margin-bottom:10px;"
+        >
+
+
+        <input
+          type="number"
+          id="editCategoryOrder"
+          name="sort_order"
+          placeholder="Order"
+          style="margin-bottom:10px;"
+        >
+
+
+        <label
+          style="
+            display:flex;
+            align-items:center;
+            gap:7px;
+            margin-bottom:15px;
+            font-weight:bold;
+          "
+        >
+
+          <input
+            type="checkbox"
+            id="editCategoryActive"
+            name="active"
+            style="width:auto;"
+          >
+
+          Active
+
+        </label>
+
+
+        <div
+          style="
+            display:flex;
+            gap:8px;
+          "
+        >
+
+          <button
+            type="submit"
+            class="add-btn"
+          >
+            Save
+          </button>
+
+
+          <button
+            type="button"
+            class="delete-btn"
+            onclick="closeCategoryModal()"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    /* =====================
+       IMAGE PREVIEW
+    ===================== */
+
+    const imageInput =
+      document.getElementById(
+        "imageInput"
+      );
+
+    const imagePreview =
+      document.getElementById(
+        "imagePreview"
+      );
+
+
+    imageInput.addEventListener(
+      "change",
+      function () {
+
+        imagePreview.innerHTML = "";
+
+        const files =
+          Array.from(this.files);
+
+
+        if (files.length > 5) {
+
+          alert(
+            "Maximum 5 photos allowed."
+          );
+
+          this.value = "";
+
+          return;
+        }
+
+
+        files.forEach(function(file) {
+
+          if (
+            ![
+              "image/jpeg",
+              "image/png",
+              "image/webp"
+            ].includes(file.type)
+          ) {
+
+            return;
+          }
+
+
+          const reader =
+            new FileReader();
+
+
+          reader.onload =
+            function(e) {
+
+              const img =
+                document.createElement(
+                  "img"
+                );
+
+              img.src =
+                e.target.result;
+
+              imagePreview.appendChild(
+                img
+              );
+
+            };
+
+
+          reader.readAsDataURL(file);
+
+        });
+
+      }
+    );
+
+
+    /* =====================
+       CATEGORY MODAL
+    ===================== */
+
+    function editCategory(
+      id,
+      name,
+      sortOrder,
+      active
+    ) {
+
+      const modal =
+        document.getElementById(
+          "categoryModal"
+        );
+
+      const form =
+        document.getElementById(
+          "categoryEditForm"
+        );
+
+      const nameInput =
+        document.getElementById(
+          "editCategoryName"
+        );
+
+      const orderInput =
+        document.getElementById(
+          "editCategoryOrder"
+        );
+
+      const activeInput =
+        document.getElementById(
+          "editCategoryActive"
+        );
+
+
+      form.action =
+        "/admin/categories/edit/" +
+        id;
+
+      nameInput.value = name;
+
+      orderInput.value = sortOrder;
+
+      activeInput.checked =
+        Boolean(active);
+
+
+      modal.style.display =
+        "flex";
+    }
+
+
+    function closeCategoryModal() {
+
+      document.getElementById(
+        "categoryModal"
+      ).style.display =
+        "none";
+
+    }
+
+
+    document
+      .getElementById("categoryModal")
+      .addEventListener(
+        "click",
+        function(e) {
+
+          if (e.target === this) {
+            closeCategoryModal();
+          }
+
+        }
+      );
+
+  </script>
+
+</body>
+
+</html>
