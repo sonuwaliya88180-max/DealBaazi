@@ -2,218 +2,332 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const Database = require("better-sqlite3");
 
 const app = express();
 
-/* Render PORT + Local PC fallback */
-const PORT = process.env.PORT || 3000;
+/* =========================================================
+   SERVER SETTINGS
+========================================================= */
 
-/* =========================
-   BASIC SETUP
-========================= */
+const PORT = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static("public"));
 
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
-const uploadDir = path.join(__dirname, "public", "uploads");
+app.use(
+  express.static(
+    path.join(__dirname, "public")
+  )
+);
 
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+/* =========================================================
+   STORAGE PATHS
+========================================================= */
 
-/* =========================
-   MULTER
-========================= */
+/*
+   Local PC:
+   dealbaazi.db
+   public/uploads
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
+   Render / future hosting:
+   DB_PATH and UPLOADS_DIR can be supplied
+   through environment variables.
+*/
 
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
+const dbPath =
+  process.env.DB_PATH ||
+  path.join(
+    __dirname,
+    "dealbaazi.db"
+  );
 
-    const name =
-      Date.now() +
-      "-" +
-      Math.round(Math.random() * 1e9) +
-      ext;
+const uploadsDir =
+  process.env.UPLOADS_DIR ||
+  path.join(
+    __dirname,
+    "public",
+    "uploads"
+  );
 
-    cb(null, name);
-  }
-});
-
-const upload = multer({
-  storage: storage,
-
-  limits: {
-    fileSize: 5 * 1024 * 1024
-  },
-
-  fileFilter: function (req, file, cb) {
-    const allowed = [
-      "image/jpeg",
-      "image/png",
-      "image/webp"
-    ];
-
-    if (allowed.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(
-        new Error(
-          "Only JPG, PNG and WEBP images are allowed."
-        )
-      );
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(
+    uploadsDir,
+    {
+      recursive: true
     }
-  }
-});
-
-const multiUpload = upload.fields([
-  {
-    name: "images",
-    maxCount: 5
-  },
-
-  {
-    name: "image",
-    maxCount: 1
-  }
-]);
-
-function getUploadedImages(req) {
-  const modern = req.files?.images || [];
-  const legacy = req.files?.image || [];
-
-  return [...modern, ...legacy].slice(0, 5);
+  );
 }
 
-/* =========================
+/* =========================================================
+   MULTER UPLOAD
+========================================================= */
+
+const storage =
+  multer.diskStorage({
+    destination:
+      function (
+        req,
+        file,
+        cb
+      ) {
+        cb(
+          null,
+          uploadsDir
+        );
+      },
+
+    filename:
+      function (
+        req,
+        file,
+        cb
+      ) {
+        const ext =
+          path.extname(
+            file.originalname
+          );
+
+        const name =
+          Date.now() +
+          "-" +
+          Math.round(
+            Math.random() *
+              1e9
+          ) +
+          ext;
+
+        cb(
+          null,
+          name
+        );
+      }
+  });
+
+const upload =
+  multer({
+    storage,
+
+    limits: {
+      fileSize:
+        5 * 1024 * 1024
+    },
+
+    fileFilter:
+      function (
+        req,
+        file,
+        cb
+      ) {
+        const allowed = [
+          "image/jpeg",
+          "image/png",
+          "image/webp"
+        ];
+
+        if (
+          allowed.includes(
+            file.mimetype
+          )
+        ) {
+          cb(
+            null,
+            true
+          );
+        } else {
+          cb(
+            new Error(
+              "Only JPG, PNG and WEBP images are allowed."
+            )
+          );
+        }
+      }
+  });
+
+const multiUpload =
+  upload.fields([
+    {
+      name: "images",
+      maxCount: 5
+    },
+    {
+      name: "image",
+      maxCount: 1
+    }
+  ]);
+
+const homepageUpload =
+  upload.fields([
+    {
+      name: "logo",
+      maxCount: 1
+    },
+    {
+      name: "hero_image",
+      maxCount: 1
+    }
+  ]);
+
+/* =========================================================
    DATABASE
-========================= */
+========================================================= */
 
-const db = new Database("dealbaazi.db");
+const db =
+  new Database(
+    dbPath
+  );
 
-db.pragma("journal_mode = WAL");
+db.pragma(
+  "journal_mode = WAL"
+);
 
-/* =========================
-   TABLES
-========================= */
+/* =========================================================
+   DATABASE TABLES
+========================================================= */
 
-db.prepare(`
+db.exec(`
   CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     price REAL DEFAULT 0,
     discount TEXT DEFAULT '',
     rating REAL DEFAULT 0,
-    affiliate_url TEXT NOT NULL,
+    affiliate_url TEXT DEFAULT '',
     image_url TEXT DEFAULT '',
     featured INTEGER DEFAULT 0,
     trending INTEGER DEFAULT 0,
     visible INTEGER DEFAULT 1,
-    expiry_date TEXT,
+    expiry_date TEXT DEFAULT '',
     clicks INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
-`).run();
+`);
 
-db.prepare(`
+db.exec(`
   CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
     sort_order INTEGER DEFAULT 0,
     active INTEGER DEFAULT 1,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
-`).run();
+`);
 
-db.prepare(`
+db.exec(`
   CREATE TABLE IF NOT EXISTS admin (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
+    username TEXT NOT NULL,
     password TEXT NOT NULL
   )
-`).run();
+`);
 
-db.prepare(`
+db.exec(`
   CREATE TABLE IF NOT EXISTS product_images (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id INTEGER NOT NULL,
     image_url TEXT NOT NULL,
-    sort_order INTEGER DEFAULT 1
+    sort_order INTEGER DEFAULT 0
   )
-`).run();
+`);
 
-db.prepare(`
+db.exec(`
   CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id INTEGER NOT NULL,
-    name TEXT NOT NULL,
-    rating INTEGER NOT NULL,
-    comment TEXT NOT NULL,
+    name TEXT DEFAULT '',
+    rating REAL DEFAULT 5,
+    comment TEXT DEFAULT '',
     approved INTEGER DEFAULT 1,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
-`).run();
+`);
 
-/* =========================
-   COLUMN MIGRATION
-========================= */
+/* =========================================================
+   EXISTING MIGRATIONS
+========================================================= */
 
-function addColumnIfMissing(table, column, definition) {
-  const columns = db
-    .prepare(`PRAGMA table_info(${table})`)
-    .all();
+try {
+  db.prepare(`
+    ALTER TABLE products
+    ADD COLUMN category_id INTEGER DEFAULT NULL
+  `).run();
+} catch (e) {}
 
-  const exists = columns.some(
-    col => col.name === column
-  );
+try {
+  db.prepare(`
+    ALTER TABLE products
+    ADD COLUMN description TEXT DEFAULT ''
+  `).run();
+} catch (e) {}
 
-  if (!exists) {
-    db.prepare(
-      `ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`
-    ).run();
-  }
-}
+try {
+  db.prepare(`
+    ALTER TABLE products
+    ADD COLUMN original_price REAL DEFAULT 0
+  `).run();
+} catch (e) {}
 
-addColumnIfMissing(
-  "products",
-  "category_id",
-  "INTEGER"
-);
+try {
+  db.prepare(`
+    ALTER TABLE products
+    ADD COLUMN hot_deal INTEGER DEFAULT 0
+  `).run();
+} catch (e) {}
 
-addColumnIfMissing(
-  "products",
-  "description",
-  "TEXT DEFAULT ''"
-);
+/* =========================================================
+   HOMEPAGE CMS TABLES
+========================================================= */
 
-addColumnIfMissing(
-  "products",
-  "original_price",
-  "REAL DEFAULT 0"
-);
+db.exec(`
+  CREATE TABLE IF NOT EXISTS site_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    setting_key TEXT NOT NULL UNIQUE,
+    setting_value TEXT DEFAULT ''
+  )
+`);
 
-addColumnIfMissing(
-  "products",
-  "hot_deal",
-  "INTEGER DEFAULT 0"
-);
+db.exec(`
+  CREATE TABLE IF NOT EXISTS banners (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    image_url TEXT DEFAULT '',
+    heading TEXT DEFAULT '',
+    description TEXT DEFAULT '',
+    button_text TEXT DEFAULT '',
+    link_url TEXT DEFAULT '',
+    active INTEGER DEFAULT 1,
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
 
-/* =========================
+/* =========================================================
    DEFAULT CATEGORIES
-========================= */
+========================================================= */
 
-const categoryCount = db
-  .prepare("SELECT COUNT(*) AS count FROM categories")
-  .get();
+const categoryCount =
+  db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM categories
+  `).get();
 
-if (categoryCount.count === 0) {
+if (
+  categoryCount.count === 0
+) {
+  const insertCategory =
+    db.prepare(`
+      INSERT INTO categories
+      (
+        name,
+        sort_order,
+        active
+      )
+      VALUES (?, ?, 1)
+    `);
+
   const defaultCategories = [
     "Mobiles",
     "Electronics",
@@ -224,366 +338,1177 @@ if (categoryCount.count === 0) {
     "Trending"
   ];
 
-  const insertCategory = db.prepare(`
-    INSERT INTO categories
-    (name, sort_order, active)
-    VALUES (?, ?, 1)
+  defaultCategories.forEach(
+    (
+      name,
+      index
+    ) => {
+      insertCategory.run(
+        name,
+        index + 1
+      );
+    }
+  );
+}
+
+/* =========================================================
+   DEFAULT ADMIN
+========================================================= */
+
+const adminCount =
+  db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM admin
+  `).get();
+
+if (
+  adminCount.count === 0
+) {
+  db.prepare(`
+    INSERT INTO admin
+    (
+      username,
+      password
+    )
+    VALUES (?, ?)
+  `).run(
+    "admin",
+    "admin123"
+  );
+}
+
+/* =========================================================
+   DEFAULT HOMEPAGE SETTINGS
+========================================================= */
+
+const defaultSettings = {
+  logo_url:
+    "/images/logo.png",
+
+  hero_title:
+    "Best Deals. Best Prices. DealBaazi.",
+
+  hero_description:
+    "Find amazing deals, discounts and offers across mobiles, electronics, fashion, home, beauty and more.",
+
+  hero_button_text:
+    "Explore Deals",
+
+  hero_button_link:
+    "#deals",
+
+  feature1_icon:
+    "🔥",
+
+  feature1_title:
+    "Best Deals",
+
+  feature1_description:
+    "Handpicked deals at great prices.",
+
+  feature1_enabled:
+    "1",
+
+  feature2_icon:
+    "💰",
+
+  feature2_title:
+    "Save More",
+
+  feature2_description:
+    "Compare prices and save money.",
+
+  feature2_enabled:
+    "1",
+
+  feature3_icon:
+    "⭐",
+
+  feature3_title:
+    "Top Rated",
+
+  feature3_description:
+    "Discover highly rated products.",
+
+  feature3_enabled:
+    "1",
+
+  feature4_icon:
+    "⚡",
+
+  feature4_title:
+    "Easy Shopping",
+
+  feature4_description:
+    "Buy directly from trusted stores.",
+
+  feature4_enabled:
+    "1",
+
+  show_hot_deals:
+    "1",
+
+  show_top_picks:
+    "1",
+
+  show_top_rated:
+    "1",
+
+  show_all_deals:
+    "1",
+
+  footer_text:
+    "DealBaazi helps you discover the best deals, discounts and offers from trusted online stores."
+};
+
+const settingInsert =
+  db.prepare(`
+    INSERT OR IGNORE INTO site_settings
+    (
+      setting_key,
+      setting_value
+    )
+    VALUES (?, ?)
   `);
 
-  defaultCategories.forEach((name, index) => {
-    insertCategory.run(name, index);
-  });
-}
+Object.entries(
+  defaultSettings
+).forEach(
+  (
+    [key, value]
+  ) => {
+    settingInsert.run(
+      key,
+      String(value)
+    );
+  }
+);
 
-/* =========================
-   DEFAULT ADMIN
-========================= */
-
-const adminCount = db
-  .prepare("SELECT COUNT(*) AS count FROM admin")
-  .get();
-
-if (adminCount.count === 0) {
-  db.prepare(`
-    INSERT INTO admin (username, password)
-    VALUES (?, ?)
-  `).run("admin", "admin123");
-}
-
-/* =========================
+/* =========================================================
    HELPERS
-========================= */
+========================================================= */
 
-function getDiscountPercent(discount) {
-  const match = String(discount || "").match(/[\d.]+/);
+function calculateDiscountText(
+  price,
+  originalPrice
+) {
+  const p =
+    Number(price || 0);
 
-  if (!match) return 0;
+  const op =
+    Number(
+      originalPrice || 0
+    );
 
-  return Math.max(
-    0,
-    Math.min(100, Number(match[0]))
+  if (
+    !p ||
+    !op ||
+    op <= p
+  ) {
+    return "";
+  }
+
+  const percentage =
+    Math.round(
+      ((op - p) / op) *
+        100
+    );
+
+  return (
+    percentage +
+    "% OFF"
+  );
+}
+
+function getDiscountPercent(
+  price,
+  originalPrice
+) {
+  const p =
+    Number(price || 0);
+
+  const op =
+    Number(
+      originalPrice || 0
+    );
+
+  if (
+    !p ||
+    !op ||
+    op <= p
+  ) {
+    return 0;
+  }
+
+  return Math.round(
+    ((op - p) / op) *
+      100
   );
 }
 
 function calculateDealScore(
-  product,
-  reviewCount,
-  avgRating
+  product
 ) {
-  const discountPercent =
-    getDiscountPercent(product.discount);
-
-  const discountScore =
-    Math.min(discountPercent, 40);
-
-  const ratingScore =
-    (Number(
-      avgRating ||
-      product.rating ||
-      0
-    ) / 5) * 30;
-
-  const reviewScore =
-    (Math.min(
-      Number(reviewCount || 0),
-      20
-    ) / 20) * 20;
-
-  let priceScore = 0;
-
-  if (
-    Number(product.original_price) > 0 &&
-    Number(product.price) > 0
-  ) {
-    const saving =
-      (
-        (
-          Number(product.original_price) -
-          Number(product.price)
-        ) /
-        Number(product.original_price)
-      ) * 100;
-
-    priceScore = Math.min(
-      Math.max(saving / 10, 0),
-      10
+  const discount =
+    getDiscountPercent(
+      product.price,
+      product.original_price
     );
-  } else {
-    priceScore = Math.min(
-      discountPercent / 10,
-      10
-    );
-  }
 
-  return Math.round(
+  const rating =
+    Number(
+      product.rating || 0
+    );
+
+  const clicks =
+    Number(
+      product.clicks || 0
+    );
+
+  return (
+    discount * 3 +
+    rating * 10 +
     Math.min(
-      discountScore +
-        ratingScore +
-        reviewScore +
-        priceScore,
+      clicks,
       100
     )
   );
 }
 
 function getProductImages(
-  productId,
-  fallbackImage
+  productId
 ) {
-  const images = db.prepare(`
-    SELECT image_url
+  return db.prepare(`
+    SELECT *
     FROM product_images
     WHERE product_id = ?
     ORDER BY sort_order ASC, id ASC
   `).all(productId);
-
-  if (images.length > 0) {
-    return images.map(
-      img => img.image_url
-    );
-  }
-
-  if (fallbackImage) {
-    return [fallbackImage];
-  }
-
-  return [];
 }
 
 function getReviewStats(
-  productId,
-  productRating
+  productId
 ) {
-  const stats = db.prepare(`
-    SELECT
-      COUNT(*) AS count,
-      AVG(rating) AS average
-    FROM reviews
-    WHERE product_id = ?
-      AND approved = 1
-  `).get(productId);
+  const stats =
+    db.prepare(`
+      SELECT
+        COUNT(*) AS count,
+        AVG(rating) AS average
+      FROM reviews
+      WHERE product_id = ?
+        AND approved = 1
+    `).get(
+      productId
+    );
 
   return {
-    count: Number(stats.count || 0),
+    count:
+      stats.count || 0,
 
     average:
-      stats.average !== null
-        ? Number(
-            stats.average
-          ).toFixed(1)
-        : Number(
-            productRating || 0
-          ).toFixed(1)
+      Number(
+        stats.average || 0
+      ).toFixed(1)
   };
 }
 
-/* =========================
-   LOGIN
-========================= */
+function getSiteSettings() {
+  const rows =
+    db.prepare(`
+      SELECT
+        setting_key,
+        setting_value
+      FROM site_settings
+    `).all();
 
-let loggedIn = false;
+  const settings = {};
 
-/* =========================
-   HOME
-========================= */
+  rows.forEach(
+    row => {
+      settings[
+        row.setting_key
+      ] =
+        row.setting_value;
+    }
+  );
 
-app.get("/", (req, res) => {
+  return settings;
+}
 
-  const products = db.prepare(`
-    SELECT
-      p.*,
-      c.name AS category_name
-    FROM products p
-    LEFT JOIN categories c
-      ON p.category_id = c.id
-    WHERE p.visible = 1
-      AND (
-        p.expiry_date IS NULL
-        OR p.expiry_date = ''
-        OR p.expiry_date >= date('now')
-      )
-    ORDER BY p.created_at DESC
-  `).all();
-
-  const categories = db.prepare(`
+function getActiveBanners() {
+  return db.prepare(`
     SELECT *
-    FROM categories
+    FROM banners
     WHERE active = 1
     ORDER BY sort_order ASC, id ASC
   `).all();
+}
 
-  const topPicks =
-    products.filter(
-      product => product.featured
+function getAllBanners() {
+  return db.prepare(`
+    SELECT *
+    FROM banners
+    ORDER BY sort_order ASC, id ASC
+  `).all();
+}
+
+/* =========================================================
+   SEARCH HELPERS
+========================================================= */
+
+function getSearchTerms(
+  query
+) {
+  return String(
+    query || ""
+  )
+    .toLowerCase()
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function removeCommonWords(
+  text
+) {
+  const commonWords = [
+    "the",
+    "and",
+    "for",
+    "with",
+    "best",
+    "deal",
+    "deals",
+    "price",
+    "buy",
+    "online",
+    "new",
+    "offer",
+    "offers"
+  ];
+
+  return getSearchTerms(
+    text
+  ).filter(
+    word =>
+      !commonWords.includes(
+        word
+      )
+  );
+}
+
+function normalizeSearchText(
+  text
+) {
+  return String(
+    text || ""
+  )
+    .toLowerCase()
+    .replace(
+      /[^a-z0-9\s]/g,
+      " "
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
+    .trim();
+}
+
+function containsWord(
+  text,
+  word
+) {
+  const normalized =
+    normalizeSearchText(
+      text
     );
 
-  const hotDeals =
-    products.filter(
-      product => product.hot_deal
+  return normalized
+    .split(" ")
+    .includes(
+      normalizeSearchText(
+        word
+      )
+    );
+}
+
+function containsPartial(
+  text,
+  word
+) {
+  return normalizeSearchText(
+    text
+  ).includes(
+    normalizeSearchText(
+      word
+    )
+  );
+}
+
+function calculateSearchScore(
+  product,
+  query
+) {
+  const terms =
+    removeCommonWords(
+      query
     );
 
-  const topRated =
-    [...products]
-      .sort((a, b) => {
-        return (
-          Number(b.rating || 0) -
-          Number(a.rating || 0)
+  if (
+    !terms.length
+  ) {
+    return 0;
+  }
+
+  const name =
+    normalizeSearchText(
+      product.name
+    );
+
+  const description =
+    normalizeSearchText(
+      product.description
+    );
+
+  let score = 0;
+
+  terms.forEach(
+    term => {
+      if (
+        containsWord(
+          name,
+          term
+        )
+      ) {
+        score += 10;
+      } else if (
+        containsPartial(
+          name,
+          term
+        )
+      ) {
+        score += 5;
+      }
+
+      if (
+        containsPartial(
+          description,
+          term
+        )
+      ) {
+        score += 2;
+      }
+    }
+  );
+
+  return score;
+}
+
+/* =========================================================
+   SECURE ADMIN AUTHENTICATION
+========================================================= */
+
+/*
+   Previous version used:
+
+   let loggedIn = false;
+
+   That was unsafe for a public website because one
+   global variable controlled everybody's access.
+
+   Now each browser receives its own signed cookie.
+
+   No additional npm package is required.
+*/
+
+const SESSION_COOKIE =
+  "dealbaazi_admin_session";
+
+const SESSION_SECRET =
+  process.env.SESSION_SECRET ||
+  "dealbaazi-local-secret-change-this-before-production";
+
+const SESSION_MAX_AGE =
+  24 * 60 * 60;
+
+/* Create signed session */
+
+function createAdminToken(
+  username
+) {
+  const expires =
+    Math.floor(
+      Date.now() / 1000
+    ) +
+    SESSION_MAX_AGE;
+
+  const payload =
+    `${username}|${expires}`;
+
+  const signature =
+    crypto
+      .createHmac(
+        "sha256",
+        SESSION_SECRET
+      )
+      .update(
+        payload
+      )
+      .digest("hex");
+
+  return Buffer.from(
+    `${payload}|${signature}`
+  ).toString(
+    "base64url"
+  );
+}
+
+/* Verify signed session */
+
+function verifyAdminToken(
+  token
+) {
+  try {
+    if (!token) {
+      return null;
+    }
+
+    const decoded =
+      Buffer.from(
+        token,
+        "base64url"
+      ).toString(
+        "utf8"
+      );
+
+    const parts =
+      decoded.split("|");
+
+    if (
+      parts.length !== 3
+    ) {
+      return null;
+    }
+
+    const username =
+      parts[0];
+
+    const expires =
+      Number(parts[1]);
+
+    const signature =
+      parts[2];
+
+    if (
+      !username ||
+      !expires ||
+      !signature
+    ) {
+      return null;
+    }
+
+    if (
+      Math.floor(
+        Date.now() / 1000
+      ) > expires
+    ) {
+      return null;
+    }
+
+    const payload =
+      `${username}|${expires}`;
+
+    const expected =
+      crypto
+        .createHmac(
+          "sha256",
+          SESSION_SECRET
+        )
+        .update(
+          payload
+        )
+        .digest("hex");
+
+    const receivedBuffer =
+      Buffer.from(
+        signature,
+        "utf8"
+      );
+
+    const expectedBuffer =
+      Buffer.from(
+        expected,
+        "utf8"
+      );
+
+    if (
+      receivedBuffer.length !==
+      expectedBuffer.length
+    ) {
+      return null;
+    }
+
+    if (
+      !crypto.timingSafeEqual(
+        receivedBuffer,
+        expectedBuffer
+      )
+    ) {
+      return null;
+    }
+
+    return {
+      username,
+      expires
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+/* Read cookie */
+
+function getAdminToken(
+  req
+) {
+  const cookieHeader =
+    String(
+      req.headers.cookie ||
+        ""
+    );
+
+  if (
+    !cookieHeader
+  ) {
+    return null;
+  }
+
+  const cookies = {};
+
+  cookieHeader
+    .split(";")
+    .forEach(
+      part => {
+        const index =
+          part.indexOf("=");
+
+        if (
+          index === -1
+        ) {
+          return;
+        }
+
+        const key =
+          part
+            .slice(
+              0,
+              index
+            )
+            .trim();
+
+        const value =
+          part
+            .slice(
+              index + 1
+            )
+            .trim();
+
+        cookies[key] =
+          value;
+      }
+    );
+
+  return (
+    cookies[
+      SESSION_COOKIE
+    ] || null
+  );
+}
+
+/* Check login */
+
+function isLoggedIn(
+  req
+) {
+  const token =
+    getAdminToken(
+      req
+    );
+
+  return Boolean(
+    verifyAdminToken(
+      token
+    )
+  );
+}
+
+/* Set login cookie */
+
+function setAdminCookie(
+  res,
+  username
+) {
+  const token =
+    createAdminToken(
+      username
+    );
+
+  const isProduction =
+    process.env.NODE_ENV ===
+    "production";
+
+  const cookie =
+    [
+      `${SESSION_COOKIE}=${token}`,
+      "HttpOnly",
+      "Path=/",
+      "SameSite=Lax",
+      `Max-Age=${SESSION_MAX_AGE}`,
+      isProduction
+        ? "Secure"
+        : ""
+    ]
+      .filter(Boolean)
+      .join("; ");
+
+  res.setHeader(
+    "Set-Cookie",
+    cookie
+  );
+}
+
+/* Clear login cookie */
+
+function clearAdminCookie(
+  res
+) {
+  res.setHeader(
+    "Set-Cookie",
+    `${SESSION_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`
+  );
+}
+
+/* =========================================================
+   PUBLIC HOME
+========================================================= */
+
+app.get(
+  "/",
+  (req, res) => {
+    const products =
+      db.prepare(`
+        SELECT *
+        FROM products
+        WHERE visible = 1
+        ORDER BY id DESC
+      `).all();
+
+    products.forEach(
+      product => {
+        product.images =
+          getProductImages(
+            product.id
+          );
+
+        product.reviewStats =
+          getReviewStats(
+            product.id
+          );
+
+        product.discountText =
+          calculateDiscountText(
+            product.price,
+            product.original_price
+          );
+
+        product.dealScore =
+          calculateDealScore(
+            product
+          );
+      }
+    );
+
+    const categories =
+      db.prepare(`
+        SELECT *
+        FROM categories
+        WHERE active = 1
+        ORDER BY sort_order ASC, id ASC
+      `).all();
+
+    const hotDeals =
+      products
+        .filter(
+          p =>
+            Number(
+              p.hot_deal
+            ) === 1
+        )
+        .sort(
+          (a, b) =>
+            b.dealScore -
+            a.dealScore
         );
-      })
-      .slice(0, 10);
 
-  res.render("index", {
-    products,
-    categories,
-    selectedCategory: null,
-    topPicks,
-    hotDeals,
-    topRated
-  });
-});
+    const topPicks =
+      products
+        .filter(
+          p =>
+            Number(
+              p.featured
+            ) === 1
+        )
+        .sort(
+          (a, b) =>
+            b.dealScore -
+            a.dealScore
+        );
 
-/* =========================
+    const topRated =
+      products
+        .filter(
+          p =>
+            Number(
+              p.rating || 0
+            ) >= 4
+        )
+        .sort(
+          (a, b) =>
+            Number(
+              b.rating || 0
+            ) -
+            Number(
+              a.rating || 0
+            )
+        );
+
+    res.render(
+      "index",
+      {
+        products,
+        categories,
+        hotDeals,
+        topPicks,
+        topRated,
+
+        selectedCategory:
+          null,
+
+        searchQuery:
+          "",
+
+        siteSettings:
+          getSiteSettings(),
+
+        banners:
+          getActiveBanners()
+      }
+    );
+  }
+);
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+app.get(
+  "/search",
+  (req, res) => {
+    const query =
+      String(
+        req.query.q || ""
+      ).trim();
+
+    const allProducts =
+      db.prepare(`
+        SELECT *
+        FROM products
+        WHERE visible = 1
+        ORDER BY id DESC
+      `).all();
+
+    let products =
+      allProducts;
+
+    if (query) {
+      products =
+        allProducts
+          .map(
+            product => ({
+              ...product,
+
+              searchScore:
+                calculateSearchScore(
+                  product,
+                  query
+                )
+            })
+          )
+          .filter(
+            product =>
+              product.searchScore >
+              0
+          )
+          .sort(
+            (a, b) =>
+              b.searchScore -
+              a.searchScore
+          );
+    }
+
+    products.forEach(
+      product => {
+        product.images =
+          getProductImages(
+            product.id
+          );
+
+        product.reviewStats =
+          getReviewStats(
+            product.id
+          );
+
+        product.discountText =
+          calculateDiscountText(
+            product.price,
+            product.original_price
+          );
+
+        product.dealScore =
+          calculateDealScore(
+            product
+          );
+      }
+    );
+
+    const categories =
+      db.prepare(`
+        SELECT *
+        FROM categories
+        WHERE active = 1
+        ORDER BY sort_order ASC, id ASC
+      `).all();
+
+    res.render(
+      "index",
+      {
+        products,
+        categories,
+
+        hotDeals: [],
+        topPicks: [],
+        topRated: [],
+
+        selectedCategory:
+          null,
+
+        searchQuery:
+          query,
+
+        siteSettings:
+          getSiteSettings(),
+
+        banners:
+          getActiveBanners()
+      }
+    );
+  }
+);
+
+/* =========================================================
    CATEGORY
-========================= */
+========================================================= */
 
 app.get(
   "/category/:id",
   (req, res) => {
-
     const categoryId =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
-    const category = db.prepare(`
-      SELECT *
-      FROM categories
-      WHERE id = ?
-        AND active = 1
-    `).get(categoryId);
+    const category =
+      db.prepare(`
+        SELECT *
+        FROM categories
+        WHERE id = ?
+      `).get(
+        categoryId
+      );
 
     if (!category) {
-      return res.redirect("/");
+      return res.redirect(
+        "/"
+      );
     }
 
-    const products = db.prepare(`
-      SELECT
-        p.*,
-        c.name AS category_name
-      FROM products p
-      LEFT JOIN categories c
-        ON p.category_id = c.id
-      WHERE p.visible = 1
-        AND p.category_id = ?
-        AND (
-          p.expiry_date IS NULL
-          OR p.expiry_date = ''
-          OR p.expiry_date >= date('now')
-        )
-      ORDER BY p.created_at DESC
-    `).all(categoryId);
+    const products =
+      db.prepare(`
+        SELECT *
+        FROM products
+        WHERE visible = 1
+          AND category_id = ?
+        ORDER BY id DESC
+      `).all(
+        categoryId
+      );
 
-    const categories = db.prepare(`
-      SELECT *
-      FROM categories
-      WHERE active = 1
-      ORDER BY sort_order ASC, id ASC
-    `).all();
+    products.forEach(
+      product => {
+        product.images =
+          getProductImages(
+            product.id
+          );
 
-    res.render("index", {
-      products,
-      categories,
-      selectedCategory: category,
-      topPicks: [],
-      hotDeals: [],
-      topRated: []
-    });
+        product.reviewStats =
+          getReviewStats(
+            product.id
+          );
+
+        product.discountText =
+          calculateDiscountText(
+            product.price,
+            product.original_price
+          );
+
+        product.dealScore =
+          calculateDealScore(
+            product
+          );
+      }
+    );
+
+    const categories =
+      db.prepare(`
+        SELECT *
+        FROM categories
+        WHERE active = 1
+        ORDER BY sort_order ASC, id ASC
+      `).all();
+
+    res.render(
+      "index",
+      {
+        products,
+        categories,
+        category,
+
+        selectedCategory:
+          category,
+
+        searchQuery:
+          "",
+
+        hotDeals: [],
+        topPicks: [],
+        topRated: [],
+
+        siteSettings:
+          getSiteSettings(),
+
+        banners:
+          getActiveBanners()
+      }
+    );
   }
 );
 
-/* =========================
-   PRODUCT DETAIL
-========================= */
+/* =========================================================
+   PRODUCT DETAILS
+========================================================= */
 
 app.get(
   "/product/:id",
   (req, res) => {
-
     const id =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
-    const product = db.prepare(`
-      SELECT
-        p.*,
-        c.name AS category_name
-      FROM products p
-      LEFT JOIN categories c
-        ON p.category_id = c.id
-      WHERE p.id = ?
-    `).get(id);
+    const product =
+      db.prepare(`
+        SELECT
+          p.*,
+          c.name AS category_name
+        FROM products p
+        LEFT JOIN categories c
+          ON c.id = p.category_id
+        WHERE p.id = ?
+      `).get(id);
 
     if (!product) {
       return res
         .status(404)
-        .send("Product not found");
+        .send(
+          "Product not found"
+        );
     }
 
-    const images =
+    product.images =
       getProductImages(
-        product.id,
-        product.image_url
+        id
       );
 
-    const reviews = db.prepare(`
-      SELECT *
-      FROM reviews
-      WHERE product_id = ?
-        AND approved = 1
-      ORDER BY created_at DESC
-    `).all(id);
-
-    const reviewStats =
+    product.reviewStats =
       getReviewStats(
-        id,
-        product.rating
+        id
       );
 
-    const dealScore =
-      calculateDealScore(
+    product.discountText =
+      calculateDiscountText(
+        product.price,
+        product.original_price
+      );
+
+    const reviews =
+      db.prepare(`
+        SELECT *
+        FROM reviews
+        WHERE product_id = ?
+          AND approved = 1
+        ORDER BY id DESC
+      `).all(id);
+
+    res.render(
+      "product",
+      {
         product,
-        reviewStats.count,
-        reviewStats.average
-      );
+        reviews,
 
-    res.render("product", {
-      product,
-      images,
-      reviews,
-      reviewCount: reviewStats.count,
-      averageRating: reviewStats.average,
-      dealScore
-    });
+        siteSettings:
+          getSiteSettings()
+      }
+    );
   }
 );
 
-/* =========================
-   BUY NOW
-========================= */
+/* =========================================================
+   BUY NOW - DIRECT AFFILIATE REDIRECT
+========================================================= */
 
 app.get(
   "/buy/:id",
   (req, res) => {
-
     const id =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
-    const product = db.prepare(`
-      SELECT *
-      FROM products
-      WHERE id = ?
-        AND visible = 1
-    `).get(id);
+    const product =
+      db.prepare(`
+        SELECT *
+        FROM products
+        WHERE id = ?
+          AND visible = 1
+      `).get(id);
 
     if (!product) {
-      return res.redirect("/");
+      return res
+        .status(404)
+        .send(
+          "Product not found"
+        );
     }
 
     db.prepare(`
@@ -592,58 +1517,64 @@ app.get(
       WHERE id = ?
     `).run(id);
 
+    if (
+      !product.affiliate_url
+    ) {
+      return res
+        .status(400)
+        .send(
+          "Affiliate link is not available."
+        );
+    }
+
     res.redirect(
       product.affiliate_url
     );
   }
 );
 
-/* =========================
-   PUBLIC REVIEW
-========================= */
+/* =========================================================
+   PRODUCT REVIEW
+========================================================= */
 
 app.post(
   "/product/:id/review",
   (req, res) => {
-
     const productId =
-      Number(req.params.id);
-
-    const product = db.prepare(`
-      SELECT id
-      FROM products
-      WHERE id = ?
-    `).get(productId);
-
-    if (!product) {
-      return res
-        .status(404)
-        .send("Product not found");
-    }
+      Number(
+        req.params.id
+      );
 
     const name =
       String(
         req.body.name || ""
       ).trim();
 
+    const rating =
+      Number(
+        req.body.rating || 5
+      );
+
     const comment =
       String(
         req.body.comment || ""
       ).trim();
 
-    const rating =
-      Number(req.body.rating);
-
-    if (
-      !name ||
-      !comment ||
-      !Number.isInteger(rating) ||
-      rating < 1 ||
-      rating > 5
-    ) {
-      return res.redirect(
-        `/product/${productId}#reviews`
+    const product =
+      db.prepare(`
+        SELECT id
+        FROM products
+        WHERE id = ?
+      `).get(
+        productId
       );
+
+    if (!product) {
+      return res
+        .status(404)
+        .send(
+          "Product not found"
+        );
     }
 
     db.prepare(`
@@ -664,416 +1595,111 @@ app.post(
     );
 
     res.redirect(
-      `/product/${productId}#reviews`
+      "/product/" +
+        productId
     );
   }
 );
 
-/* =========================
-   LOGIN PAGE
-========================= */
+/* =========================================================
+   LOGIN
+========================================================= */
 
 app.get(
   "/login",
   (req, res) => {
-    res.render("login", {
-      error: null
-    });
+    if (
+      isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/admin"
+      );
+    }
+
+    res.render(
+      "login",
+      {
+        error: null
+      }
+    );
   }
 );
 
 app.post(
   "/login",
   (req, res) => {
+    const username =
+      String(
+        req.body.username ||
+          ""
+      );
 
-    const {
-      username,
-      password
-    } = req.body;
+    const password =
+      String(
+        req.body.password ||
+          ""
+      );
 
-    const admin = db.prepare(`
-      SELECT *
-      FROM admin
-      WHERE username = ?
-        AND password = ?
-    `).get(
-      username,
-      password
-    );
+    const admin =
+      db.prepare(`
+        SELECT *
+        FROM admin
+        WHERE username = ?
+        LIMIT 1
+      `).get(
+        username
+      );
 
-    if (!admin) {
-      return res.render("login", {
-        error:
-          "Invalid username or password"
-      });
+    if (
+      admin &&
+      admin.password ===
+        password
+    ) {
+      setAdminCookie(
+        res,
+        admin.username
+      );
+
+      return res.redirect(
+        "/admin"
+      );
     }
 
-    loggedIn = true;
-
-    res.redirect("/admin");
+    res.render(
+      "login",
+      {
+        error:
+          "Invalid username or password."
+      }
+    );
   }
 );
 
-/* =========================
-   ADMIN
-========================= */
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
 
 app.get(
   "/admin",
   (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
-    }
-
-    const products = db.prepare(`
-      SELECT
-        p.*,
-        c.name AS category_name
-      FROM products p
-      LEFT JOIN categories c
-        ON p.category_id = c.id
-      ORDER BY p.created_at DESC
-    `).all();
-
-    const categories = db.prepare(`
-      SELECT *
-      FROM categories
-      ORDER BY sort_order ASC, id ASC
-    `).all();
-
-    const reviews = db.prepare(`
-      SELECT
-        r.*,
-        p.name AS product_name
-      FROM reviews r
-      LEFT JOIN products p
-        ON r.product_id = p.id
-      ORDER BY r.created_at DESC
-    `).all();
-
-    res.render("admin", {
-      products,
-      categories,
-      reviews
-    });
-  }
-);
-
-/* =========================
-   ADD CATEGORY
-========================= */
-
-app.post(
-  "/admin/categories/add",
-  (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
-    }
-
-    const name =
-      String(
-        req.body.name || ""
-      ).trim();
-
-    const sortOrder =
-      Number(
-        req.body.sort_order || 0
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
       );
-
-    const active =
-      req.body.active ? 1 : 0;
-
-    if (!name) {
-      return res.redirect("/admin");
     }
 
-    try {
-
+    const products =
       db.prepare(`
-        INSERT INTO categories
-        (
-          name,
-          sort_order,
-          active
-        )
-        VALUES (?, ?, ?)
-      `).run(
-        name,
-        sortOrder,
-        active
-      );
-
-    } catch (error) {
-
-      console.log(
-        error.message
-      );
-    }
-
-    res.redirect("/admin");
-  }
-);
-
-/* =========================
-   EDIT CATEGORY
-========================= */
-
-app.post(
-  "/admin/categories/edit/:id",
-  (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
-    }
-
-    const id =
-      Number(req.params.id);
-
-    const name =
-      String(
-        req.body.name || ""
-      ).trim();
-
-    const sortOrder =
-      Number(
-        req.body.sort_order || 0
-      );
-
-    const active =
-      req.body.active ? 1 : 0;
-
-    if (!name) {
-      return res.redirect("/admin");
-    }
-
-    try {
-
-      db.prepare(`
-        UPDATE categories
-        SET
-          name = ?,
-          sort_order = ?,
-          active = ?
-        WHERE id = ?
-      `).run(
-        name,
-        sortOrder,
-        active,
-        id
-      );
-
-    } catch (error) {
-
-      console.log(
-        error.message
-      );
-    }
-
-    res.redirect("/admin");
-  }
-);
-
-/* =========================
-   DELETE CATEGORY
-========================= */
-
-app.post(
-  "/admin/categories/delete/:id",
-  (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
-    }
-
-    const id =
-      Number(req.params.id);
-
-    db.prepare(`
-      UPDATE products
-      SET category_id = NULL
-      WHERE category_id = ?
-    `).run(id);
-
-    db.prepare(`
-      DELETE FROM categories
-      WHERE id = ?
-    `).run(id);
-
-    res.redirect("/admin");
-  }
-);
-
-/* =========================
-   ADD PRODUCT
-========================= */
-
-app.post(
-  "/admin/add",
-  multiUpload,
-  (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
-    }
-
-    const files =
-      getUploadedImages(req);
-
-    const name =
-      String(
-        req.body.name || ""
-      ).trim();
-
-    const price =
-      Number(
-        req.body.price || 0
-      );
-
-    const originalPrice =
-      Number(
-        req.body.original_price || 0
-      );
-
-    const discount =
-      String(
-        req.body.discount || ""
-      ).trim();
-
-    const rating =
-      Number(
-        req.body.rating || 0
-      );
-
-    const affiliateUrl =
-      String(
-        req.body.affiliate_url || ""
-      ).trim();
-
-    const categoryId =
-      req.body.category_id
-        ? Number(req.body.category_id)
-        : null;
-
-    const expiryDate =
-      req.body.expiry_date || null;
-
-    const description =
-      String(
-        req.body.description || ""
-      ).trim();
-
-    const featured =
-      req.body.featured ? 1 : 0;
-
-    const trending =
-      req.body.trending ? 1 : 0;
-
-    const hotDeal =
-      req.body.hot_deal ? 1 : 0;
-
-    const visible =
-      req.body.visible ? 1 : 0;
-
-    let imageUrl = "";
-
-    if (files.length > 0) {
-      imageUrl =
-        "/uploads/" +
-        files[0].filename;
-    }
-
-    const result = db.prepare(`
-      INSERT INTO products
-      (
-        name,
-        price,
-        original_price,
-        discount,
-        rating,
-        affiliate_url,
-        image_url,
-        description,
-        featured,
-        trending,
-        hot_deal,
-        visible,
-        expiry_date,
-        category_id
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      name,
-      price,
-      originalPrice,
-      discount,
-      rating,
-      affiliateUrl,
-      imageUrl,
-      description,
-      featured,
-      trending,
-      hotDeal,
-      visible,
-      expiryDate,
-      categoryId
-    );
-
-    const productId =
-      result.lastInsertRowid;
-
-    const insertImage = db.prepare(`
-      INSERT INTO product_images
-      (
-        product_id,
-        image_url,
-        sort_order
-      )
-      VALUES (?, ?, ?)
-    `);
-
-    files.forEach(
-      (file, index) => {
-
-        insertImage.run(
-          productId,
-          "/uploads/" +
-            file.filename,
-          index + 1
-        );
-      }
-    );
-
-    res.redirect("/admin");
-  }
-);
-
-/* =========================
-   EDIT PAGE
-========================= */
-
-app.get(
-  "/admin/edit/:id",
-  (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
-    }
-
-    const id =
-      Number(req.params.id);
-
-    const product =
-      db.prepare(`
-        SELECT *
-        FROM products
-        WHERE id = ?
-      `).get(id);
-
-    if (!product) {
-      return res.redirect("/admin");
-    }
+        SELECT
+          p.*,
+          c.name AS category_name
+        FROM products p
+        LEFT JOIN categories c
+          ON c.id = p.category_id
+        ORDER BY p.id DESC
+      `).all();
 
     const categories =
       db.prepare(`
@@ -1082,35 +1708,823 @@ app.get(
         ORDER BY sort_order ASC, id ASC
       `).all();
 
-    const images =
-      getProductImages(
-        product.id,
-        product.image_url
-      );
+    const reviews =
+      db.prepare(`
+        SELECT
+          r.*,
+          p.name AS product_name
+        FROM reviews r
+        LEFT JOIN products p
+          ON p.id = r.product_id
+        ORDER BY r.id DESC
+      `).all();
 
-    res.render("edit", {
-      product,
-      categories,
-      images
-    });
+    const stats = {
+      totalProducts:
+        products.length,
+
+      liveProducts:
+        products.filter(
+          p =>
+            Number(
+              p.visible
+            ) === 1
+        ).length,
+
+      categories:
+        categories.length,
+
+      reviews:
+        reviews.length
+    };
+
+    res.render(
+      "admin",
+      {
+        products,
+        categories,
+        reviews,
+        stats,
+
+        siteSettings:
+          getSiteSettings(),
+
+        banners:
+          getAllBanners()
+      }
+    );
   }
 );
 
-/* =========================
-   EDIT PRODUCT
-========================= */
+/* =========================================================
+   HOMEPAGE SETTINGS SAVE
+========================================================= */
+
+app.post(
+  "/admin/homepage/save",
+  homepageUpload,
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const fields = [
+      "hero_title",
+      "hero_description",
+      "hero_button_text",
+      "hero_button_link",
+
+      "feature1_icon",
+      "feature1_title",
+      "feature1_description",
+
+      "feature2_icon",
+      "feature2_title",
+      "feature2_description",
+
+      "feature3_icon",
+      "feature3_title",
+      "feature3_description",
+
+      "feature4_icon",
+      "feature4_title",
+      "feature4_description",
+
+      "footer_text"
+    ];
+
+    const updateSetting =
+      db.prepare(`
+        INSERT INTO site_settings
+        (
+          setting_key,
+          setting_value
+        )
+        VALUES (?, ?)
+        ON CONFLICT(setting_key)
+        DO UPDATE SET
+          setting_value =
+            excluded.setting_value
+      `);
+
+    const saveSettings =
+      db.transaction(
+        () => {
+          fields.forEach(
+            key => {
+              updateSetting.run(
+                key,
+                String(
+                  req.body[
+                    key
+                  ] || ""
+                )
+              );
+            }
+          );
+
+          updateSetting.run(
+            "feature1_enabled",
+            req.body
+              .feature1_enabled
+              ? "1"
+              : "0"
+          );
+
+          updateSetting.run(
+            "feature2_enabled",
+            req.body
+              .feature2_enabled
+              ? "1"
+              : "0"
+          );
+
+          updateSetting.run(
+            "feature3_enabled",
+            req.body
+              .feature3_enabled
+              ? "1"
+              : "0"
+          );
+
+          updateSetting.run(
+            "feature4_enabled",
+            req.body
+              .feature4_enabled
+              ? "1"
+              : "0"
+          );
+
+          updateSetting.run(
+            "show_hot_deals",
+            req.body
+              .show_hot_deals
+              ? "1"
+              : "0"
+          );
+
+          updateSetting.run(
+            "show_top_picks",
+            req.body
+              .show_top_picks
+              ? "1"
+              : "0"
+          );
+
+          updateSetting.run(
+            "show_top_rated",
+            req.body
+              .show_top_rated
+              ? "1"
+              : "0"
+          );
+
+          updateSetting.run(
+            "show_all_deals",
+            req.body
+              .show_all_deals
+              ? "1"
+              : "0"
+          );
+
+          if (
+            req.files &&
+            req.files.logo &&
+            req.files.logo[0]
+          ) {
+            const logoPath =
+              "/uploads/" +
+              req.files.logo[0]
+                .filename;
+
+            updateSetting.run(
+              "logo_url",
+              logoPath
+            );
+          }
+
+          if (
+            req.files &&
+            req.files.hero_image &&
+            req.files.hero_image[0]
+          ) {
+            const heroPath =
+              "/uploads/" +
+              req.files.hero_image[0]
+                .filename;
+
+            updateSetting.run(
+              "hero_image",
+              heroPath
+            );
+          }
+        }
+      );
+
+    saveSettings();
+
+    res.redirect(
+      "/admin?homepage=saved"
+    );
+  }
+);
+
+/* =========================================================
+   BANNER ADD
+========================================================= */
+
+app.post(
+  "/admin/banners/add",
+  upload.single(
+    "banner_image"
+  ),
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    let imageUrl =
+      String(
+        req.body.image_url ||
+          ""
+      ).trim();
+
+    if (req.file) {
+      imageUrl =
+        "/uploads/" +
+        req.file.filename;
+    }
+
+    db.prepare(`
+      INSERT INTO banners
+      (
+        image_url,
+        heading,
+        description,
+        button_text,
+        link_url,
+        active,
+        sort_order
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      imageUrl,
+
+      String(
+        req.body.heading ||
+          ""
+      ),
+
+      String(
+        req.body.description ||
+          ""
+      ),
+
+      String(
+        req.body.button_text ||
+          ""
+      ),
+
+      String(
+        req.body.link_url ||
+          ""
+      ),
+
+      req.body.active
+        ? 1
+        : 0,
+
+      Number(
+        req.body.sort_order ||
+          0
+      )
+    );
+
+    res.redirect(
+      "/admin?banner=saved"
+    );
+  }
+);
+
+/* =========================================================
+   BANNER EDIT
+========================================================= */
+
+app.post(
+  "/admin/banners/edit/:id",
+  upload.single(
+    "banner_image"
+  ),
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const id =
+      Number(
+        req.params.id
+      );
+
+    const banner =
+      db.prepare(`
+        SELECT *
+        FROM banners
+        WHERE id = ?
+      `).get(id);
+
+    if (!banner) {
+      return res.redirect(
+        "/admin"
+      );
+    }
+
+    let imageUrl =
+      String(
+        req.body.image_url ||
+          banner.image_url ||
+          ""
+      ).trim();
+
+    if (req.file) {
+      imageUrl =
+        "/uploads/" +
+        req.file.filename;
+    }
+
+    db.prepare(`
+      UPDATE banners
+      SET
+        image_url = ?,
+        heading = ?,
+        description = ?,
+        button_text = ?,
+        link_url = ?,
+        active = ?,
+        sort_order = ?
+      WHERE id = ?
+    `).run(
+      imageUrl,
+
+      String(
+        req.body.heading ||
+          ""
+      ),
+
+      String(
+        req.body.description ||
+          ""
+      ),
+
+      String(
+        req.body.button_text ||
+          ""
+      ),
+
+      String(
+        req.body.link_url ||
+          ""
+      ),
+
+      req.body.active
+        ? 1
+        : 0,
+
+      Number(
+        req.body.sort_order ||
+          0
+      ),
+
+      id
+    );
+
+    res.redirect(
+      "/admin?banner=updated"
+    );
+  }
+);
+
+/* =========================================================
+   BANNER DELETE
+========================================================= */
+
+app.post(
+  "/admin/banners/delete/:id",
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const id =
+      Number(
+        req.params.id
+      );
+
+    db.prepare(`
+      DELETE FROM banners
+      WHERE id = ?
+    `).run(id);
+
+    res.redirect(
+      "/admin?banner=deleted"
+    );
+  }
+);
+
+/* =========================================================
+   BANNER TOGGLE
+========================================================= */
+
+app.post(
+  "/admin/banners/toggle/:id",
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const id =
+      Number(
+        req.params.id
+      );
+
+    db.prepare(`
+      UPDATE banners
+      SET active =
+        CASE
+          WHEN active = 1 THEN 0
+          ELSE 1
+        END
+      WHERE id = ?
+    `).run(id);
+
+    res.redirect(
+      "/admin"
+    );
+  }
+);
+
+/* =========================================================
+   CATEGORY ADD
+========================================================= */
+
+app.post(
+  "/admin/categories/add",
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const name =
+      String(
+        req.body.name ||
+          ""
+      ).trim();
+
+    const sortOrder =
+      Number(
+        req.body.sort_order ||
+          0
+      );
+
+    if (!name) {
+      return res.redirect(
+        "/admin"
+      );
+    }
+
+    db.prepare(`
+      INSERT INTO categories
+      (
+        name,
+        sort_order,
+        active
+      )
+      VALUES (?, ?, 1)
+    `).run(
+      name,
+      sortOrder
+    );
+
+    res.redirect(
+      "/admin"
+    );
+  }
+);
+
+/* =========================================================
+   CATEGORY EDIT
+========================================================= */
+
+app.post(
+  "/admin/categories/edit/:id",
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const id =
+      Number(
+        req.params.id
+      );
+
+    const name =
+      String(
+        req.body.name ||
+          ""
+      ).trim();
+
+    const sortOrder =
+      Number(
+        req.body.sort_order ||
+          0
+      );
+
+    const active =
+      req.body.active
+        ? 1
+        : 0;
+
+    db.prepare(`
+      UPDATE categories
+      SET
+        name = ?,
+        sort_order = ?,
+        active = ?
+      WHERE id = ?
+    `).run(
+      name,
+      sortOrder,
+      active,
+      id
+    );
+
+    res.redirect(
+      "/admin"
+    );
+  }
+);
+
+/* =========================================================
+   CATEGORY DELETE
+========================================================= */
+
+app.post(
+  "/admin/categories/delete/:id",
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const id =
+      Number(
+        req.params.id
+      );
+
+    db.prepare(`
+      DELETE FROM categories
+      WHERE id = ?
+    `).run(id);
+
+    res.redirect(
+      "/admin"
+    );
+  }
+);
+
+/* =========================================================
+   PRODUCT ADD
+========================================================= */
+
+app.post(
+  "/admin/add",
+  multiUpload,
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const name =
+      String(
+        req.body.name ||
+          ""
+      ).trim();
+
+    const price =
+      Number(
+        req.body.sellingPrice ||
+          req.body.price ||
+          0
+      );
+
+    const originalPrice =
+      Number(
+        req.body.originalPrice ||
+          req.body.original_price ||
+          0
+      );
+
+    const rating =
+      Number(
+        req.body.rating ||
+          0
+      );
+
+    const categoryId =
+      Number(
+        req.body.category_id ||
+          0
+      ) || null;
+
+    const affiliateUrl =
+      String(
+        req.body.affiliate_url ||
+          ""
+      ).trim();
+
+    const expiryDate =
+      String(
+        req.body.expiry_date ||
+          ""
+      );
+
+    const description =
+      String(
+        req.body.description ||
+          ""
+      );
+
+    const discount =
+      calculateDiscountText(
+        price,
+        originalPrice
+      );
+
+    let imageUrl = "";
+
+    if (
+      req.files &&
+      req.files.image &&
+      req.files.image[0]
+    ) {
+      imageUrl =
+        "/uploads/" +
+        req.files.image[0]
+          .filename;
+    } else if (
+      req.files &&
+      req.files.images &&
+      req.files.images[0]
+    ) {
+      imageUrl =
+        "/uploads/" +
+        req.files.images[0]
+          .filename;
+    }
+
+    const result =
+      db.prepare(`
+        INSERT INTO products
+        (
+          name,
+          price,
+          discount,
+          rating,
+          affiliate_url,
+          image_url,
+          featured,
+          trending,
+          visible,
+          expiry_date,
+          category_id,
+          description,
+          original_price,
+          hot_deal
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        name,
+        price,
+        discount,
+        rating,
+        affiliateUrl,
+        imageUrl,
+
+        req.body.featured
+          ? 1
+          : 0,
+
+        req.body.trending
+          ? 1
+          : 0,
+
+        req.body.visible
+          ? 1
+          : 0,
+
+        expiryDate,
+        categoryId,
+        description,
+        originalPrice,
+
+        req.body.hot_deal
+          ? 1
+          : 0
+      );
+
+    const productId =
+      result.lastInsertRowid;
+
+    if (
+      req.files &&
+      req.files.images
+    ) {
+      const insertImage =
+        db.prepare(`
+          INSERT INTO product_images
+          (
+            product_id,
+            image_url,
+            sort_order
+          )
+          VALUES (?, ?, ?)
+        `);
+
+      req.files.images.forEach(
+        (
+          file,
+          index
+        ) => {
+          insertImage.run(
+            productId,
+            "/uploads/" +
+              file.filename,
+            index
+          );
+        }
+      );
+    }
+
+    res.redirect(
+      "/admin"
+    );
+  }
+);
+
+/* =========================================================
+   PRODUCT EDIT
+========================================================= */
 
 app.post(
   "/admin/edit/:id",
   multiUpload,
   (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
     }
 
     const id =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
     const product =
       db.prepare(`
@@ -1120,74 +2534,90 @@ app.post(
       `).get(id);
 
     if (!product) {
-      return res.redirect("/admin");
+      return res.redirect(
+        "/admin"
+      );
     }
-
-    const files =
-      getUploadedImages(req);
 
     const name =
       String(
-        req.body.name || ""
+        req.body.name ||
+          ""
       ).trim();
 
     const price =
       Number(
-        req.body.price || 0
+        req.body.sellingPrice ||
+          req.body.price ||
+          0
       );
 
     const originalPrice =
       Number(
-        req.body.original_price || 0
+        req.body.originalPrice ||
+          req.body.original_price ||
+          0
       );
-
-    const discount =
-      String(
-        req.body.discount || ""
-      ).trim();
 
     const rating =
       Number(
-        req.body.rating || 0
+        req.body.rating ||
+          0
       );
+
+    const categoryId =
+      Number(
+        req.body.category_id ||
+          0
+      ) || null;
 
     const affiliateUrl =
       String(
-        req.body.affiliate_url || ""
+        req.body.affiliate_url ||
+          ""
       ).trim();
 
-    const categoryId =
-      req.body.category_id
-        ? Number(req.body.category_id)
-        : null;
-
     const expiryDate =
-      req.body.expiry_date || null;
+      String(
+        req.body.expiry_date ||
+          ""
+      );
 
     const description =
       String(
-        req.body.description || ""
-      ).trim();
+        req.body.description ||
+          ""
+      );
 
-    const featured =
-      req.body.featured ? 1 : 0;
-
-    const trending =
-      req.body.trending ? 1 : 0;
-
-    const hotDeal =
-      req.body.hot_deal ? 1 : 0;
-
-    const visible =
-      req.body.visible ? 1 : 0;
+    const discount =
+      calculateDiscountText(
+        price,
+        originalPrice
+      );
 
     let imageUrl =
-      product.image_url || "";
+      product.image_url ||
+      "";
 
-    if (files.length > 0) {
+    if (
+      req.files &&
+      req.files.image &&
+      req.files.image[0]
+    ) {
       imageUrl =
         "/uploads/" +
-        files[0].filename;
+        req.files.image[0]
+          .filename;
+    } else if (
+      req.files &&
+      req.files.images &&
+      req.files.images[0] &&
+      !imageUrl
+    ) {
+      imageUrl =
+        "/uploads/" +
+        req.files.images[0]
+          .filename;
     }
 
     db.prepare(`
@@ -1195,90 +2625,106 @@ app.post(
       SET
         name = ?,
         price = ?,
-        original_price = ?,
         discount = ?,
         rating = ?,
         affiliate_url = ?,
         image_url = ?,
-        description = ?,
         featured = ?,
         trending = ?,
-        hot_deal = ?,
         visible = ?,
         expiry_date = ?,
-        category_id = ?
+        category_id = ?,
+        description = ?,
+        original_price = ?,
+        hot_deal = ?
       WHERE id = ?
     `).run(
       name,
       price,
-      originalPrice,
       discount,
       rating,
       affiliateUrl,
       imageUrl,
-      description,
-      featured,
-      trending,
-      hotDeal,
-      visible,
+
+      req.body.featured
+        ? 1
+        : 0,
+
+      req.body.trending
+        ? 1
+        : 0,
+
+      req.body.visible
+        ? 1
+        : 0,
+
       expiryDate,
       categoryId,
+      description,
+      originalPrice,
+
+      req.body.hot_deal
+        ? 1
+        : 0,
+
       id
     );
 
-    /*
-      Agar new images upload hui hain,
-      to purani gallery replace hogi.
-    */
+    if (
+      req.files &&
+      req.files.images
+    ) {
+      const insertImage =
+        db.prepare(`
+          INSERT INTO product_images
+          (
+            product_id,
+            image_url,
+            sort_order
+          )
+          VALUES (?, ?, ?)
+        `);
 
-    if (files.length > 0) {
-
-      db.prepare(`
-        DELETE FROM product_images
-        WHERE product_id = ?
-      `).run(id);
-
-      const insertImage = db.prepare(`
-        INSERT INTO product_images
+      req.files.images.forEach(
         (
-          product_id,
-          image_url,
-          sort_order
-        )
-        VALUES (?, ?, ?)
-      `);
-
-      files.forEach(
-        (file, index) => {
-
+          file,
+          index
+        ) => {
           insertImage.run(
             id,
             "/uploads/" +
               file.filename,
-            index + 1
+            index
           );
         }
       );
     }
 
-    res.redirect("/admin");
+    res.redirect(
+      "/admin"
+    );
   }
 );
 
-/* =========================
-   DELETE PRODUCT
-========================= */
+/* =========================================================
+   PRODUCT DELETE
+========================================================= */
 
 app.post(
   "/admin/delete/:id",
   (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
     }
 
     const id =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
     db.prepare(`
       DELETE FROM product_images
@@ -1295,88 +2741,124 @@ app.post(
       WHERE id = ?
     `).run(id);
 
-    res.redirect("/admin");
+    res.redirect(
+      "/admin"
+    );
   }
 );
 
-/* =========================
-   DELETE REVIEW
-========================= */
+/* =========================================================
+   REVIEW DELETE
+========================================================= */
 
 app.post(
   "/admin/reviews/delete/:id",
   (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
     }
 
     const id =
-      Number(req.params.id);
+      Number(
+        req.params.id
+      );
 
     db.prepare(`
       DELETE FROM reviews
       WHERE id = ?
     `).run(id);
 
-    res.redirect("/admin");
+    res.redirect(
+      "/admin"
+    );
   }
 );
 
-/* =========================
+/* =========================================================
    LOGOUT
-========================= */
+========================================================= */
 
 app.get(
   "/logout",
   (req, res) => {
+    clearAdminCookie(
+      res
+    );
 
-    loggedIn = false;
-
-    res.redirect("/login");
+    res.redirect(
+      "/login"
+    );
   }
 );
 
-/* =========================
-   CHANGE PASSWORD
-========================= */
+/* =========================================================
+   PASSWORD PAGE
+========================================================= */
 
 app.get(
   "/password",
   (req, res) => {
-
-    if (!loggedIn) {
-      return res.redirect("/login");
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
     }
 
-    res.render("password", {
-      error: null,
-      success: null
-    });
+    res.render(
+      "password",
+      {
+        error:
+          req.query.error ||
+          null,
+
+        success:
+          req.query.success ||
+          null
+      }
+    );
   }
 );
 
-app.post(
-  "/password",
-  (req, res) => {
+/* =========================================================
+   CHANGE PASSWORD
+========================================================= */
 
-    if (!loggedIn) {
-      return res.redirect("/login");
+app.post(
+  "/admin/change-password",
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
     }
 
     const oldPassword =
       String(
-        req.body.old_password || ""
+        req.body.old_password ||
+          req.body.currentPassword ||
+          ""
       );
 
     const newPassword =
       String(
-        req.body.new_password || ""
+        req.body.new_password ||
+          req.body.newPassword ||
+          ""
       );
 
     const confirmPassword =
       String(
-        req.body.confirm_password || ""
+        req.body.confirm_password ||
+          req.body.confirmPassword ||
+          ""
       );
 
     const admin =
@@ -1388,30 +2870,114 @@ app.post(
 
     if (
       !admin ||
-      admin.password !== oldPassword
+      admin.password !==
+        oldPassword
     ) {
+      return res.redirect(
+        "/password?error=Old%20password%20is%20incorrect"
+      );
+    }
 
+    if (
+      !newPassword ||
+      newPassword !==
+        confirmPassword
+    ) {
+      return res.redirect(
+        "/password?error=New%20passwords%20do%20not%20match"
+      );
+    }
+
+    db.prepare(`
+      UPDATE admin
+      SET password = ?
+      WHERE id = ?
+    `).run(
+      newPassword,
+      admin.id
+    );
+
+    /*
+       Existing login cookie remains valid.
+       User can continue using admin panel.
+    */
+
+    res.redirect(
+      "/password?success=Password%20changed%20successfully"
+    );
+  }
+);
+
+/* =========================================================
+   OLD PASSWORD ROUTE - PRESERVED
+========================================================= */
+
+app.post(
+  "/password",
+  (req, res) => {
+    if (
+      !isLoggedIn(req)
+    ) {
+      return res.redirect(
+        "/login"
+      );
+    }
+
+    const oldPassword =
+      String(
+        req.body.old_password ||
+          ""
+      );
+
+    const newPassword =
+      String(
+        req.body.new_password ||
+          ""
+      );
+
+    const confirmPassword =
+      String(
+        req.body.confirm_password ||
+          ""
+      );
+
+    const admin =
+      db.prepare(`
+        SELECT *
+        FROM admin
+        LIMIT 1
+      `).get();
+
+    if (
+      !admin ||
+      admin.password !==
+        oldPassword
+    ) {
       return res.render(
         "password",
         {
           error:
             "Old password is incorrect.",
-          success: null
+
+          success:
+            null
         }
       );
     }
 
     if (
       !newPassword ||
-      newPassword !== confirmPassword
+      newPassword !==
+        confirmPassword
     ) {
-
       return res.render(
         "password",
         {
           error:
             "New passwords do not match.",
-          success: null
+
+          success:
+            null
         }
       );
     }
@@ -1428,7 +2994,9 @@ app.post(
     res.render(
       "password",
       {
-        error: null,
+        error:
+          null,
+
         success:
           "Password changed successfully."
       }
@@ -1436,55 +3004,46 @@ app.post(
   }
 );
 
-/* =========================
+/* =========================================================
    ERROR HANDLER
-========================= */
+========================================================= */
 
 app.use(
-  (err, req, res, next) => {
-
+  (
+    err,
+    req,
+    res,
+    next
+  ) => {
     console.error(err);
-
-    if (
-      err instanceof multer.MulterError
-    ) {
-
-      return res
-        .status(400)
-        .send(
-          "Image upload error: " +
-          err.message
-        );
-    }
 
     res
       .status(500)
       .send(
-        "Something went wrong."
+        "Something went wrong: " +
+          err.message
       );
   }
 );
 
-/* =========================
-   SERVER
-========================= */
-
-/*
-  Render ke liye:
-  - process.env.PORT use hoga
-  - 0.0.0.0 par server listen karega
-
-  Local PC par:
-  - PORT na mile to 3000 use hoga
-*/
+/* =========================================================
+   START SERVER
+========================================================= */
 
 app.listen(
   PORT,
   "0.0.0.0",
   () => {
+    console.log(
+      `DealBaazi server running on port ${PORT}`
+    );
 
     console.log(
-      `DealBaazi running on port ${PORT}`
+      `Database: ${dbPath}`
+    );
+
+    console.log(
+      `Uploads: ${uploadsDir}`
     );
   }
 );

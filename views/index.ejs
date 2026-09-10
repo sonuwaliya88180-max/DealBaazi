@@ -4,38 +4,29 @@
 <head>
 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>DealBaazi - Best Deals & Offers</title>
-
-  <meta
-    name="description"
-    content="DealBaazi par pao best deals, offers aur trending products."
-  >
+  <title>
+    <%= selectedCategory
+      ? selectedCategory.name + " Deals - DealBaazi"
+      : (typeof searchQuery !== 'undefined' && searchQuery
+          ? 'Search: ' + searchQuery + ' - DealBaazi'
+          : 'DealBaazi - Best Deals')
+    %>
+  </title>
 
   <style>
 
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
     }
 
     body {
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-      background: #f5f6f8;
-      color: #171717;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f5f5;
+      color: #222;
     }
 
     a {
@@ -43,62 +34,22 @@
       color: inherit;
     }
 
-    button,
-    input {
-      font-family: inherit;
-    }
-
-    /* =====================================================
-       TOP BAR
-    ===================================================== */
-
-    .top-bar {
-      background: #111827;
-      color: #fff;
-      font-size: 12px;
-    }
-
-    .top-bar-inner {
-      max-width: 1400px;
-      margin: auto;
-      min-height: 32px;
-      padding: 0 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-    }
-
-    .top-bar-left {
-      opacity: .9;
-    }
-
-    .top-bar-right {
-      display: flex;
-      gap: 18px;
-      opacity: .9;
-    }
-
-    /* =====================================================
-       HEADER
-    ===================================================== */
-
-    .header {
-      background: #fff;
+    header {
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      background: #ff6b00;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
-    .header-main {
-      max-width: 1400px;
-      min-height: 76px;
+    .header-inner {
+      max-width: 1250px;
       margin: auto;
-      padding: 10px 22px;
+      min-height: 68px;
+      padding: 10px 18px;
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 18px;
     }
 
     .logo {
@@ -108,1027 +59,645 @@
     }
 
     .logo img {
-      width: 160px;
-      max-height: 55px;
+      width: 150px;
+      max-height: 52px;
       object-fit: contain;
       display: block;
     }
 
-    /* =====================================================
-       SEARCH
-    ===================================================== */
-
     .search-box {
       flex: 1;
-      max-width: 680px;
-      height: 46px;
+      max-width: 650px;
+      margin: auto;
       display: flex;
       align-items: center;
-      border: 1px solid #dfe3e8;
-      background: #f7f8fa;
-      border-radius: 9px;
+      background: white;
+      border-radius: 30px;
       overflow: hidden;
-      transition: .2s;
-    }
-
-    .search-box:focus-within {
-      border-color: #ff6a00;
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(255,106,0,.08);
+      height: 44px;
     }
 
     .search-box input {
-      flex: 1;
+      width: 100%;
       height: 100%;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      padding: 0 16px;
-      font-size: 14px;
-      color: #222;
-    }
-
-    .search-box input::placeholder {
-      color: #8b929b;
+      border: none;
+      outline: none;
+      padding: 0 18px;
+      font-size: 15px;
     }
 
     .search-box button {
-      width: 54px;
+      width: 48px;
       height: 100%;
-      border: 0;
-      background: #ff6a00;
-      color: #fff;
+      border: none;
+      background: transparent;
       cursor: pointer;
-      font-size: 18px;
-      transition: .2s;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #555;
     }
 
     .search-box button:hover {
-      background: #e85c00;
+      background: #f5f5f5;
     }
 
-    /* =====================================================
-       HEADER LINKS
-    ===================================================== */
-
-    .header-links {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      margin-left: auto;
-    }
-
-    .header-link {
-      font-size: 13px;
-      font-weight: 700;
-      color: #333;
+    .home-btn {
+      background: white;
+      color: #ff6b00;
+      padding: 10px 15px;
+      border-radius: 25px;
+      font-weight: bold;
       white-space: nowrap;
     }
 
-    .header-link:hover {
-      color: #ff6a00;
-    }
-
-    /* =====================================================
-       CATEGORY NAV
-    ===================================================== */
-
-    .nav {
-      background: #fff;
-      border-top: 1px solid #f0f0f0;
-      border-bottom: 1px solid #e9e9e9;
-    }
-
-    .nav-inner {
-      max-width: 1400px;
-      height: 47px;
-      margin: auto;
-      padding: 0 22px;
-      display: flex;
-      align-items: center;
-      gap: 27px;
+    .category-bar {
+      background: white;
+      border-bottom: 1px solid #ddd;
       overflow-x: auto;
+      white-space: nowrap;
       scrollbar-width: none;
     }
 
-    .nav-inner::-webkit-scrollbar {
+    .category-bar::-webkit-scrollbar {
       display: none;
     }
 
-    .nav a {
-      height: 47px;
-      display: flex;
-      align-items: center;
-      position: relative;
-      color: #4b4b4b;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .nav a:hover {
-      color: #ff6a00;
-    }
-
-    .nav a.active {
-      color: #ff6a00;
-    }
-
-    .nav a.active::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 3px;
-      background: #ff6a00;
-      border-radius: 3px 3px 0 0;
-    }
-
-    /* =====================================================
-       MAIN
-    ===================================================== */
-
-    .main {
-      max-width: 1400px;
+    .category-inner {
+      max-width: 1250px;
       margin: auto;
+      display: flex;
+      gap: 8px;
+      padding: 10px 15px;
     }
 
-    /* =====================================================
+    .category-item {
+      padding: 9px 15px;
+      border-radius: 22px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #444;
+      background: #f3f3f3;
+      transition: 0.2s;
+    }
+
+    .category-item:hover,
+    .category-item.active {
+      background: #ff6b00;
+      color: white;
+    }
+
+    .container {
+      max-width: 1250px;
+      margin: auto;
+      padding: 20px 15px 50px;
+    }
+
+    .search-result-box {
+      background: white;
+      border-radius: 15px;
+      padding: 18px 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .search-result-box h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .search-result-box h1 span {
+      color: #ff6b00;
+    }
+
+    .search-result-box p {
+      color: #777;
+      font-size: 14px;
+    }
+
+    /* =========================
        HERO
-    ===================================================== */
+       ========================= */
 
     .hero {
-      padding: 22px;
-    }
-
-    .hero-box {
-      min-height: 270px;
+      background: linear-gradient(135deg, #ff6b00, #ff9d3d);
       border-radius: 18px;
+      padding: 38px 30px;
+      color: white;
+      margin-bottom: 22px;
       overflow: hidden;
       position: relative;
-      background:
-        linear-gradient(
-          120deg,
-          #ff7a00 0%,
-          #ff5b00 48%,
-          #e94700 100%
-        );
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 40px 55px;
-      box-shadow:
-        0 12px 30px rgba(255,91,0,.18);
-    }
-
-    .hero-box::before {
-      content: "";
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      right: 90px;
-      top: -150px;
-      background: rgba(255,255,255,.08);
-    }
-
-    .hero-box::after {
-      content: "";
-      position: absolute;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      right: -50px;
-      bottom: -100px;
-      background: rgba(255,255,255,.07);
     }
 
     .hero-content {
       position: relative;
       z-index: 2;
-      max-width: 680px;
     }
 
-    .hero-small {
-      display: inline-block;
-      background: rgba(255,255,255,.16);
-      border: 1px solid rgba(255,255,255,.22);
-      padding: 7px 12px;
-      border-radius: 30px;
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-
-    .hero-content h1 {
+    .hero h1 {
       font-size: 38px;
-      line-height: 1.15;
-      margin-bottom: 12px;
-      letter-spacing: -.5px;
+      margin-bottom: 10px;
     }
 
-    .hero-content p {
-      font-size: 15px;
-      line-height: 24px;
-      opacity: .94;
-      max-width: 590px;
-      margin-bottom: 22px;
+    .hero p {
+      font-size: 17px;
+      max-width: 650px;
+      line-height: 1.5;
     }
 
-    .hero-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff;
-      color: #e85d00;
-      padding: 12px 19px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 800;
-      box-shadow: 0 5px 15px rgba(0,0,0,.12);
-      transition: .2s;
+    .hero-button {
+      display: inline-block;
+      margin-top: 20px;
+      background: white;
+      color: #ff6b00;
+      padding: 11px 20px;
+      border-radius: 25px;
+      font-weight: bold;
     }
 
-    .hero-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(0,0,0,.16);
+    .hero-button:hover {
+      background: #f5f5f5;
     }
 
-    .hero-art {
+    .hero-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-top: 20px;
+      display: block;
+    }
+
+    /* =========================
+       BANNERS
+       ========================= */
+
+    .banner-section {
+      margin-bottom: 25px;
+    }
+
+    .banner-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .banner-card {
       position: relative;
-      z-index: 2;
-      width: 270px;
-      height: 210px;
+      min-height: 220px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #ddd;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .banner-card img {
+      width: 100%;
+      height: 100%;
+      min-height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .banner-overlay {
+      position: absolute;
+      inset: 0;
+      padding: 25px;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: linear-gradient(
+        transparent,
+        rgba(0,0,0,0.72)
+      );
+      color: white;
     }
 
-    .hero-circle {
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255,255,255,.16);
+    .banner-overlay h2 {
+      font-size: 25px;
+      margin-bottom: 6px;
     }
 
-    .hero-rupee {
-      font-size: 105px;
-      font-weight: 900;
-      color: rgba(255,255,255,.88);
-      transform: rotate(-8deg);
+    .banner-overlay p {
+      font-size: 14px;
+      margin-bottom: 12px;
     }
 
-    /* =====================================================
-       QUICK FEATURES
-    ===================================================== */
+    .banner-button {
+      display: inline-block;
+      width: fit-content;
+      background: #ff6b00;
+      color: white;
+      padding: 9px 15px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: bold;
+    }
 
     .features {
-      padding: 0 22px;
-      margin-bottom: 8px;
-    }
-
-    .features-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 15px;
+      margin-bottom: 28px;
     }
 
     .feature {
-      background: #fff;
-      border: 1px solid #e8e8e8;
-      border-radius: 10px;
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
     .feature-icon {
-      width: 39px;
-      height: 39px;
-      flex-shrink: 0;
-      border-radius: 9px;
-      background: #fff2e9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
+      font-size: 28px;
+      margin-bottom: 8px;
     }
 
-    .feature strong {
-      display: block;
+    .feature h3 {
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .feature p {
       font-size: 12px;
-      margin-bottom: 3px;
+      color: #777;
     }
-
-    .feature span {
-      font-size: 10px;
-      color: #858585;
-    }
-
-    /* =====================================================
-       SECTION
-    ===================================================== */
 
     .section {
-      padding: 0 22px;
-      margin-top: 30px;
+      margin-bottom: 32px;
     }
 
     .section-header {
       display: flex;
-      align-items: flex-end;
       justify-content: space-between;
-      gap: 15px;
+      align-items: center;
       margin-bottom: 15px;
     }
 
-    .section-left h2 {
-      font-size: 23px;
-      line-height: 30px;
-      font-weight: 800;
-      color: #202124;
+    .section-title {
+      font-size: 24px;
+      font-weight: bold;
     }
 
-    .section-left h2 span {
-      color: #ff6a00;
+    .section-title span {
+      color: #ff6b00;
     }
 
-    .section-left p {
-      font-size: 12px;
-      color: #888;
-      margin-top: 3px;
-    }
-
-    .view-all {
-      color: #ff6a00;
-      font-size: 12px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .view-all:hover {
-      text-decoration: underline;
-    }
-
-    /* =====================================================
-       PRODUCT GRID
-    ===================================================== */
-
-    .products {
+    .products-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 15px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
     }
-
-    /* =====================================================
-       PRODUCT CARD
-    ===================================================== */
 
     .product-card {
-      position: relative;
-      background: #fff;
-      border: 1px solid #e5e5e5;
-      border-radius: 11px;
+      background: white;
+      border-radius: 15px;
       overflow: hidden;
-      transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        border-color .2s ease;
-      min-width: 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
     }
 
     .product-card:hover {
       transform: translateY(-4px);
-      border-color: #dedede;
-      box-shadow:
-        0 12px 28px rgba(0,0,0,.10);
+      box-shadow: 0 7px 18px rgba(0,0,0,0.13);
     }
 
-    /* =====================================================
-       DISCOUNT
-    ===================================================== */
-
-    .discount {
-      position: absolute;
-      z-index: 5;
-      top: 10px;
-      left: 10px;
-      background: #008a45;
-      color: #fff;
-      border-radius: 5px;
-      padding: 5px 8px;
-      font-size: 10px;
-      line-height: 1;
-      font-weight: 800;
-      box-shadow: 0 2px 6px rgba(0,0,0,.12);
+    .product-image-wrap {
+      height: 220px;
+      background: #fff;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
     }
-
-    /* =====================================================
-       IMAGE
-    ===================================================== */
 
     .product-image {
       width: 100%;
-      height: 225px;
-      background: #fff;
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-bottom: 1px solid #f1f1f1;
-    }
-
-    .product-image img {
-      width: 100%;
       height: 100%;
       object-fit: contain;
-      display: block;
-      transition: transform .25s ease;
     }
 
-    .product-card:hover .product-image img {
-      transform: scale(1.04);
+    .discount-badge {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      background: #e53935;
+      color: white;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+      z-index: 2;
     }
-
-    .no-image {
-      width: 75px;
-      height: 75px;
-      border-radius: 50%;
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      color: #aaa;
-    }
-
-    /* =====================================================
-       PRODUCT INFO
-    ===================================================== */
 
     .product-info {
-      padding: 13px;
+      padding: 14px;
     }
 
-    .category-badge {
-      display: inline-block;
-      max-width: 100%;
-      background: #fff2e9;
-      color: #e85d00;
-      padding: 4px 7px;
-      border-radius: 4px;
-      font-size: 9px;
-      line-height: 1;
-      font-weight: 800;
+    .product-name {
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1.35;
+      min-height: 43px;
       margin-bottom: 8px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
 
-    .product-title {
-      font-size: 13px;
-      line-height: 19px;
-      font-weight: 600;
-      height: 38px;
-      overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
-      color: #272727;
-      margin-bottom: 9px;
-    }
-
-    .rating-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 5px;
-      margin-bottom: 9px;
+      overflow: hidden;
     }
 
     .rating {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      background: #168a4a;
-      color: #fff;
-      padding: 4px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 800;
+      font-size: 13px;
+      color: #f5a623;
+      margin-bottom: 8px;
     }
-
-    .rating-text {
-      color: #999;
-      font-size: 10px;
-    }
-
-    /* =====================================================
-       PRICE
-    ===================================================== */
 
     .price-row {
-      min-height: 37px;
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 7px;
+      margin-bottom: 5px;
     }
 
-    .price {
+    .selling-price {
+      font-size: 22px;
+      font-weight: bold;
       color: #111;
-      font-size: 20px;
-      font-weight: 900;
     }
 
     .original-price {
-      color: #999;
-      font-size: 11px;
+      font-size: 14px;
+      color: #888;
       text-decoration: line-through;
     }
 
-    .save-text {
-      color: #008a45;
-      font-size: 10px;
-      font-weight: 800;
+    .discount-text {
+      font-size: 13px;
+      color: #0a8f35;
+      font-weight: bold;
     }
 
-    /* =====================================================
-       BUTTONS
-    ===================================================== */
+    .saving {
+      font-size: 13px;
+      color: #0a8f35;
+      margin-bottom: 12px;
+    }
 
-    .product-actions {
+    .product-buttons {
       display: flex;
-      gap: 7px;
+      gap: 8px;
+    }
+
+    .details-btn,
+    .buy-btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px 7px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: bold;
     }
 
     .details-btn {
-      width: 38%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      color: #444;
-      font-size: 10px;
-      font-weight: 800;
-      background: #fff;
-    }
-
-    .details-btn:hover {
-      border-color: #ff6a00;
-      color: #ff6a00;
-    }
-
-    .buy-btn {
-      width: 62%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 38px;
-      background: #ff6a00;
-      color: #fff;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 900;
-      transition: .2s;
-    }
-
-    .buy-btn:hover {
-      background: #e85d00;
-      transform: translateY(-1px);
-    }
-
-    /* =====================================================
-       SEARCH EMPTY
-    ===================================================== */
-
-    .search-empty {
-      display: none;
-      background: #fff;
-      border: 1px solid #e5e5e5;
-      border-radius: 12px;
-      text-align: center;
-      padding: 55px 20px;
-      margin-top: 15px;
-    }
-
-    .search-empty-icon {
-      font-size: 45px;
-      margin-bottom: 12px;
-    }
-
-    .search-empty h3 {
-      font-size: 20px;
-      margin-bottom: 7px;
-    }
-
-    .search-empty p {
-      color: #888;
-      font-size: 13px;
-    }
-
-    /* =====================================================
-       EMPTY
-    ===================================================== */
-
-    .empty {
-      background: #fff;
-      border: 1px solid #e5e5e5;
-      border-radius: 12px;
-      text-align: center;
-      padding: 65px 20px;
-    }
-
-    .empty .emoji {
-      font-size: 55px;
-      margin-bottom: 12px;
-    }
-
-    .empty h3 {
-      font-size: 23px;
-      margin-bottom: 7px;
+      background: #f1f1f1;
       color: #333;
     }
 
-    .empty p {
-      font-size: 13px;
-      color: #888;
+    .details-btn:hover {
+      background: #e5e5e5;
     }
 
-    /* =====================================================
-       FOOTER
-    ===================================================== */
+    .buy-btn {
+      background: #ff6b00;
+      color: white;
+    }
 
-    .footer {
-      margin-top: 55px;
-      background: #16191d;
+    .buy-btn:hover {
+      background: #e85e00;
+    }
+
+    .empty-box {
+      background: white;
+      border-radius: 15px;
+      padding: 50px 20px;
+      text-align: center;
+      color: #777;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .empty-box h2 {
+      color: #444;
+      margin-bottom: 8px;
+    }
+
+    .empty-icon {
+      font-size: 50px;
+      margin-bottom: 10px;
+    }
+
+    .empty-box .back-home {
+      display: inline-block;
+      margin-top: 18px;
+      background: #ff6b00;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    footer {
+      background: #222;
       color: #ddd;
+      margin-top: 20px;
     }
 
     .footer-inner {
-      max-width: 1400px;
+      max-width: 1250px;
       margin: auto;
-      padding: 45px 22px;
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 45px;
+      padding: 35px 15px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      margin-bottom: 10px;
     }
 
     .footer-logo img {
-      width: 150px;
-      max-height: 55px;
+      width: 145px;
+      max-height: 50px;
       object-fit: contain;
-      background: #fff;
-      padding: 5px;
-      border-radius: 6px;
-      margin-bottom: 15px;
     }
 
-    .footer-description {
-      max-width: 420px;
-      color: #999;
-      font-size: 12px;
-      line-height: 21px;
-    }
-
-    .footer h3 {
-      color: #fff;
-      font-size: 14px;
-      margin-bottom: 16px;
-    }
-
-    .footer a {
-      display: block;
-      color: #999;
-      font-size: 12px;
-      margin-bottom: 11px;
-      transition: .2s;
-    }
-
-    .footer a:hover {
-      color: #ff7a00;
-    }
-
-    .footer-note {
-      color: #777;
-      font-size: 11px;
-      line-height: 19px;
+    .footer-text {
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.6;
     }
 
     .copyright {
-      border-top: 1px solid #292d32;
-      text-align: center;
-      padding: 17px 15px;
-      color: #777;
-      font-size: 11px;
+      border-top: 1px solid #444;
+      margin-top: 20px;
+      padding-top: 15px;
+      font-size: 12px;
+      color: #888;
     }
 
-    /* =====================================================
-       TABLET
-    ===================================================== */
+    @media (max-width: 1000px) {
 
-    @media (max-width: 1150px) {
-
-      .products {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .header-main {
-        gap: 18px;
-      }
-
-      .hero-content h1 {
-        font-size: 32px;
-      }
-
-      .hero-art {
-        width: 220px;
-      }
-
-      .footer-inner {
-        grid-template-columns: 2fr 1fr 1fr;
-      }
-
-    }
-
-    /* =====================================================
-       MOBILE
-    ===================================================== */
-
-    @media (max-width: 768px) {
-
-      .top-bar {
-        display: none;
-      }
-
-      .header-main {
-        min-height: auto;
-        padding: 9px 12px 11px;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 9px;
-      }
-
-      .logo img {
-        width: 125px;
-        max-height: 45px;
-      }
-
-      .header-links {
-        gap: 10px;
-      }
-
-      .header-link {
-        font-size: 11px;
-      }
-
-      .search-box {
-        grid-column: 1 / -1;
-        width: 100%;
-        max-width: none;
-        height: 42px;
-      }
-
-      .search-box input {
-        font-size: 13px;
-      }
-
-      .search-box button {
-        width: 47px;
-      }
-
-      .nav-inner {
-        height: 43px;
-        padding: 0 12px;
-        gap: 21px;
-      }
-
-      .nav a {
-        height: 43px;
-        font-size: 11px;
-      }
-
-      .hero {
-        padding: 12px;
-      }
-
-      .hero-box {
-        min-height: 205px;
-        padding: 25px 21px;
-        border-radius: 14px;
-      }
-
-      .hero-content {
-        max-width: 100%;
-      }
-
-      .hero-small {
-        font-size: 9px;
-        padding: 6px 9px;
-      }
-
-      .hero-content h1 {
-        font-size: 24px;
-        line-height: 30px;
-        margin-bottom: 8px;
-      }
-
-      .hero-content p {
-        font-size: 12px;
-        line-height: 19px;
-        margin-bottom: 15px;
-      }
-
-      .hero-btn {
-        font-size: 11px;
-        padding: 10px 14px;
-      }
-
-      .hero-art {
-        display: none;
+      .products-grid {
+        grid-template-columns: repeat(3, 1fr);
       }
 
       .features {
-        padding: 0 12px;
-      }
-
-      .features-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
       }
 
-      .feature {
-        padding: 10px;
-        gap: 8px;
-      }
-
-      .feature-icon {
-        width: 33px;
-        height: 33px;
-        font-size: 15px;
-      }
-
-      .feature strong {
-        font-size: 10px;
-      }
-
-      .feature span {
-        font-size: 8px;
-      }
-
-      .section {
-        padding: 0 12px;
-        margin-top: 24px;
-      }
-
-      .section-header {
-        margin-bottom: 11px;
-      }
-
-      .section-left h2 {
-        font-size: 18px;
-        line-height: 24px;
-      }
-
-      .section-left p {
-        font-size: 10px;
-      }
-
-      .view-all {
-        font-size: 10px;
-      }
-
-      .products {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 9px;
-      }
-
-      .product-image {
-        height: 175px;
-        padding: 10px;
-      }
-
-      .product-info {
-        padding: 10px;
-      }
-
-      .discount {
-        top: 7px;
-        left: 7px;
-        font-size: 8px;
-        padding: 4px 6px;
-      }
-
-      .category-badge {
-        font-size: 8px;
-        padding: 4px 5px;
-      }
-
-      .product-title {
-        font-size: 11px;
-        line-height: 16px;
-        height: 32px;
-        margin-bottom: 7px;
-      }
-
-      .rating {
-        font-size: 8px;
-        padding: 4px 5px;
-      }
-
-      .rating-text {
-        display: none;
-      }
-
-      .price-row {
-        min-height: 31px;
-        gap: 5px;
-        flex-wrap: wrap;
-        margin-bottom: 8px;
-      }
-
-      .price {
-        font-size: 16px;
-      }
-
-      .original-price {
-        font-size: 9px;
-      }
-
-      .save-text {
-        display: none;
-      }
-
-      .product-actions {
-        gap: 5px;
-      }
-
-      .details-btn {
-        width: 35%;
-        min-height: 35px;
-        font-size: 8px;
-      }
-
-      .buy-btn {
-        width: 65%;
-        min-height: 35px;
-        font-size: 9px;
-      }
-
-      .footer-inner {
-        grid-template-columns: 1fr 1fr;
-        gap: 28px 20px;
-        padding: 35px 15px;
-      }
-
-      .footer-main {
-        grid-column: 1 / -1;
+      .banner-grid {
+        grid-template-columns: 1fr;
       }
 
     }
 
-    /* =====================================================
-       SMALL MOBILE
-    ===================================================== */
+    @media (max-width: 700px) {
 
-    @media (max-width: 390px) {
+      .header-inner {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 10px;
+      }
 
       .logo img {
-        width: 110px;
+        width: 120px;
+        max-height: 42px;
       }
 
-      .header-link {
-        font-size: 10px;
+      .home-btn {
+        padding: 8px 11px;
+        font-size: 13px;
       }
 
-      .products {
-        gap: 7px;
+      .search-box {
+        order: 3;
+        flex-basis: 100%;
+        max-width: none;
       }
 
-      .product-image {
-        height: 155px;
+      .hero {
+        padding: 28px 20px;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .hero-image {
+        max-height: 200px;
+      }
+
+      .banner-card,
+      .banner-card img {
+        min-height: 190px;
+      }
+
+      .banner-overlay {
+        padding: 18px;
+      }
+
+      .banner-overlay h2 {
+        font-size: 20px;
+      }
+
+      .banner-overlay p {
+        font-size: 12px;
+      }
+
+      .container {
+        padding: 15px 10px 35px;
+      }
+
+      .section-title {
+        font-size: 20px;
+      }
+
+      .search-result-box {
+        padding: 15px;
+      }
+
+      .search-result-box h1 {
+        font-size: 20px;
+      }
+
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .product-image-wrap {
+        height: 165px;
+        padding: 10px;
       }
 
       .product-info {
-        padding: 8px;
+        padding: 10px;
       }
 
-      .price {
-        font-size: 15px;
+      .product-name {
+        font-size: 14px;
+        min-height: 38px;
       }
 
-      .buy-btn,
-      .details-btn {
-        min-height: 33px;
+      .selling-price {
+        font-size: 19px;
+      }
+
+      .original-price {
+        font-size: 12px;
+      }
+
+      .discount-text {
+        font-size: 11px;
+      }
+
+      .saving {
+        font-size: 11px;
+      }
+
+      .details-btn,
+      .buy-btn {
+        padding: 9px 4px;
+        font-size: 11px;
+      }
+
+    }
+
+    @media (max-width: 400px) {
+
+      .products-grid {
+        gap: 8px;
+      }
+
+      .product-image-wrap {
+        height: 145px;
+      }
+
+      .product-name {
+        font-size: 13px;
+      }
+
+      .selling-price {
+        font-size: 17px;
       }
 
     }
@@ -1137,1513 +706,1310 @@
 
 </head>
 
-
 <body>
 
-
-  <!-- =====================================================
-       TOP BAR
-  ===================================================== -->
-
-  <div class="top-bar">
-
-    <div class="top-bar-inner">
-
-      <div class="top-bar-left">
-        🛍️ Smart Shopping Starts With DealBaazi
-      </div>
-
-      <div class="top-bar-right">
-        <span>🔥 Best Deals</span>
-        <span>⭐ Top Rated</span>
-        <span>💰 Great Prices</span>
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
+  <!-- =========================
        HEADER
-  ===================================================== -->
+       ========================= -->
 
-  <header class="header">
+  <header>
 
-    <div class="header-main">
+    <div class="header-inner">
 
-
-      <!-- LOGO -->
-
-      <a
-        href="/"
-        class="logo"
-      >
+      <a href="/" class="logo">
 
         <img
-          src="/images/logo.png"
-          alt="DealBaazi"
+          src="<%= (typeof siteSettings !== 'undefined' && siteSettings.logo_url) ? siteSettings.logo_url : '/images/logo.png' %>"
+          alt="DealBaazi Logo"
+          onerror="this.src='/images/placeholder.png'"
         >
 
       </a>
 
-
-      <!-- SEARCH -->
-
       <form
         class="search-box"
-        action="/"
+        action="/search"
         method="GET"
-        id="searchForm"
       >
 
         <input
-          type="text"
-          name="search"
+          type="search"
+          name="q"
           id="searchInput"
-          placeholder="Search products, deals & offers..."
+          value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+          placeholder="Search products, deals..."
           autocomplete="off"
+          required
         >
 
-        <button type="submit">
+        <button
+          type="submit"
+          aria-label="Search"
+          title="Search"
+        >
           🔍
         </button>
 
       </form>
 
-
-      <!-- HEADER LINKS -->
-
-      <div class="header-links">
-
-        <a
-          href="/"
-          class="header-link"
-        >
-          🏠 Home
-        </a>
-
-        <a
-          href="#deals"
-          class="header-link"
-        >
-          🔥 Deals
-        </a>
-
-      </div>
-
+      <a href="/" class="home-btn">
+        🏠 Home
+      </a>
 
     </div>
-
-
-    <!-- ===================================================
-         CATEGORY NAV
-    =================================================== -->
-
-    <nav class="nav">
-
-      <div class="nav-inner">
-
-
-        <a
-          href="/"
-          class="<%= !selectedCategory ? 'active' : '' %>"
-        >
-          All Deals
-        </a>
-
-
-        <% if (categories && categories.length > 0) { %>
-
-          <% categories.forEach(category => { %>
-
-            <a
-              href="/category/<%= category.id %>"
-              class="<%= selectedCategory && selectedCategory.id === category.id ? 'active' : '' %>"
-            >
-              <%= category.name %>
-            </a>
-
-          <% }) %>
-
-        <% } %>
-
-
-      </div>
-
-    </nav>
 
   </header>
 
 
-  <!-- =====================================================
-       MAIN
-  ===================================================== -->
+  <!-- =========================
+       CATEGORY BAR
+       ========================= -->
 
-  <main class="main">
+  <nav class="category-bar">
 
+    <div class="category-inner">
 
-    <!-- ===================================================
-         HERO
-    =================================================== -->
-
-    <section class="hero">
-
-      <div class="hero-box">
-
-
-        <div class="hero-content">
-
-          <div class="hero-small">
-            🔥 DAILY DEALS & OFFERS
-          </div>
-
-          <h1>
-            Best Deals.<br>
-            Best Prices.
-          </h1>
-
-          <p>
-            DealBaazi par discover karo trending products,
-            amazing discounts aur hand-picked deals —
-            sab ek jagah.
-          </p>
-
-          <a
-            href="#deals"
-            class="hero-btn"
-          >
-            Explore Deals
-            <span>→</span>
-          </a>
-
-        </div>
-
-
-        <div class="hero-art">
-
-          <div class="hero-circle">
-
-            <div class="hero-rupee">
-              ₹
-            </div>
-
-          </div>
-
-        </div>
-
-
-      </div>
-
-    </section>
-
-
-    <!-- ===================================================
-         FEATURES
-    =================================================== -->
-
-    <section class="features">
-
-      <div class="features-grid">
-
-
-        <div class="feature">
-
-          <div class="feature-icon">
-            🔥
-          </div>
-
-          <div>
-
-            <strong>Hot Deals</strong>
-
-            <span>
-              Hand-picked offers
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="feature">
-
-          <div class="feature-icon">
-            💰
-          </div>
-
-          <div>
-
-            <strong>Best Prices</strong>
-
-            <span>
-              Amazing value
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="feature">
-
-          <div class="feature-icon">
-            ⭐
-          </div>
-
-          <div>
-
-            <strong>Top Rated</strong>
-
-            <span>
-              Popular products
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="feature">
-
-          <div class="feature-icon">
-            🛒
-          </div>
-
-          <div>
-
-            <strong>Easy Shopping</strong>
-
-            <span>
-              One click to buy
-            </span>
-
-          </div>
-
-        </div>
-
-
-      </div>
-
-    </section>
-
-
-    <!-- ===================================================
-         CATEGORY PAGE
-    =================================================== -->
-
-    <% if (selectedCategory) { %>
-
-
-      <section
-        class="section"
-        id="deals"
+      <a
+        href="/"
+        class="category-item <%= !selectedCategory ? 'active' : '' %>"
       >
+        All Deals
+      </a>
 
-        <div class="section-header">
+      <% if (categories && categories.length) { %>
 
-          <div class="section-left">
-
-            <h2>
-              🗂️
-              <span>
-                <%= selectedCategory.name %>
-              </span>
-              Deals
-            </h2>
-
-            <p>
-              Is category ke best available deals
-            </p>
-
-          </div>
+        <% categories.forEach(category => { %>
 
           <a
-            href="/"
-            class="view-all"
+            href="/category/<%= category.id %>"
+            class="category-item <%= selectedCategory && Number(selectedCategory.id) === Number(category.id) ? 'active' : '' %>"
           >
-            ← All Deals
+            <%= category.name %>
           </a>
 
-        </div>
+        <% }) %>
+
+      <% } %>
+
+    </div>
+
+  </nav>
 
 
-        <% if (products && products.length > 0) { %>
+  <main class="container">
 
 
-          <div class="products">
+    <!-- =========================
+         SEARCH RESULTS
+         ========================= -->
 
+    <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+
+      <div class="search-result-box">
+
+        <h1>
+          Search results for:
+          <span>"<%= searchQuery %>"</span>
+        </h1>
+
+        <p>
+          <%= products ? products.length : 0 %>
+          deal<%= products && products.length === 1 ? '' : 's' %>
+          found
+        </p>
+
+      </div>
+
+
+      <% if (products && products.length) { %>
+
+        <section class="section">
+
+          <div class="products-grid">
 
             <% products.forEach(product => { %>
 
-              <div
-                class="product-card searchable-product"
-                data-name="<%= String(product.name || '').toLowerCase() %>"
-                data-category="<%= String(product.category_name || '').toLowerCase() %>"
-              >
+              <%
+                const original = Number(product.original_price || 0);
+                const selling = Number(product.price || 0);
 
+                let discountPercent = 0;
 
-                <!-- DISCOUNT -->
+                if (
+                  original > 0 &&
+                  selling > 0 &&
+                  selling < original
+                ) {
+                  discountPercent = Math.round(
+                    ((original - selling) / original) * 100
+                  );
+                }
 
-                <div class="discount">
+                const savingAmount =
+                  original > selling
+                    ? original - selling
+                    : 0;
+              %>
 
-                  <%= product.discount || 'DEAL' %>
+              <article class="product-card">
 
-                </div>
+                <div class="product-image-wrap">
 
+                  <% if (discountPercent > 0) { %>
 
-                <!-- IMAGE -->
-
-                <div class="product-image">
-
-                  <% if (product.image_url) { %>
-
-                    <img
-                      src="<%= product.image_url %>"
-                      alt="<%= product.name %>"
-                      loading="lazy"
-                    >
-
-                  <% } else { %>
-
-                    <div class="no-image">
-                      🖼️
+                    <div class="discount-badge">
+                      <%= discountPercent %>% OFF
                     </div>
 
                   <% } %>
 
+                  <img
+                    class="product-image"
+                    src="<%= product.image_url || '/images/placeholder.png' %>"
+                    alt="<%= product.name %>"
+                    loading="lazy"
+                    onerror="this.src='/images/placeholder.png'"
+                  >
+
                 </div>
 
-
-                <!-- INFO -->
 
                 <div class="product-info">
 
-
-                  <% if (product.category_name) { %>
-
-                    <div class="category-badge">
-                      🗂️ <%= product.category_name %>
-                    </div>
-
-                  <% } %>
-
-
-                  <div class="product-title">
-
+                  <div class="product-name">
                     <%= product.name %>
-
                   </div>
 
-
-                  <div class="rating-row">
-
-                    <div class="rating">
-                      ⭐ <%= product.rating || "—" %>
-                    </div>
-
-                    <div class="rating-text">
-                      Customer Rating
-                    </div>
-
+                  <div class="rating">
+                    ⭐ <%= Number(product.rating || 0).toFixed(1) %>
                   </div>
-
 
                   <div class="price-row">
 
-                    <span class="price">
-                      ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
+                    <span class="selling-price">
+                      ₹<%= Number(selling).toLocaleString('en-IN') %>
                     </span>
 
-
-                    <% if (Number(product.original_price || 0) > Number(product.price || 0)) { %>
+                    <% if (original > selling) { %>
 
                       <span class="original-price">
-                        ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
+                        ₹<%= Number(original).toLocaleString('en-IN') %>
                       </span>
 
-                      <span class="save-text">
-                        Save
+                      <span class="discount-text">
+                        <%= discountPercent %>% OFF
                       </span>
 
                     <% } %>
 
                   </div>
 
+                  <% if (savingAmount > 0) { %>
 
-                  <div class="product-actions">
+                    <div class="saving">
+                      You Save ₹<%= Number(savingAmount).toLocaleString('en-IN') %>
+                    </div>
 
+                  <% } %>
+
+                  <div class="product-buttons">
 
                     <a
                       href="/product/<%= product.id %>"
                       class="details-btn"
                     >
-                      DETAILS
+                      Details
                     </a>
-
-
-                    <!-- DIRECT AFFILIATE LINK -->
 
                     <a
                       href="/buy/<%= product.id %>"
                       class="buy-btn"
                     >
-                      🛒 BUY NOW
+                      BUY NOW
                     </a>
-
 
                   </div>
 
-
                 </div>
 
-              </div>
+              </article>
 
             <% }) %>
 
-
           </div>
 
+        </section>
 
-          <div
-            class="search-empty"
-            id="searchEmpty"
+
+      <% } else { %>
+
+        <div class="empty-box">
+
+          <div class="empty-icon">
+            🔍
+          </div>
+
+          <h2>
+            No deals found
+          </h2>
+
+          <p>
+            "<%= searchQuery %>" ke liye koi matching deal nahi mili.
+          </p>
+
+          <a
+            href="/"
+            class="back-home"
           >
+            View All Deals
+          </a>
 
-            <div class="search-empty-icon">
-              🔎
-            </div>
+        </div>
 
-            <h3>
-              No matching deals found
-            </h3>
+      <% } %>
 
-            <p>
-              Try another product or category name.
-            </p>
+
+    <!-- =========================
+         CATEGORY PAGE
+         ========================= -->
+
+    <% } else if (selectedCategory) { %>
+
+      <div class="section">
+
+        <div class="section-header">
+
+          <h1 class="section-title">
+            <span><%= selectedCategory.name %></span> Deals
+          </h1>
+
+        </div>
+
+
+        <% if (products && products.length) { %>
+
+          <div class="products-grid">
+
+            <% products.forEach(product => { %>
+
+              <%
+                const original = Number(product.original_price || 0);
+                const selling = Number(product.price || 0);
+
+                let discountPercent = 0;
+
+                if (
+                  original > 0 &&
+                  selling > 0 &&
+                  selling < original
+                ) {
+                  discountPercent = Math.round(
+                    ((original - selling) / original) * 100
+                  );
+                }
+
+                const savingAmount =
+                  original > selling
+                    ? original - selling
+                    : 0;
+              %>
+
+              <article class="product-card">
+
+                <div class="product-image-wrap">
+
+                  <% if (discountPercent > 0) { %>
+
+                    <div class="discount-badge">
+                      <%= discountPercent %>% OFF
+                    </div>
+
+                  <% } %>
+
+                  <img
+                    class="product-image"
+                    src="<%= product.image_url || '/images/placeholder.png' %>"
+                    alt="<%= product.name %>"
+                    loading="lazy"
+                    onerror="this.src='/images/placeholder.png'"
+                  >
+
+                </div>
+
+
+                <div class="product-info">
+
+                  <div class="product-name">
+                    <%= product.name %>
+                  </div>
+
+                  <div class="rating">
+                    ⭐ <%= Number(product.rating || 0).toFixed(1) %>
+                  </div>
+
+                  <div class="price-row">
+
+                    <span class="selling-price">
+                      ₹<%= Number(selling).toLocaleString('en-IN') %>
+                    </span>
+
+                    <% if (original > selling) { %>
+
+                      <span class="original-price">
+                        ₹<%= Number(original).toLocaleString('en-IN') %>
+                      </span>
+
+                      <span class="discount-text">
+                        <%= discountPercent %>% OFF
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+                  <% if (savingAmount > 0) { %>
+
+                    <div class="saving">
+                      You Save ₹<%= Number(savingAmount).toLocaleString('en-IN') %>
+                    </div>
+
+                  <% } %>
+
+                  <div class="product-buttons">
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      Details
+                    </a>
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      BUY NOW
+                    </a>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            <% }) %>
 
           </div>
 
 
         <% } else { %>
 
+          <div class="empty-box">
 
-          <div class="empty">
-
-            <div class="emoji">
-              😊
+            <div class="empty-icon">
+              🛍️
             </div>
 
-            <h3>
-              Deals Coming Soon
-            </h3>
+            <h2>
+              No deals available right now
+            </h2>
 
             <p>
-              Is category mein deals bahut jald aayengi.
+              Is category mein abhi koi deal available nahi hai.
             </p>
 
           </div>
 
-
         <% } %>
 
+      </div>
 
-      </section>
 
+    <!-- =========================
+         HOMEPAGE
+         ========================= -->
 
     <% } else { %>
 
 
-      <!-- =================================================
-           HOME PAGE
-      ================================================= -->
+      <!-- =========================
+           CMS HERO
+           ========================= -->
 
+      <section class="hero">
 
-      <!-- ================================================
-           HOT DEALS
-      ================================================= -->
+        <div class="hero-content">
 
-      <% if (hotDeals && hotDeals.length > 0) { %>
+          <h1>
+            <%= (typeof siteSettings !== 'undefined' && siteSettings.hero_title)
+              ? siteSettings.hero_title
+              : 'Best Deals. Best Prices. DealBaazi.' %>
+          </h1>
 
+          <p>
+            <%= (typeof siteSettings !== 'undefined' && siteSettings.hero_description)
+              ? siteSettings.hero_description
+              : 'Find amazing deals, discounts and offers across mobiles, electronics, fashion, home, beauty and more.' %>
+          </p>
 
-        <section
-          class="section"
-          id="deals"
-        >
-
-          <div class="section-header">
-
-            <div class="section-left">
-
-              <h2>
-                🔥 Hot <span>Deals</span>
-              </h2>
-
-              <p>
-                Sabse exciting deals jo abhi available hain
-              </p>
-
-            </div>
+          <% if (
+            typeof siteSettings !== 'undefined' &&
+            siteSettings.hero_button_text
+          ) { %>
 
             <a
-              href="#all-products"
-              class="view-all"
+              href="<%= siteSettings.hero_button_link || '#deals' %>"
+              class="hero-button"
             >
-              View All →
+              <%= siteSettings.hero_button_text %>
             </a>
 
-          </div>
-
-
-          <div class="products">
-
-
-            <% hotDeals.forEach(product => { %>
-
-              <div
-                class="product-card searchable-product"
-                data-name="<%= String(product.name || '').toLowerCase() %>"
-                data-category="<%= String(product.category_name || '').toLowerCase() %>"
-              >
-
-
-                <div class="discount">
-                  <%= product.discount || 'HOT DEAL' %>
-                </div>
-
-
-                <div class="product-image">
-
-                  <% if (product.image_url) { %>
-
-                    <img
-                      src="<%= product.image_url %>"
-                      alt="<%= product.name %>"
-                      loading="lazy"
-                    >
-
-                  <% } else { %>
-
-                    <div class="no-image">
-                      🖼️
-                    </div>
-
-                  <% } %>
-
-                </div>
-
-
-                <div class="product-info">
-
-
-                  <% if (product.category_name) { %>
-
-                    <div class="category-badge">
-                      🗂️ <%= product.category_name %>
-                    </div>
-
-                  <% } %>
-
-
-                  <div class="product-title">
-                    <%= product.name %>
-                  </div>
-
-
-                  <div class="rating-row">
-
-                    <div class="rating">
-                      ⭐ <%= product.rating || "—" %>
-                    </div>
-
-                    <div class="rating-text">
-                      Top Deal
-                    </div>
-
-                  </div>
-
-
-                  <div class="price-row">
-
-                    <span class="price">
-                      ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
-                    </span>
-
-
-                    <% if (Number(product.original_price || 0) > Number(product.price || 0)) { %>
-
-                      <span class="original-price">
-                        ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
-                      </span>
-
-                    <% } %>
-
-                  </div>
-
-
-                  <div class="product-actions">
-
-                    <a
-                      href="/product/<%= product.id %>"
-                      class="details-btn"
-                    >
-                      DETAILS
-                    </a>
-
-                    <a
-                      href="/buy/<%= product.id %>"
-                      class="buy-btn"
-                    >
-                      🛒 BUY NOW
-                    </a>
-
-                  </div>
-
-
-                </div>
-
-              </div>
-
-            <% }) %>
-
-
-          </div>
-
-        </section>
-
-
-      <% } %>
-
-
-      <!-- ================================================
-           TOP PICKS
-      ================================================= -->
-
-      <% if (topPicks && topPicks.length > 0) { %>
-
-
-        <section class="section">
-
-
-          <div class="section-header">
-
-            <div class="section-left">
-
-              <h2>
-                ⭐ Top <span>Picks</span>
-              </h2>
-
-              <p>
-                Hamare specially selected products
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="products">
-
-
-            <% topPicks.forEach(product => { %>
-
-              <div
-                class="product-card searchable-product"
-                data-name="<%= String(product.name || '').toLowerCase() %>"
-                data-category="<%= String(product.category_name || '').toLowerCase() %>"
-              >
-
-
-                <div class="discount">
-                  <%= product.discount || 'TOP PICK' %>
-                </div>
-
-
-                <div class="product-image">
-
-                  <% if (product.image_url) { %>
-
-                    <img
-                      src="<%= product.image_url %>"
-                      alt="<%= product.name %>"
-                      loading="lazy"
-                    >
-
-                  <% } else { %>
-
-                    <div class="no-image">
-                      🖼️
-                    </div>
-
-                  <% } %>
-
-                </div>
-
-
-                <div class="product-info">
-
-
-                  <% if (product.category_name) { %>
-
-                    <div class="category-badge">
-                      🗂️ <%= product.category_name %>
-                    </div>
-
-                  <% } %>
-
-
-                  <div class="product-title">
-                    <%= product.name %>
-                  </div>
-
-
-                  <div class="rating-row">
-
-                    <div class="rating">
-                      ⭐ <%= product.rating || "—" %>
-                    </div>
-
-                    <div class="rating-text">
-                      Recommended
-                    </div>
-
-                  </div>
-
-
-                  <div class="price-row">
-
-                    <span class="price">
-                      ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
-                    </span>
-
-
-                    <% if (Number(product.original_price || 0) > Number(product.price || 0)) { %>
-
-                      <span class="original-price">
-                        ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
-                      </span>
-
-                    <% } %>
-
-                  </div>
-
-
-                  <div class="product-actions">
-
-                    <a
-                      href="/product/<%= product.id %>"
-                      class="details-btn"
-                    >
-                      DETAILS
-                    </a>
-
-                    <a
-                      href="/buy/<%= product.id %>"
-                      class="buy-btn"
-                    >
-                      🛒 BUY NOW
-                    </a>
-
-                  </div>
-
-
-                </div>
-
-              </div>
-
-            <% }) %>
-
-
-          </div>
-
-
-        </section>
-
-
-      <% } %>
-
-
-      <!-- ================================================
-           TOP RATED
-      ================================================= -->
-
-      <% if (topRated && topRated.length > 0) { %>
-
-
-        <section class="section">
-
-
-          <div class="section-header">
-
-            <div class="section-left">
-
-              <h2>
-                ⭐ Top <span>Rated</span>
-              </h2>
-
-              <p>
-                Customers ke favourite products
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="products">
-
-
-            <% topRated.forEach(product => { %>
-
-              <div
-                class="product-card searchable-product"
-                data-name="<%= String(product.name || '').toLowerCase() %>"
-                data-category="<%= String(product.category_name || '').toLowerCase() %>"
-              >
-
-
-                <div class="discount">
-                  <%= product.discount || 'DEAL' %>
-                </div>
-
-
-                <div class="product-image">
-
-                  <% if (product.image_url) { %>
-
-                    <img
-                      src="<%= product.image_url %>"
-                      alt="<%= product.name %>"
-                      loading="lazy"
-                    >
-
-                  <% } else { %>
-
-                    <div class="no-image">
-                      🖼️
-                    </div>
-
-                  <% } %>
-
-                </div>
-
-
-                <div class="product-info">
-
-
-                  <% if (product.category_name) { %>
-
-                    <div class="category-badge">
-                      🗂️ <%= product.category_name %>
-                    </div>
-
-                  <% } %>
-
-
-                  <div class="product-title">
-                    <%= product.name %>
-                  </div>
-
-
-                  <div class="rating-row">
-
-                    <div class="rating">
-                      ⭐ <%= product.rating || "—" %>
-                    </div>
-
-                    <div class="rating-text">
-                      Highly Rated
-                    </div>
-
-                  </div>
-
-
-                  <div class="price-row">
-
-                    <span class="price">
-                      ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
-                    </span>
-
-
-                    <% if (Number(product.original_price || 0) > Number(product.price || 0)) { %>
-
-                      <span class="original-price">
-                        ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
-                      </span>
-
-                    <% } %>
-
-                  </div>
-
-
-                  <div class="product-actions">
-
-                    <a
-                      href="/product/<%= product.id %>"
-                      class="details-btn"
-                    >
-                      DETAILS
-                    </a>
-
-                    <a
-                      href="/buy/<%= product.id %>"
-                      class="buy-btn"
-                    >
-                      🛒 BUY NOW
-                    </a>
-
-                  </div>
-
-
-                </div>
-
-              </div>
-
-            <% }) %>
-
-
-          </div>
-
-
-        </section>
-
-
-      <% } %>
-
-
-      <!-- ================================================
-           ALL PRODUCTS
-      ================================================= -->
-
-      <section
-        class="section"
-        id="all-products"
-      >
-
-
-        <div class="section-header">
-
-          <div class="section-left">
-
-            <h2>
-              🛍️ All <span>Deals</span>
-            </h2>
-
-            <p>
-              DealBaazi par available latest products
-            </p>
-
-          </div>
-
-
-          <a
-            href="#top"
-            class="view-all"
-          >
-            Back to Top ↑
-          </a>
-
+          <% } %>
+
+          <% if (
+            typeof siteSettings !== 'undefined' &&
+            siteSettings.hero_image_url
+          ) { %>
+
+            <img
+              class="hero-image"
+              src="<%= siteSettings.hero_image_url %>"
+              alt="DealBaazi Banner"
+              onerror="this.style.display='none'"
+            >
+
+          <% } %>
 
         </div>
-
-
-        <% if (products && products.length > 0) { %>
-
-
-          <div class="products">
-
-
-            <% products.forEach(product => { %>
-
-              <div
-                class="product-card searchable-product"
-                data-name="<%= String(product.name || '').toLowerCase() %>"
-                data-category="<%= String(product.category_name || '').toLowerCase() %>"
-              >
-
-
-                <!-- DISCOUNT -->
-
-                <div class="discount">
-
-                  <%= product.discount || 'DEAL' %>
-
-                </div>
-
-
-                <!-- IMAGE -->
-
-                <div class="product-image">
-
-                  <% if (product.image_url) { %>
-
-                    <img
-                      src="<%= product.image_url %>"
-                      alt="<%= product.name %>"
-                      loading="lazy"
-                    >
-
-                  <% } else { %>
-
-                    <div class="no-image">
-                      🖼️
-                    </div>
-
-                  <% } %>
-
-                </div>
-
-
-                <!-- INFO -->
-
-                <div class="product-info">
-
-
-                  <% if (product.category_name) { %>
-
-                    <div class="category-badge">
-
-                      🗂️
-                      <%= product.category_name %>
-
-                    </div>
-
-                  <% } %>
-
-
-                  <div class="product-title">
-
-                    <%= product.name %>
-
-                  </div>
-
-
-                  <div class="rating-row">
-
-                    <div class="rating">
-
-                      ⭐
-                      <%= product.rating || "—" %>
-
-                    </div>
-
-                    <div class="rating-text">
-                      Customer Rating
-                    </div>
-
-                  </div>
-
-
-                  <div class="price-row">
-
-                    <span class="price">
-
-                      ₹<%= Number(
-                        product.price || 0
-                      ).toLocaleString('en-IN') %>
-
-                    </span>
-
-
-                    <% if (
-                      Number(product.original_price || 0) >
-                      Number(product.price || 0)
-                    ) { %>
-
-                      <span class="original-price">
-
-                        ₹<%= Number(
-                          product.original_price
-                        ).toLocaleString('en-IN') %>
-
-                      </span>
-
-
-                      <span class="save-text">
-                        Save
-                      </span>
-
-                    <% } %>
-
-
-                  </div>
-
-
-                  <div class="product-actions">
-
-
-                    <a
-                      href="/product/<%= product.id %>"
-                      class="details-btn"
-                    >
-                      DETAILS
-                    </a>
-
-
-                    <!--
-                      IMPORTANT:
-                      BUY NOW directly opens affiliate
-                      through /buy/:id
-                    -->
-
-                    <a
-                      href="/buy/<%= product.id %>"
-                      class="buy-btn"
-                    >
-                      🛒 BUY NOW
-                    </a>
-
-
-                  </div>
-
-
-                </div>
-
-              </div>
-
-            <% }) %>
-
-
-          </div>
-
-
-          <!-- SEARCH EMPTY -->
-
-          <div
-            class="search-empty"
-            id="searchEmptyHome"
-          >
-
-            <div class="search-empty-icon">
-              🔎
-            </div>
-
-            <h3>
-              No matching deals found
-            </h3>
-
-            <p>
-              Product ya category ka naam change karke try karo.
-            </p>
-
-          </div>
-
-
-        <% } else { %>
-
-
-          <div class="empty">
-
-            <div class="emoji">
-              🛍️
-            </div>
-
-            <h3>
-              Deals Coming Soon
-            </h3>
-
-            <p>
-              Products add karte hi deals yahan show hongi.
-            </p>
-
-          </div>
-
-
-        <% } %>
-
 
       </section>
 
 
-    <% } %>
+      <!-- =========================
+           CMS BANNERS
+           ========================= -->
+
+      <% if (
+        typeof banners !== 'undefined' &&
+        banners &&
+        banners.length
+      ) { %>
+
+        <section class="banner-section">
+
+          <div class="banner-grid">
+
+            <% banners.forEach(banner => { %>
+
+              <a
+                href="<%= banner.link_url || '#' %>"
+                class="banner-card"
+              >
+
+                <% if (banner.image_url) { %>
+
+                  <img
+                    src="<%= banner.image_url %>"
+                    alt="<%= banner.heading || 'DealBaazi Banner' %>"
+                    loading="lazy"
+                    onerror="this.src='/images/placeholder.png'"
+                  >
+
+                <% } %>
+
+                <div class="banner-overlay">
+
+                  <% if (banner.heading) { %>
+
+                    <h2>
+                      <%= banner.heading %>
+                    </h2>
+
+                  <% } %>
+
+                  <% if (banner.description) { %>
+
+                    <p>
+                      <%= banner.description %>
+                    </p>
+
+                  <% } %>
+
+                  <% if (banner.button_text) { %>
+
+                    <span class="banner-button">
+                      <%= banner.button_text %>
+                    </span>
+
+                  <% } %>
+
+                </div>
+
+              </a>
+
+            <% }) %>
+
+          </div>
+
+        </section>
+
+      <% } %>
 
 
-  </main>
+      <!-- =========================
+           FEATURES
+           ========================= -->
 
+      <%
+        const feature1Enabled =
+          typeof siteSettings === 'undefined' ||
+          siteSettings.feature1_enabled !== '0';
 
-  <!-- =====================================================
-       FOOTER
-  ===================================================== -->
+        const feature2Enabled =
+          typeof siteSettings === 'undefined' ||
+          siteSettings.feature2_enabled !== '0';
 
-  <footer class="footer">
+        const feature3Enabled =
+          typeof siteSettings === 'undefined' ||
+          siteSettings.feature3_enabled !== '0';
 
+        const feature4Enabled =
+          typeof siteSettings === 'undefined' ||
+          siteSettings.feature4_enabled !== '0';
+      %>
 
-    <div class="footer-inner">
+      <section class="features">
 
+        <% if (feature1Enabled) { %>
 
-      <!-- ABOUT -->
+          <div class="feature">
 
-      <div class="footer-main">
+            <div class="feature-icon">
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature1_icon)
+                ? siteSettings.feature1_icon
+                : '🔥' %>
+            </div>
 
-        <div class="footer-logo">
+            <h3>
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature1_title)
+                ? siteSettings.feature1_title
+                : 'Best Deals' %>
+            </h3>
 
-          <img
-            src="/images/logo.png"
-            alt="DealBaazi"
-          >
+            <p>
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature1_description)
+                ? siteSettings.feature1_description
+                : 'Handpicked deals at great prices.' %>
+            </p>
 
-        </div>
-
-
-        <p class="footer-description">
-
-          DealBaazi aapke liye best deals, offers aur
-          trending products ek jagah lekar aata hai.
-          Smart shopping ke liye daily naye deals discover karo.
-
-        </p>
-
-      </div>
-
-
-      <!-- QUICK LINKS -->
-
-      <div>
-
-        <h3>
-          Quick Links
-        </h3>
-
-        <a href="/">
-          🏠 Home
-        </a>
-
-        <a href="/#deals">
-          🔥 Hot Deals
-        </a>
-
-        <a href="/#all-products">
-          🛍️ All Products
-        </a>
-
-      </div>
-
-
-      <!-- CATEGORIES -->
-
-      <div>
-
-        <h3>
-          Categories
-        </h3>
-
-
-        <% if (categories && categories.length > 0) { %>
-
-
-          <% categories.slice(0, 7).forEach(category => { %>
-
-            <a
-              href="/category/<%= category.id %>"
-            >
-
-              <%= category.name %>
-
-            </a>
-
-          <% }) %>
-
+          </div>
 
         <% } %>
 
 
+        <% if (feature2Enabled) { %>
+
+          <div class="feature">
+
+            <div class="feature-icon">
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature2_icon)
+                ? siteSettings.feature2_icon
+                : '💰' %>
+            </div>
+
+            <h3>
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature2_title)
+                ? siteSettings.feature2_title
+                : 'Save More' %>
+            </h3>
+
+            <p>
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature2_description)
+                ? siteSettings.feature2_description
+                : 'Compare prices and save money.' %>
+            </p>
+
+          </div>
+
+        <% } %>
+
+
+        <% if (feature3Enabled) { %>
+
+          <div class="feature">
+
+            <div class="feature-icon">
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature3_icon)
+                ? siteSettings.feature3_icon
+                : '⭐' %>
+            </div>
+
+            <h3>
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature3_title)
+                ? siteSettings.feature3_title
+                : 'Top Rated' %>
+            </h3>
+
+            <p>
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature3_description)
+                ? siteSettings.feature3_description
+                : 'Discover highly rated products.' %>
+            </p>
+
+          </div>
+
+        <% } %>
+
+
+        <% if (feature4Enabled) { %>
+
+          <div class="feature">
+
+            <div class="feature-icon">
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature4_icon)
+                ? siteSettings.feature4_icon
+                : '⚡' %>
+            </div>
+
+            <h3>
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature4_title)
+                ? siteSettings.feature4_title
+                : 'Easy Shopping' %>
+            </h3>
+
+            <p>
+              <%= (typeof siteSettings !== 'undefined' && siteSettings.feature4_description)
+                ? siteSettings.feature4_description
+                : 'Buy directly from trusted stores.' %>
+            </p>
+
+          </div>
+
+        <% } %>
+
+      </section>
+
+
+      <!-- =========================
+           HOT DEALS
+           ========================= -->
+
+      <% if (
+        (!siteSettings || siteSettings.show_hot_deals !== '0') &&
+        hotDeals &&
+        hotDeals.length
+      ) { %>
+
+        <section class="section">
+
+          <div class="section-header">
+
+            <h2 class="section-title">
+              🔥 <span>Hot Deals</span>
+            </h2>
+
+          </div>
+
+
+          <div class="products-grid">
+
+            <% hotDeals.forEach(product => { %>
+
+              <%
+                const original = Number(product.original_price || 0);
+                const selling = Number(product.price || 0);
+
+                let discountPercent = 0;
+
+                if (
+                  original > 0 &&
+                  selling > 0 &&
+                  selling < original
+                ) {
+                  discountPercent = Math.round(
+                    ((original - selling) / original) * 100
+                  );
+                }
+
+                const savingAmount =
+                  original > selling
+                    ? original - selling
+                    : 0;
+              %>
+
+              <article class="product-card">
+
+                <div class="product-image-wrap">
+
+                  <% if (discountPercent > 0) { %>
+
+                    <div class="discount-badge">
+                      <%= discountPercent %>% OFF
+                    </div>
+
+                  <% } %>
+
+                  <img
+                    class="product-image"
+                    src="<%= product.image_url || '/images/placeholder.png' %>"
+                    alt="<%= product.name %>"
+                    loading="lazy"
+                    onerror="this.src='/images/placeholder.png'"
+                  >
+
+                </div>
+
+
+                <div class="product-info">
+
+                  <div class="product-name">
+                    <%= product.name %>
+                  </div>
+
+                  <div class="rating">
+                    ⭐ <%= Number(product.rating || 0).toFixed(1) %>
+                  </div>
+
+                  <div class="price-row">
+
+                    <span class="selling-price">
+                      ₹<%= Number(selling).toLocaleString('en-IN') %>
+                    </span>
+
+                    <% if (original > selling) { %>
+
+                      <span class="original-price">
+                        ₹<%= Number(original).toLocaleString('en-IN') %>
+                      </span>
+
+                      <span class="discount-text">
+                        <%= discountPercent %>% OFF
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+                  <% if (savingAmount > 0) { %>
+
+                    <div class="saving">
+                      You Save ₹<%= Number(savingAmount).toLocaleString('en-IN') %>
+                    </div>
+
+                  <% } %>
+
+                  <div class="product-buttons">
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      Details
+                    </a>
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      BUY NOW
+                    </a>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            <% }) %>
+
+          </div>
+
+        </section>
+
+      <% } %>
+
+
+      <!-- =========================
+           TOP PICKS
+           ========================= -->
+
+      <% if (
+        (!siteSettings || siteSettings.show_top_picks !== '0') &&
+        topPicks &&
+        topPicks.length
+      ) { %>
+
+        <section class="section">
+
+          <div class="section-header">
+
+            <h2 class="section-title">
+              🎯 <span>Top Picks</span>
+            </h2>
+
+          </div>
+
+
+          <div class="products-grid">
+
+            <% topPicks.forEach(product => { %>
+
+              <%
+                const original = Number(product.original_price || 0);
+                const selling = Number(product.price || 0);
+
+                let discountPercent = 0;
+
+                if (
+                  original > 0 &&
+                  selling > 0 &&
+                  selling < original
+                ) {
+                  discountPercent = Math.round(
+                    ((original - selling) / original) * 100
+                  );
+                }
+
+                const savingAmount =
+                  original > selling
+                    ? original - selling
+                    : 0;
+              %>
+
+              <article class="product-card">
+
+                <div class="product-image-wrap">
+
+                  <% if (discountPercent > 0) { %>
+
+                    <div class="discount-badge">
+                      <%= discountPercent %>% OFF
+                    </div>
+
+                  <% } %>
+
+                  <img
+                    class="product-image"
+                    src="<%= product.image_url || '/images/placeholder.png' %>"
+                    alt="<%= product.name %>"
+                    loading="lazy"
+                    onerror="this.src='/images/placeholder.png'"
+                  >
+
+                </div>
+
+
+                <div class="product-info">
+
+                  <div class="product-name">
+                    <%= product.name %>
+                  </div>
+
+                  <div class="rating">
+                    ⭐ <%= Number(product.rating || 0).toFixed(1) %>
+                  </div>
+
+                  <div class="price-row">
+
+                    <span class="selling-price">
+                      ₹<%= Number(selling).toLocaleString('en-IN') %>
+                    </span>
+
+                    <% if (original > selling) { %>
+
+                      <span class="original-price">
+                        ₹<%= Number(original).toLocaleString('en-IN') %>
+                      </span>
+
+                      <span class="discount-text">
+                        <%= discountPercent %>% OFF
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+                  <% if (savingAmount > 0) { %>
+
+                    <div class="saving">
+                      You Save ₹<%= Number(savingAmount).toLocaleString('en-IN') %>
+                    </div>
+
+                  <% } %>
+
+                  <div class="product-buttons">
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      Details
+                    </a>
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      BUY NOW
+                    </a>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            <% }) %>
+
+          </div>
+
+        </section>
+
+      <% } %>
+
+
+      <!-- =========================
+           TOP RATED
+           ========================= -->
+
+      <% if (
+        (!siteSettings || siteSettings.show_top_rated !== '0') &&
+        topRated &&
+        topRated.length
+      ) { %>
+
+        <section class="section">
+
+          <div class="section-header">
+
+            <h2 class="section-title">
+              ⭐ <span>Top Rated</span>
+            </h2>
+
+          </div>
+
+
+          <div class="products-grid">
+
+            <% topRated.forEach(product => { %>
+
+              <%
+                const original = Number(product.original_price || 0);
+                const selling = Number(product.price || 0);
+
+                let discountPercent = 0;
+
+                if (
+                  original > 0 &&
+                  selling > 0 &&
+                  selling < original
+                ) {
+                  discountPercent = Math.round(
+                    ((original - selling) / original) * 100
+                  );
+                }
+
+                const savingAmount =
+                  original > selling
+                    ? original - selling
+                    : 0;
+              %>
+
+              <article class="product-card">
+
+                <div class="product-image-wrap">
+
+                  <% if (discountPercent > 0) { %>
+
+                    <div class="discount-badge">
+                      <%= discountPercent %>% OFF
+                    </div>
+
+                  <% } %>
+
+                  <img
+                    class="product-image"
+                    src="<%= product.image_url || '/images/placeholder.png' %>"
+                    alt="<%= product.name %>"
+                    loading="lazy"
+                    onerror="this.src='/images/placeholder.png'"
+                  >
+
+                </div>
+
+
+                <div class="product-info">
+
+                  <div class="product-name">
+                    <%= product.name %>
+                  </div>
+
+                  <div class="rating">
+                    ⭐ <%= Number(product.rating || 0).toFixed(1) %>
+                  </div>
+
+                  <div class="price-row">
+
+                    <span class="selling-price">
+                      ₹<%= Number(selling).toLocaleString('en-IN') %>
+                    </span>
+
+                    <% if (original > selling) { %>
+
+                      <span class="original-price">
+                        ₹<%= Number(original).toLocaleString('en-IN') %>
+                      </span>
+
+                      <span class="discount-text">
+                        <%= discountPercent %>% OFF
+                      </span>
+
+                    <% } %>
+
+                  </div>
+
+                  <% if (savingAmount > 0) { %>
+
+                    <div class="saving">
+                      You Save ₹<%= Number(savingAmount).toLocaleString('en-IN') %>
+                    </div>
+
+                  <% } %>
+
+                  <div class="product-buttons">
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="details-btn"
+                    >
+                      Details
+                    </a>
+
+                    <a
+                      href="/buy/<%= product.id %>"
+                      class="buy-btn"
+                    >
+                      BUY NOW
+                    </a>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            <% }) %>
+
+          </div>
+
+        </section>
+
+      <% } %>
+
+
+      <!-- =========================
+           ALL DEALS
+           ========================= -->
+
+      <% if (
+        !siteSettings ||
+        siteSettings.show_all_deals !== '0'
+      ) { %>
+
+        <section class="section">
+
+          <div class="section-header">
+
+            <h2 class="section-title">
+              🛍️ <span>All Deals</span>
+            </h2>
+
+          </div>
+
+
+          <% if (products && products.length) { %>
+
+            <div class="products-grid">
+
+              <% products.forEach(product => { %>
+
+                <%
+                  const original = Number(product.original_price || 0);
+                  const selling = Number(product.price || 0);
+
+                  let discountPercent = 0;
+
+                  if (
+                    original > 0 &&
+                    selling > 0 &&
+                    selling < original
+                  ) {
+                    discountPercent = Math.round(
+                      ((original - selling) / original) * 100
+                    );
+                  }
+
+                  const savingAmount =
+                    original > selling
+                      ? original - selling
+                      : 0;
+                %>
+
+                <article class="product-card">
+
+                  <div class="product-image-wrap">
+
+                    <% if (discountPercent > 0) { %>
+
+                      <div class="discount-badge">
+                        <%= discountPercent %>% OFF
+                      </div>
+
+                    <% } %>
+
+                    <img
+                      class="product-image"
+                      src="<%= product.image_url || '/images/placeholder.png' %>"
+                      alt="<%= product.name %>"
+                      loading="lazy"
+                      onerror="this.src='/images/placeholder.png'"
+                    >
+
+                  </div>
+
+
+                  <div class="product-info">
+
+                    <div class="product-name">
+                      <%= product.name %>
+                    </div>
+
+                    <div class="rating">
+                      ⭐ <%= Number(product.rating || 0).toFixed(1) %>
+                    </div>
+
+                    <div class="price-row">
+
+                      <span class="selling-price">
+                        ₹<%= Number(selling).toLocaleString('en-IN') %>
+                      </span>
+
+                      <% if (original > selling) { %>
+
+                        <span class="original-price">
+                          ₹<%= Number(original).toLocaleString('en-IN') %>
+                        </span>
+
+                        <span class="discount-text">
+                          <%= discountPercent %>% OFF
+                        </span>
+
+                      <% } %>
+
+                    </div>
+
+                    <% if (savingAmount > 0) { %>
+
+                      <div class="saving">
+                        You Save ₹<%= Number(savingAmount).toLocaleString('en-IN') %>
+                      </div>
+
+                    <% } %>
+
+                    <div class="product-buttons">
+
+                      <a
+                        href="/product/<%= product.id %>"
+                        class="details-btn"
+                      >
+                        Details
+                      </a>
+
+                      <a
+                        href="/buy/<%= product.id %>"
+                        class="buy-btn"
+                      >
+                        BUY NOW
+                      </a>
+
+                    </div>
+
+                  </div>
+
+                </article>
+
+              <% }) %>
+
+            </div>
+
+
+          <% } else { %>
+
+            <div class="empty-box">
+
+              <div class="empty-icon">
+                🛍️
+              </div>
+
+              <h2>
+                No deals available right now
+              </h2>
+
+              <p>
+                Admin panel se products add karne ke baad
+                yahan deals automatically show hongi.
+              </p>
+
+            </div>
+
+          <% } %>
+
+        </section>
+
+      <% } %>
+
+
+    <% } %>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+       ========================= -->
+
+  <footer>
+
+    <div class="footer-inner">
+
+      <div class="footer-logo">
+
+        <img
+          src="<%= (typeof siteSettings !== 'undefined' && siteSettings.logo_url) ? siteSettings.logo_url : '/images/logo.png' %>"
+          alt="DealBaazi"
+          onerror="this.src='/images/placeholder.png'"
+        >
+
       </div>
 
+      <div class="footer-text">
 
-      <!-- INFO -->
-
-      <div>
-
-        <h3>
-          DealBaazi
-        </h3>
-
-        <p class="footer-note">
-
-          Best deals discover karo,
-          product compare karo aur
-          BUY NOW button se directly
-          shopping partner ke page par jao.
-
-        </p>
+        <%= (typeof siteSettings !== 'undefined' && siteSettings.footer_text)
+          ? siteSettings.footer_text
+          : 'DealBaazi helps you discover amazing products, offers and discounts from online stores.' %>
 
       </div>
 
+      <div class="copyright">
+
+        © <%= new Date().getFullYear() %>
+        DealBaazi. All Rights Reserved.
+
+      </div>
 
     </div>
-
-
-    <div class="copyright">
-
-      © <%= new Date().getFullYear() %>
-      DealBaazi. All Rights Reserved.
-
-    </div>
-
 
   </footer>
-
-
-  <!-- =====================================================
-       SEARCH SCRIPT
-  ===================================================== -->
-
-  <script>
-
-    const searchForm =
-      document.getElementById("searchForm");
-
-    const searchInput =
-      document.getElementById("searchInput");
-
-
-    if (searchForm && searchInput) {
-
-      searchForm.addEventListener(
-        "submit",
-        function(event) {
-
-          /*
-            Existing server search route abhi
-            implement nahi hai.
-
-            Isliye homepage par client-side
-            search use kar rahe hain.
-          */
-
-          const value =
-            searchInput.value
-              .trim()
-              .toLowerCase();
-
-          if (!value) {
-            return;
-          }
-
-          event.preventDefault();
-
-          const cards =
-            document.querySelectorAll(
-              ".searchable-product"
-            );
-
-          let found = 0;
-
-          cards.forEach(card => {
-
-            const name =
-              card.dataset.name || "";
-
-            const category =
-              card.dataset.category || "";
-
-            const match =
-              name.includes(value) ||
-              category.includes(value);
-
-            if (match) {
-
-              card.style.display = "";
-
-              found++;
-
-            } else {
-
-              card.style.display = "none";
-
-            }
-
-          });
-
-
-          const empty =
-            document.getElementById(
-              "searchEmptyHome"
-            ) ||
-            document.getElementById(
-              "searchEmpty"
-            );
-
-
-          if (empty) {
-
-            if (found === 0) {
-
-              empty.style.display =
-                "block";
-
-            } else {
-
-              empty.style.display =
-                "none";
-
-            }
-
-          }
-
-
-          const firstResult =
-            document.querySelector(
-              ".searchable-product:not([style*='display: none'])"
-            );
-
-
-          if (firstResult) {
-
-            firstResult.scrollIntoView({
-              behavior: "smooth",
-              block: "center"
-            });
-
-          }
-
-        }
-      );
-
-
-      searchInput.addEventListener(
-        "input",
-        function() {
-
-          if (
-            searchInput.value.trim() === ""
-          ) {
-
-            document
-              .querySelectorAll(
-                ".searchable-product"
-              )
-              .forEach(card => {
-
-                card.style.display = "";
-
-              });
-
-
-            const empty =
-              document.getElementById(
-                "searchEmptyHome"
-              ) ||
-              document.getElementById(
-                "searchEmpty"
-              );
-
-
-            if (empty) {
-
-              empty.style.display =
-                "none";
-
-            }
-
-          }
-
-        }
-      );
-
-    }
-
-  </script>
 
 
 </body>

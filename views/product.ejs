@@ -1,204 +1,969 @@
 ﻿<!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><%= product.name %> - DealBaazi</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#f5f6f8;color:#222}
-header{background:#fff;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px #0001;position:sticky;top:0;z-index:10}
-.logo{height:48px;max-width:180px;object-fit:contain}
-.back{color:#333;text-decoration:none;font-weight:bold}
-.container{max-width:1200px;margin:25px auto;padding:0 18px}
-.product-box{background:#fff;border-radius:18px;padding:25px;display:grid;grid-template-columns:1fr 1fr;gap:35px;box-shadow:0 3px 15px #00000010}
-.gallery{width:100%}
-.main-image{height:430px;border-radius:15px;background:#f7f7f7;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.main-image img{width:100%;height:100%;object-fit:contain}
-.arrow{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 10px #0003;font-size:25px;cursor:pointer;z-index:2}
-.prev{left:12px}.next{right:12px}
-.thumbs{display:flex;gap:10px;margin-top:12px;overflow-x:auto}
-.thumb{width:75px;height:75px;border:2px solid transparent;border-radius:10px;object-fit:cover;cursor:pointer;background:#eee}
-.thumb.active{border-color:#ff4b2b}
-.category{display:inline-block;background:#fff0ed;color:#ff4b2b;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:bold;margin-bottom:12px}
-h1{font-size:30px;line-height:1.25;margin-bottom:12px}
-.rating{color:#f59e0b;font-size:18px;margin-bottom:18px}
-.price{font-size:34px;font-weight:bold;color:#111}
-.old{font-size:18px;color:#999;text-decoration:line-through;margin-left:10px}
-.discount{display:inline-block;background:#e7f8ed;color:#16853b;padding:6px 10px;border-radius:6px;font-weight:bold;margin:12px 0}
-.score{background:linear-gradient(135deg,#fff2e9,#ffe7dc);padding:15px;border-radius:12px;margin:15px 0;font-weight:bold}
-.buy{display:block;width:100%;text-align:center;text-decoration:none;background:#ff4b2b;color:#fff;padding:17px;border-radius:10px;font-size:18px;font-weight:bold;margin-top:20px}
-.buy:hover{background:#e83d20}
-.description{background:#fff;margin-top:22px;padding:25px;border-radius:18px;box-shadow:0 3px 15px #00000010}
-.description h2,.reviews h2{margin-bottom:15px}
-.desc-text{white-space:pre-wrap;line-height:1.7;color:#555}
-.reviews{background:#fff;margin-top:22px;padding:25px;border-radius:18px;box-shadow:0 3px 15px #00000010}
-.review{border-bottom:1px solid #eee;padding:15px 0}
-.review:last-child{border-bottom:0}
-.review-name{font-weight:bold}
-.review-stars{color:#f59e0b;margin:5px 0}
-.review-date{font-size:12px;color:#999}
-form{margin-top:20px;background:#f8f8f8;padding:18px;border-radius:12px}
-input,select,textarea{width:100%;padding:12px;margin:7px 0 12px;border:1px solid #ddd;border-radius:8px;font-size:15px}
-textarea{min-height:100px;resize:vertical}
-.submit{background:#222;color:#fff;border:0;padding:12px 22px;border-radius:8px;cursor:pointer;font-weight:bold}
-@media(max-width:768px){
-header{padding:10px 15px}.logo{height:40px;max-width:145px}
-.container{margin:15px auto;padding:0 10px}
-.product-box{grid-template-columns:1fr;padding:15px;gap:20px}
-.main-image{height:330px}
-h1{font-size:23px}
-.price{font-size:28px}
-.description,.reviews{padding:18px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title><%= product.name %> - DealBaazi</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* ================= HEADER ================= */
+
+    header {
+      background: #ff6a00;
+      color: white;
+      padding: 12px 5%;
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .logo img {
+      width: 155px;
+      height: auto;
+      display: block;
+    }
+
+    .search-box {
+      flex: 1;
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 18px;
+      border: none;
+      outline: none;
+      border-radius: 25px;
+      font-size: 15px;
+    }
+
+    .home-btn {
+      background: white;
+      color: #ff6a00;
+      padding: 10px 18px;
+      border-radius: 22px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    /* ================= MAIN ================= */
+
+    .container {
+      width: 92%;
+      max-width: 1200px;
+      margin: 30px auto;
+    }
+
+    .product-box {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      display: grid;
+      grid-template-columns: 48% 52%;
+      gap: 35px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    /* ================= GALLERY ================= */
+
+    .gallery {
+      width: 100%;
+    }
+
+    .main-image {
+      position: relative;
+      width: 100%;
+      height: 450px;
+      background: #fff;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid #eee;
+    }
+
+    .main-image img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.55);
+      color: white;
+      font-size: 25px;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .arrow.left {
+      left: 12px;
+    }
+
+    .arrow.right {
+      right: 12px;
+    }
+
+    .thumbnails {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+
+    .thumbnail {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      background: white;
+    }
+
+    .thumbnail.active {
+      border-color: #ff6a00;
+    }
+
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* ================= PRODUCT INFO ================= */
+
+    .product-info {
+      padding: 5px 0;
+    }
+
+    .deal-badge {
+      display: inline-block;
+      background: #ff6a00;
+      color: white;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 14px;
+    }
+
+    .product-title {
+      font-size: 30px;
+      line-height: 1.3;
+      margin-bottom: 14px;
+      color: #222;
+    }
+
+    .rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #178a38;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    /* ================= PRICE ================= */
+
+    .price-section {
+      padding: 20px 0;
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 20px;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .selling-price {
+      font-size: 36px;
+      font-weight: 800;
+      color: #111;
+    }
+
+    .original-price {
+      font-size: 19px;
+      color: #888;
+      text-decoration: line-through;
+    }
+
+    .discount {
+      background: #e7f8ec;
+      color: #168238;
+      padding: 6px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .save-text {
+      margin-top: 10px;
+      color: #168238;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    /* ================= BUY BUTTON ================= */
+
+    .buy-btn {
+      width: 100%;
+      display: block;
+      text-align: center;
+      background: #ff6a00;
+      color: white;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 19px;
+      font-weight: bold;
+      transition: 0.2s;
+      margin-bottom: 20px;
+    }
+
+    .buy-btn:hover {
+      background: #e85e00;
+      transform: translateY(-1px);
+    }
+
+    .affiliate-note {
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+      margin-top: -12px;
+      margin-bottom: 20px;
+    }
+
+    /* ================= DESCRIPTION ================= */
+
+    .description-box {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin-top: 25px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #222;
+    }
+
+    .description {
+      color: #555;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    /* ================= REVIEWS ================= */
+
+    .reviews-box {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin-top: 25px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    }
+
+    .review-summary {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .big-rating {
+      font-size: 38px;
+      font-weight: bold;
+      color: #178a38;
+    }
+
+    .review-item {
+      border-top: 1px solid #eee;
+      padding: 18px 0;
+    }
+
+    .review-name {
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    .review-stars {
+      color: #f5a400;
+      margin-bottom: 7px;
+    }
+
+    .review-comment {
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* ================= FOOTER ================= */
+
+    footer {
+      background: #222;
+      color: #aaa;
+      text-align: center;
+      padding: 25px;
+      margin-top: 40px;
+      font-size: 14px;
+    }
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 800px) {
+
+      header {
+        padding: 10px 4%;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .logo img {
+        width: 125px;
+      }
+
+      .search-box {
+        order: 3;
+        flex-basis: 100%;
+        max-width: none;
+      }
+
+      .home-btn {
+        padding: 8px 13px;
+        font-size: 13px;
+      }
+
+      .container {
+        width: 94%;
+        margin: 18px auto;
+      }
+
+      .product-box {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 16px;
+      }
+
+      .main-image {
+        height: 330px;
+      }
+
+      .product-title {
+        font-size: 23px;
+      }
+
+      .selling-price {
+        font-size: 30px;
+      }
+
+      .original-price {
+        font-size: 17px;
+      }
+
+      .buy-btn {
+        font-size: 17px;
+        padding: 15px;
+      }
+
+      .description-box,
+      .reviews-box {
+        padding: 18px;
+        margin-top: 18px;
+      }
+
+      .section-title {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 450px) {
+
+      .main-image {
+        height: 280px;
+      }
+
+      .thumbnail {
+        width: 60px;
+        height: 60px;
+      }
+
+      .selling-price {
+        font-size: 27px;
+      }
+
+      .product-title {
+        font-size: 21px;
+      }
+
+      .price-row {
+        gap: 8px;
+      }
+
+    }
+
+  </style>
+
 </head>
+
 <body>
 
+<%
+/* =========================================================
+AUTOMATIC PRICE / DISCOUNT CALCULATION
+========================================================= */
+
+const originalPrice = Number(
+product.original_price || 0
+);
+
+const sellingPrice = Number(
+product.price || 0
+);
+
+let discountPercent = 0;
+
+if (
+originalPrice > 0 &&
+sellingPrice > 0 &&
+sellingPrice < originalPrice
+) {
+
+discountPercent = Math.round(
+((originalPrice - sellingPrice) /
+originalPrice) * 100
+);
+
+}
+
+const savingAmount =
+originalPrice > sellingPrice
+? originalPrice - sellingPrice
+: 0;
+
+/* =========================================================
+PRODUCT IMAGES
+========================================================= */
+
+const productImages =
+(images && images.length)
+? images
+: (
+product.image_url
+? [product.image_url]
+: ['/images/placeholder.png']
+);
+
+%>
+
+<!-- ================= HEADER ================= -->
+
 <header>
-<a href="/" class="back">← Back</a>
-<img src="/images/logo.png" class="logo" alt="DealBaazi">
+
+  <a href="/" class="logo">
+    <img
+      src="/images/logo.png"
+      alt="DealBaazi"
+    >
+  </a>
+
+  <div class="search-box">
+    <input
+      type="text"
+      placeholder="Search deals..."
+      onkeydown="
+        if(event.key === 'Enter') {
+          window.location.href =
+            '/?search=' +
+            encodeURIComponent(this.value);
+        }
+      "
+    >
+  </div>
+
+  <a href="/" class="home-btn">
+    Home
+  </a>
+
 </header>
 
-<div class="container">
+<!-- ================= MAIN PRODUCT ================= -->
 
-<div class="product-box">
+<main class="container">
+
+  <div class="product-box">
+
+```
+<!-- ================= GALLERY ================= -->
 
 <div class="gallery">
-<div class="main-image" id="mainImage">
-<img id="productImage" src="<%= images[0] %>" alt="<%= product.name %>">
-<button class="arrow prev" onclick="changeImage(-1)">‹</button>
-<button class="arrow next" onclick="changeImage(1)">›</button>
+
+  <div
+    class="main-image"
+    id="mainImageBox"
+  >
+
+    <button
+      type="button"
+      class="arrow left"
+      onclick="previousImage()"
+    >
+      ‹
+    </button>
+
+    <img
+      id="mainImage"
+      src="<%= productImages[0] %>"
+      alt="<%= product.name %>"
+    >
+
+    <button
+      type="button"
+      class="arrow right"
+      onclick="nextImage()"
+    >
+      ›
+    </button>
+
+  </div>
+
+
+  <% if (productImages.length > 1) { %>
+
+    <div class="thumbnails">
+
+      <% productImages.forEach((image, index) => { %>
+
+        <div
+          class="thumbnail <%= index === 0 ? 'active' : '' %>"
+          onclick="showImage(<%= index %>)"
+        >
+
+          <img
+            src="<%= image %>"
+            alt="<%= product.name %>"
+          >
+
+        </div>
+
+      <% }) %>
+
+    </div>
+
+  <% } %>
+
 </div>
 
-<div class="thumbs">
-<% images.forEach((img,index)=>{ %>
-<img class="thumb <%= index===0?'active':'' %>"
-src="<%= img %>"
-onclick="showImage(<%= index %>)"
-alt="Product image">
-<% }) %>
+
+<!-- ================= PRODUCT INFO ================= -->
+
+<div class="product-info">
+
+
+  <div class="deal-badge">
+    DEALBAAZI DEAL
+  </div>
+
+
+  <h1 class="product-title">
+    <%= product.name %>
+  </h1>
+
+
+  <% if (product.rating) { %>
+
+    <div class="rating">
+
+      ★ <%= product.rating %> / 5
+
+    </div>
+
+  <% } %>
+
+
+  <!-- ================= PRICE ================= -->
+
+  <div class="price-section">
+
+    <div class="price-row">
+
+      <!-- SELLING PRICE -->
+
+      <span class="selling-price">
+
+        ₹<%= sellingPrice.toLocaleString('en-IN') %>
+
+      </span>
+
+
+      <!-- ORIGINAL PRICE -->
+
+      <% if (originalPrice > sellingPrice) { %>
+
+        <span class="original-price">
+
+          ₹<%= originalPrice.toLocaleString('en-IN') %>
+
+        </span>
+
+      <% } %>
+
+
+      <!-- AUTOMATIC DISCOUNT -->
+
+      <% if (discountPercent > 0) { %>
+
+        <span class="discount">
+
+          <%= discountPercent %>% OFF
+
+        </span>
+
+      <% } %>
+
+    </div>
+
+
+    <!-- SAVING -->
+
+    <% if (savingAmount > 0) { %>
+
+      <div class="save-text">
+
+        You Save ₹<%= savingAmount.toLocaleString('en-IN') %>
+
+      </div>
+
+    <% } %>
+
+  </div>
+
+
+  <!-- ================= BUY NOW ================= -->
+
+  <a
+    href="/buy/<%= product.id %>"
+    class="buy-btn"
+  >
+
+    🛒 BUY NOW
+
+  </a>
+
+
+  <div class="affiliate-note">
+
+    You will be redirected directly to the seller.
+
+  </div>
+
+
 </div>
-</div>
+```
 
-<div class="info">
-<div class="category"><%= product.category_name || 'Deal' %></div>
+  </div>
 
-<h1><%= product.name %></h1>
+  <!-- ================= DESCRIPTION ================= -->
 
-<div class="rating">
-⭐ <%= Number(averageRating || 0).toFixed(1) %>/5
-&nbsp; (<%= reviewCount || 0 %> reviews)
-</div>
+<% if (product.description) { %>
 
-<div>
-<span class="price">₹<%= Number(product.price).toLocaleString('en-IN') %></span>
+```
+<section class="description-box">
 
-<% if(product.original_price && Number(product.original_price)>Number(product.price)){ %>
-<span class="old">₹<%= Number(product.original_price).toLocaleString('en-IN') %></span>
+  <h2 class="section-title">
+    Product Description
+  </h2>
+
+  <div class="description">
+    <%= product.description %>
+  </div>
+
+</section>
+```
+
 <% } %>
-</div>
 
-<% if(product.original_price && Number(product.original_price)>Number(product.price)){ %>
-<div class="discount">
-<%= Math.round(((product.original_price-product.price)/product.original_price)*100) %>% OFF
-</div>
+  <!-- ================= REVIEWS ================= -->
+
+  <section class="reviews-box">
+
+```
+<h2 class="section-title">
+  Customer Reviews
+</h2>
+
+
+<% if (reviewStats && reviewStats.count > 0) { %>
+
+  <div class="review-summary">
+
+    <div class="big-rating">
+
+      <%= Number(reviewStats.average).toFixed(1) %> ★
+
+    </div>
+
+    <div>
+
+      <strong>
+        <%= reviewStats.count %>
+      </strong>
+
+      reviews
+
+    </div>
+
+  </div>
+
 <% } %>
 
-<div class="score">
-🔥 DealBaazi Deal Score: <%= dealScore %>/100
-</div>
 
-<a href="/buy/<%= product.id %>" class="buy">🛒 BUY NOW</a>
-</div>
+<% if (reviews && reviews.length > 0) { %>
 
-</div>
+  <% reviews.forEach(review => { %>
 
-<div class="description">
-<h2>📋 Product Description</h2>
-<div class="desc-text"><%= product.description || 'Is product ki detailed information jald available hogi.' %></div>
-</div>
+    <div class="review-item">
 
-<div class="reviews">
-<h2>⭐ Customer Reviews</h2>
+      <div class="review-name">
 
-<% if(reviews && reviews.length){ %>
-<% reviews.forEach(review=>{ %>
-<div class="review">
-<div class="review-name"><%= review.name %></div>
-<div class="review-stars">
-<%= '★'.repeat(review.rating) %><%= '☆'.repeat(5-review.rating) %>
-</div>
-<div><%= review.comment %></div>
-<div class="review-date"><%= review.created_at %></div>
-</div>
-<% }) %>
+        <%= review.name || 'Customer' %>
+
+      </div>
+
+
+      <div class="review-stars">
+
+        <% for (let i = 1; i <= 5; i++) { %>
+
+          <%= i <= review.rating ? '★' : '☆' %>
+
+        <% } %>
+
+      </div>
+
+
+      <div class="review-comment">
+
+        <%= review.comment %>
+
+      </div>
+
+    </div>
+
+  <% }) %>
+
 <% } else { %>
-<p>Abhi koi review nahi hai. Pehla review aap karein ❤️</p>
+
+  <div style="
+    color:#777;
+    padding:15px 0;
+  ">
+
+    No reviews yet.
+
+  </div>
+
 <% } %>
+```
 
-<form action="/product/<%= product.id %>/review" method="POST">
-<h3>Apna Review Dein</h3>
+  </section>
 
-<input type="text" name="name" placeholder="Aapka naam" required>
+</main>
 
-<select name="rating" required>
-<option value="">Rating select karein</option>
-<option value="5">⭐⭐⭐⭐⭐ 5 - Excellent</option>
-<option value="4">⭐⭐⭐⭐ 4 - Very Good</option>
-<option value="3">⭐⭐⭐ 3 - Good</option>
-<option value="2">⭐⭐ 2 - Average</option>
-<option value="1">⭐ 1 - Poor</option>
-</select>
+<!-- ================= FOOTER ================= -->
 
-<textarea name="comment" placeholder="Apna experience likhein..." required></textarea>
+<footer>
 
-<button class="submit" type="submit">Submit Review</button>
-</form>
+© <%= new Date().getFullYear() %> DealBaazi.
+All Rights Reserved.
 
-</div>
+</footer>
 
-</div>
+<!-- ================= GALLERY SCRIPT ================= -->
 
 <script>
-const images = <%- JSON.stringify(images) %>;
-let current = 0;
 
-function showImage(index){
-current=index;
-document.getElementById('productImage').src=images[current];
+  const productImages = <%- JSON.stringify(productImages) %>;
 
-document.querySelectorAll('.thumb').forEach((el,i)=>{
-el.classList.toggle('active',i===current);
-});
-}
+  let currentImage = 0;
 
-function changeImage(direction){
-if(images.length<=1)return;
-current=(current+direction+images.length)%images.length;
-showImage(current);
-}
 
-let startX=0;
+  function showImage(index) {
 
-document.getElementById('mainImage').addEventListener('touchstart',function(e){
-startX=e.touches[0].clientX;
-},{passive:true});
+    if (!productImages.length) {
+      return;
+    }
 
-document.getElementById('mainImage').addEventListener('touchend',function(e){
-let endX=e.changedTouches[0].clientX;
-let difference=startX-endX;
+    currentImage = index;
 
-if(Math.abs(difference)>50){
-if(difference>0) changeImage(1);
-else changeImage(-1);
-}
-},{passive:true});
+    document.getElementById('mainImage').src =
+      productImages[currentImage];
 
-document.addEventListener('keydown',function(e){
-if(e.key==='ArrowLeft') changeImage(-1);
-if(e.key==='ArrowRight') changeImage(1);
-});
+
+    document
+      .querySelectorAll('.thumbnail')
+      .forEach((thumb, i) => {
+
+        thumb.classList.toggle(
+          'active',
+          i === currentImage
+        );
+
+      });
+
+  }
+
+
+  function nextImage() {
+
+    if (productImages.length <= 1) {
+      return;
+    }
+
+    currentImage =
+      (currentImage + 1) %
+      productImages.length;
+
+    showImage(currentImage);
+
+  }
+
+
+  function previousImage() {
+
+    if (productImages.length <= 1) {
+      return;
+    }
+
+    currentImage =
+      (currentImage - 1 +
+      productImages.length) %
+      productImages.length;
+
+    showImage(currentImage);
+
+  }
+
+
+  /* ================= KEYBOARD ================= */
+
+  document.addEventListener(
+    'keydown',
+    function(event) {
+
+      if (event.key === 'ArrowRight') {
+        nextImage();
+      }
+
+      if (event.key === 'ArrowLeft') {
+        previousImage();
+      }
+
+    }
+  );
+
+
+  /* ================= TOUCH SWIPE ================= */
+
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+
+  const imageBox =
+    document.getElementById('mainImageBox');
+
+
+  imageBox.addEventListener(
+    'touchstart',
+    function(event) {
+
+      touchStartX =
+        event.changedTouches[0].screenX;
+
+    },
+    { passive: true }
+  );
+
+
+  imageBox.addEventListener(
+    'touchend',
+    function(event) {
+
+      touchEndX =
+        event.changedTouches[0].screenX;
+
+      const difference =
+        touchEndX - touchStartX;
+
+
+      if (Math.abs(difference) < 50) {
+        return;
+      }
+
+
+      if (difference < 0) {
+        nextImage();
+      } else {
+        previousImage();
+      }
+
+    },
+    { passive: true }
+  );
+
 </script>
 
 </body>
