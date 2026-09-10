@@ -1470,16 +1470,22 @@ app.get(
         ORDER BY id DESC
       `).all(id);
 
-    res.render(
-      "product",
-      {
-        product,
-        reviews,
+res.render(
+  "product",
+  {
+    product,
+    reviews,
 
-        siteSettings:
-          getSiteSettings()
-      }
-    );
+    images:
+      getProductImages(id),
+
+    reviewStats:
+      getReviewStats(id),
+
+    siteSettings:
+      getSiteSettings()
+  }
+);
   }
 );
 
@@ -2508,7 +2514,52 @@ app.post(
 /* =========================================================
    PRODUCT EDIT
 ========================================================= */
+app.get(
+  "/admin/edit/:id",
+  (req, res) => {
 
+    if (!isLoggedIn(req)) {
+      return res.redirect("/login");
+    }
+
+    const id =
+      Number(req.params.id);
+
+    const product =
+      db.prepare(`
+        SELECT
+          p.*,
+          c.name AS category_name
+        FROM products p
+        LEFT JOIN categories c
+          ON c.id = p.category_id
+        WHERE p.id = ?
+      `).get(id);
+
+    if (!product) {
+      return res.redirect("/admin");
+    }
+
+    const categories =
+      db.prepare(`
+        SELECT *
+        FROM categories
+        ORDER BY sort_order ASC, id ASC
+      `).all();
+
+    const images =
+      getProductImages(id);
+
+   res.render(
+  "edit",
+  {
+    product,
+    categories,
+    images
+  }
+);
+  }
+);
 app.post(
   "/admin/edit/:id",
   multiUpload,

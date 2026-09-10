@@ -351,6 +351,74 @@
       line-height: 1.6;
     }
 
+    /* ================= WRITE REVIEW ================= */
+
+    .write-review {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    .write-review-title {
+      font-size: 20px;
+      margin-bottom: 18px;
+      color: #222;
+    }
+
+    .review-field {
+      margin-bottom: 15px;
+    }
+
+    .review-field label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+      color: #333;
+    }
+
+    .review-field input,
+    .review-field select,
+    .review-field textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      font-size: 15px;
+      background: white;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .review-field input:focus,
+    .review-field select:focus,
+    .review-field textarea:focus {
+      border-color: #ff6a00;
+    }
+
+    .review-field textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .submit-review-btn {
+      width: 100%;
+      border: none;
+      background: #ff6a00;
+      color: white;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .submit-review-btn:hover {
+      background: #e85e00;
+    }
+
     /* ================= FOOTER ================= */
 
     footer {
@@ -428,6 +496,11 @@
       .section-title {
         font-size: 20px;
       }
+
+      .write-review {
+        padding: 16px;
+      }
+
     }
 
     @media (max-width: 450px) {
@@ -467,60 +540,71 @@ AUTOMATIC PRICE / DISCOUNT CALCULATION
 ========================================================= */
 
 const originalPrice = Number(
-product.original_price || 0
+  product.original_price || 0
 );
 
 const sellingPrice = Number(
-product.price || 0
+  product.price || 0
 );
 
 let discountPercent = 0;
 
 if (
-originalPrice > 0 &&
-sellingPrice > 0 &&
-sellingPrice < originalPrice
+  originalPrice > 0 &&
+  sellingPrice > 0 &&
+  sellingPrice < originalPrice
 ) {
 
-discountPercent = Math.round(
-((originalPrice - sellingPrice) /
-originalPrice) * 100
-);
+  discountPercent = Math.round(
+    ((originalPrice - sellingPrice) /
+    originalPrice) * 100
+  );
 
 }
 
 const savingAmount =
-originalPrice > sellingPrice
-? originalPrice - sellingPrice
-: 0;
+  originalPrice > sellingPrice
+    ? originalPrice - sellingPrice
+    : 0;
+
 
 /* =========================================================
 PRODUCT IMAGES
 ========================================================= */
 
 const productImages =
-(images && images.length)
-? images
-: (
-product.image_url
-? [product.image_url]
-: ['/images/placeholder.png']
-);
+  (images && images.length)
+    ? images.map(function(image) {
+        return image.image_url ||
+               image.url ||
+               image.path ||
+               image.filename;
+      })
+    : (
+        product.image_url
+          ? [product.image_url]
+          : ['/images/placeholder.png']
+      );
 
 %>
+
 
 <!-- ================= HEADER ================= -->
 
 <header>
 
   <a href="/" class="logo">
+
     <img
       src="/images/logo.png"
       alt="DealBaazi"
     >
+
   </a>
 
+
   <div class="search-box">
+
     <input
       type="text"
       placeholder="Search deals..."
@@ -532,7 +616,9 @@ product.image_url
         }
       "
     >
+
   </div>
+
 
   <a href="/" class="home-btn">
     Home
@@ -540,303 +626,390 @@ product.image_url
 
 </header>
 
+
 <!-- ================= MAIN PRODUCT ================= -->
 
 <main class="container">
 
   <div class="product-box">
 
-```
-<!-- ================= GALLERY ================= -->
 
-<div class="gallery">
+    <!-- ================= GALLERY ================= -->
 
-  <div
-    class="main-image"
-    id="mainImageBox"
-  >
+    <div class="gallery">
 
-    <button
-      type="button"
-      class="arrow left"
-      onclick="previousImage()"
-    >
-      ‹
-    </button>
+      <div
+        class="main-image"
+        id="mainImageBox"
+      >
 
-    <img
-      id="mainImage"
-      src="<%= productImages[0] %>"
-      alt="<%= product.name %>"
-    >
-
-    <button
-      type="button"
-      class="arrow right"
-      onclick="nextImage()"
-    >
-      ›
-    </button>
-
-  </div>
+        <button
+          type="button"
+          class="arrow left"
+          onclick="previousImage()"
+        >
+          ‹
+        </button>
 
 
-  <% if (productImages.length > 1) { %>
-
-    <div class="thumbnails">
-
-      <% productImages.forEach((image, index) => { %>
-
-        <div
-          class="thumbnail <%= index === 0 ? 'active' : '' %>"
-          onclick="showImage(<%= index %>)"
+        <img
+          id="mainImage"
+          src="<%= productImages[0] %>"
+          alt="<%= product.name %>"
         >
 
-          <img
-            src="<%= image %>"
-            alt="<%= product.name %>"
-          >
+
+        <button
+          type="button"
+          class="arrow right"
+          onclick="nextImage()"
+        >
+          ›
+        </button>
+
+      </div>
+
+
+      <% if (productImages.length > 1) { %>
+
+        <div class="thumbnails">
+
+          <% productImages.forEach((image, index) => { %>
+
+            <div
+              class="thumbnail <%= index === 0 ? 'active' : '' %>"
+              onclick="showImage(<%= index %>)"
+            >
+
+              <img
+                src="<%= image %>"
+                alt="<%= product.name %>"
+              >
+
+            </div>
+
+          <% }) %>
 
         </div>
 
-      <% }) %>
-
-    </div>
-
-  <% } %>
-
-</div>
-
-
-<!-- ================= PRODUCT INFO ================= -->
-
-<div class="product-info">
-
-
-  <div class="deal-badge">
-    DEALBAAZI DEAL
-  </div>
-
-
-  <h1 class="product-title">
-    <%= product.name %>
-  </h1>
-
-
-  <% if (product.rating) { %>
-
-    <div class="rating">
-
-      ★ <%= product.rating %> / 5
-
-    </div>
-
-  <% } %>
-
-
-  <!-- ================= PRICE ================= -->
-
-  <div class="price-section">
-
-    <div class="price-row">
-
-      <!-- SELLING PRICE -->
-
-      <span class="selling-price">
-
-        ₹<%= sellingPrice.toLocaleString('en-IN') %>
-
-      </span>
-
-
-      <!-- ORIGINAL PRICE -->
-
-      <% if (originalPrice > sellingPrice) { %>
-
-        <span class="original-price">
-
-          ₹<%= originalPrice.toLocaleString('en-IN') %>
-
-        </span>
-
-      <% } %>
-
-
-      <!-- AUTOMATIC DISCOUNT -->
-
-      <% if (discountPercent > 0) { %>
-
-        <span class="discount">
-
-          <%= discountPercent %>% OFF
-
-        </span>
-
       <% } %>
 
     </div>
 
 
-    <!-- SAVING -->
+    <!-- ================= PRODUCT INFO ================= -->
 
-    <% if (savingAmount > 0) { %>
+    <div class="product-info">
 
-      <div class="save-text">
-
-        You Save ₹<%= savingAmount.toLocaleString('en-IN') %>
-
-      </div>
-
-    <% } %>
-
-  </div>
-
-
-  <!-- ================= BUY NOW ================= -->
-
-  <a
-    href="/buy/<%= product.id %>"
-    class="buy-btn"
-  >
-
-    🛒 BUY NOW
-
-  </a>
-
-
-  <div class="affiliate-note">
-
-    You will be redirected directly to the seller.
-
-  </div>
-
-
-</div>
-```
-
-  </div>
-
-  <!-- ================= DESCRIPTION ================= -->
-
-<% if (product.description) { %>
-
-```
-<section class="description-box">
-
-  <h2 class="section-title">
-    Product Description
-  </h2>
-
-  <div class="description">
-    <%= product.description %>
-  </div>
-
-</section>
-```
-
-<% } %>
-
-  <!-- ================= REVIEWS ================= -->
-
-  <section class="reviews-box">
-
-```
-<h2 class="section-title">
-  Customer Reviews
-</h2>
-
-
-<% if (reviewStats && reviewStats.count > 0) { %>
-
-  <div class="review-summary">
-
-    <div class="big-rating">
-
-      <%= Number(reviewStats.average).toFixed(1) %> ★
-
-    </div>
-
-    <div>
-
-      <strong>
-        <%= reviewStats.count %>
-      </strong>
-
-      reviews
-
-    </div>
-
-  </div>
-
-<% } %>
-
-
-<% if (reviews && reviews.length > 0) { %>
-
-  <% reviews.forEach(review => { %>
-
-    <div class="review-item">
-
-      <div class="review-name">
-
-        <%= review.name || 'Customer' %>
-
+      <div class="deal-badge">
+        DEALBAAZI DEAL
       </div>
 
 
-      <div class="review-stars">
+      <h1 class="product-title">
+        <%= product.name %>
+      </h1>
 
-        <% for (let i = 1; i <= 5; i++) { %>
 
-          <%= i <= review.rating ? '★' : '☆' %>
+      <% if (product.rating) { %>
+
+        <div class="rating">
+          ★ <%= product.rating %> / 5
+        </div>
+
+      <% } %>
+
+
+      <!-- ================= PRICE ================= -->
+
+      <div class="price-section">
+
+        <div class="price-row">
+
+          <span class="selling-price">
+            ₹<%= sellingPrice.toLocaleString('en-IN') %>
+          </span>
+
+
+          <% if (originalPrice > sellingPrice) { %>
+
+            <span class="original-price">
+              ₹<%= originalPrice.toLocaleString('en-IN') %>
+            </span>
+
+          <% } %>
+
+
+          <% if (discountPercent > 0) { %>
+
+            <span class="discount">
+              <%= discountPercent %>% OFF
+            </span>
+
+          <% } %>
+
+        </div>
+
+
+        <% if (savingAmount > 0) { %>
+
+          <div class="save-text">
+            You Save ₹<%= savingAmount.toLocaleString('en-IN') %>
+          </div>
 
         <% } %>
 
       </div>
 
 
-      <div class="review-comment">
+      <!-- ================= BUY NOW ================= -->
 
-        <%= review.comment %>
+      <a
+        href="/buy/<%= product.id %>"
+        class="buy-btn"
+      >
+        🛒 BUY NOW
+      </a>
 
+
+      <div class="affiliate-note">
+        You will be redirected directly to the seller.
       </div>
 
     </div>
 
-  <% }) %>
-
-<% } else { %>
-
-  <div style="
-    color:#777;
-    padding:15px 0;
-  ">
-
-    No reviews yet.
-
   </div>
 
-<% } %>
-```
+
+  <!-- ================= DESCRIPTION ================= -->
+
+  <% if (product.description) { %>
+
+    <section class="description-box">
+
+      <h2 class="section-title">
+        Product Description
+      </h2>
+
+
+      <div class="description">
+        <%= product.description %>
+      </div>
+
+    </section>
+
+  <% } %>
+
+
+  <!-- ================= REVIEWS ================= -->
+
+  <section class="reviews-box">
+
+    <h2 class="section-title">
+      Customer Reviews
+    </h2>
+
+
+    <!-- ================= PUBLIC REVIEW FORM ================= -->
+
+    <div class="write-review">
+
+      <h3 class="write-review-title">
+        ⭐ Write a Review
+      </h3>
+
+
+      <form
+        action="/product/<%= product.id %>/review"
+        method="POST"
+      >
+
+
+        <!-- NAME -->
+
+        <div class="review-field">
+
+          <label for="reviewName">
+            Your Name
+          </label>
+
+          <input
+            type="text"
+            id="reviewName"
+            name="name"
+            placeholder="Enter your name"
+            maxlength="100"
+            required
+          >
+
+        </div>
+
+
+        <!-- RATING -->
+
+        <div class="review-field">
+
+          <label for="reviewRating">
+            Your Rating
+          </label>
+
+          <select
+            id="reviewRating"
+            name="rating"
+            required
+          >
+
+            <option value="5">
+              ★★★★★ - 5 Stars
+            </option>
+
+            <option value="4">
+              ★★★★☆ - 4 Stars
+            </option>
+
+            <option value="3">
+              ★★★☆☆ - 3 Stars
+            </option>
+
+            <option value="2">
+              ★★☆☆☆ - 2 Stars
+            </option>
+
+            <option value="1">
+              ★☆☆☆☆ - 1 Star
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- COMMENT -->
+
+        <div class="review-field">
+
+          <label for="reviewComment">
+            Your Review
+          </label>
+
+          <textarea
+            id="reviewComment"
+            name="comment"
+            rows="5"
+            maxlength="1000"
+            placeholder="Write your experience about this product..."
+            required
+          ></textarea>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button
+          type="submit"
+          class="submit-review-btn"
+        >
+          ⭐ SUBMIT REVIEW
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <!-- ================= REVIEW SUMMARY ================= -->
+
+    <% if (reviewStats && reviewStats.count > 0) { %>
+
+      <div class="review-summary">
+
+        <div class="big-rating">
+          <%= Number(reviewStats.average).toFixed(1) %> ★
+        </div>
+
+        <div>
+
+          <strong>
+            <%= reviewStats.count %>
+          </strong>
+
+          reviews
+
+        </div>
+
+      </div>
+
+    <% } %>
+
+
+    <!-- ================= EXISTING REVIEWS ================= -->
+
+    <% if (reviews && reviews.length > 0) { %>
+
+      <% reviews.forEach(review => { %>
+
+        <div class="review-item">
+
+          <div class="review-name">
+            <%= review.name || 'Customer' %>
+          </div>
+
+
+          <div class="review-stars">
+
+            <% for (let i = 1; i <= 5; i++) { %>
+
+              <%= i <= review.rating ? '★' : '☆' %>
+
+            <% } %>
+
+          </div>
+
+
+          <div class="review-comment">
+            <%= review.comment %>
+          </div>
+
+        </div>
+
+      <% }) %>
+
+
+    <% } else { %>
+
+      <div style="
+        color:#777;
+        padding:15px 0;
+      ">
+
+        No reviews yet.
+
+      </div>
+
+    <% } %>
 
   </section>
 
 </main>
 
+
 <!-- ================= FOOTER ================= -->
 
 <footer>
 
-© <%= new Date().getFullYear() %> DealBaazi.
-All Rights Reserved.
+  © <%= new Date().getFullYear() %> DealBaazi.
+  All Rights Reserved.
 
 </footer>
+
 
 <!-- ================= GALLERY SCRIPT ================= -->
 
 <script>
 
-  const productImages = <%- JSON.stringify(productImages) %>;
+  const productImages =
+    <%- JSON.stringify(productImages) %>;
 
   let currentImage = 0;
 
