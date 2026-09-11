@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>DealBaazi Admin</title>
+  <title>DealBaazi Admin Panel</title>
 
   <style>
     * {
@@ -14,9 +14,14 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f9;
       color: #222;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
     }
 
     button,
@@ -26,192 +31,164 @@
       font-family: inherit;
     }
 
-    a {
-      text-decoration: none;
-    }
-
-    /* =========================
-       TOP BAR
-    ========================= */
-
     .topbar {
-      background: linear-gradient(
-        135deg,
-        #ff6a00,
-        #ff3d00
-      );
-      color: #fff;
-      padding: 14px 22px;
+      background: #111827;
+      color: white;
+      min-height: 65px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 15px;
+      padding: 12px 25px;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 4px 15px rgba(0,0,0,.12);
+      box-shadow: 0 2px 10px rgba(0,0,0,.15);
     }
 
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
+      font-size: 24px;
+      font-weight: 800;
     }
 
-    .brand img {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-      background: #fff;
-      border-radius: 10px;
-      padding: 5px;
-    }
-
-    .brand h1 {
-      font-size: 20px;
-      margin-bottom: 3px;
-    }
-
-    .brand p {
-      font-size: 12px;
-      opacity: .9;
+    .brand span {
+      color: #ff6b00;
     }
 
     .top-actions {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      gap: 10px;
+      align-items: center;
     }
 
-    .top-actions a {
-      color: #fff;
-      border: 1px solid rgba(255,255,255,.35);
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 13px;
+    .top-btn {
+      background: #374151;
+      color: white;
+      padding: 9px 14px;
+      border-radius: 7px;
+      font-size: 14px;
     }
 
-    .top-actions a:hover {
-      background: rgba(255,255,255,.15);
+    .logout-btn {
+      background: #dc2626;
     }
 
-    /* =========================
-       CONTAINER
-    ========================= */
-
-    .container {
-      width: min(1400px, 94%);
-      margin: 22px auto 80px;
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 65px);
     }
 
-    /* =========================
-       STATS
-    ========================= */
-
-    .stats {
-      display: grid;
-      grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-      gap: 15px;
-      margin-bottom: 22px;
+    .sidebar {
+      width: 240px;
+      background: #1f2937;
+      color: white;
+      padding: 20px 12px;
+      flex-shrink: 0;
     }
 
-    .stat-card {
-      background: #fff;
-      padding: 18px;
-      border-radius: 14px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.07);
+    .sidebar h3 {
+      font-size: 12px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      margin: 10px 12px;
     }
 
-    .stat-card .number {
+    .nav-link {
+      display: block;
+      padding: 12px 14px;
+      border-radius: 7px;
+      margin-bottom: 5px;
+      color: #e5e7eb;
+      font-size: 14px;
+    }
+
+    .nav-link:hover {
+      background: #374151;
+    }
+
+    .main {
+      flex: 1;
+      padding: 25px;
+      max-width: 1500px;
+    }
+
+    .page-title {
+      margin-bottom: 20px;
+    }
+
+    .page-title h1 {
       font-size: 28px;
-      font-weight: 800;
-      color: #ff5a00;
       margin-bottom: 5px;
     }
 
-    .stat-card .label {
-      color: #666;
-      font-size: 13px;
+    .page-title p {
+      color: #6b7280;
+      font-size: 14px;
     }
 
-    /* =========================
-       QUICK NAV
-    ========================= */
-
-    .quick-nav {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 22px;
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
     }
 
-    .quick-nav a {
-      background: #fff;
-      color: #333;
-      border: 1px solid #e5e5e5;
-      padding: 11px 15px;
-      border-radius: 9px;
-      font-weight: 700;
-      font-size: 13px;
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+      border-left: 4px solid #ff6b00;
     }
 
-    .quick-nav a:hover {
-      border-color: #ff5a00;
-      color: #ff5a00;
+    .stat-card h3 {
+      font-size: 28px;
+      margin-bottom: 5px;
     }
 
-    /* =========================
-       SECTION
-    ========================= */
+    .stat-card p {
+      color: #6b7280;
+      font-size: 14px;
+    }
 
     .section {
-      background: #fff;
-      border-radius: 15px;
-      padding: 22px;
-      margin-bottom: 22px;
-      box-shadow: 0 3px 14px rgba(0,0,0,.06);
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      overflow: hidden;
     }
 
-    .section-title {
+    .section-header {
+      padding: 17px 20px;
+      border-bottom: 1px solid #eee;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #eee;
+      gap: 10px;
     }
 
-    .section-title h2 {
+    .section-header h2 {
       font-size: 19px;
     }
 
-    .section-title p {
-      color: #777;
-      font-size: 12px;
-      margin-top: 4px;
+    .section-body {
+      padding: 20px;
     }
 
-    /* =========================
-       FORMS
-    ========================= */
-
-    .form-grid {
+    .grid-2 {
       display: grid;
-      grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 15px;
     }
 
     .form-group {
-      margin-bottom: 3px;
-    }
-
-    .form-group.full {
-      grid-column: 1 / -1;
+      margin-bottom: 15px;
     }
 
     label {
@@ -219,574 +196,330 @@
       font-size: 13px;
       font-weight: 700;
       margin-bottom: 7px;
-      color: #333;
+      color: #374151;
     }
 
     input,
     textarea,
     select {
       width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 9px;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
       padding: 11px 12px;
-      font-size: 14px;
       outline: none;
-      background: #fff;
+      background: white;
     }
 
     input:focus,
     textarea:focus,
     select:focus {
-      border-color: #ff6500;
-      box-shadow:
-        0 0 0 3px rgba(255,101,0,.08);
+      border-color: #ff6b00;
+      box-shadow: 0 0 0 2px rgba(255,107,0,.1);
     }
 
     textarea {
+      min-height: 100px;
       resize: vertical;
-      min-height: 95px;
     }
 
     .checkbox-row {
       display: flex;
-      gap: 18px;
       flex-wrap: wrap;
-      align-items: center;
-      margin-top: 8px;
+      gap: 15px;
+      margin: 10px 0 15px;
     }
 
     .checkbox {
       display: flex;
       align-items: center;
       gap: 7px;
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 14px;
     }
 
     .checkbox input {
       width: auto;
     }
 
-    /* =========================
-       BUTTONS
-    ========================= */
-
     .btn {
       border: none;
-      border-radius: 9px;
-      padding: 11px 16px;
+      border-radius: 7px;
+      padding: 10px 15px;
       cursor: pointer;
       font-weight: 700;
-      font-size: 13px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      font-size: 14px;
+      display: inline-block;
     }
 
     .btn-primary {
-      background: #ff5a00;
-      color: #fff;
+      background: #ff6b00;
+      color: white;
     }
 
     .btn-primary:hover {
-      background: #e94f00;
+      background: #e85d00;
     }
 
-    .btn-secondary {
-      background: #f1f1f1;
-      color: #333;
+    .btn-green {
+      background: #16a34a;
+      color: white;
     }
 
-    .btn-danger {
-      background: #dc3545;
-      color: #fff;
+    .btn-blue {
+      background: #2563eb;
+      color: white;
     }
 
-    .btn-success {
-      background: #198754;
-      color: #fff;
+    .btn-red {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-gray {
+      background: #6b7280;
+      color: white;
     }
 
     .btn-small {
-      padding: 8px 10px;
+      padding: 7px 10px;
       font-size: 12px;
     }
 
-    /* =========================
-       HOMEPAGE EDITOR
-    ========================= */
-
-    .editor-intro {
-      background: linear-gradient(
-        135deg,
-        #fff4ec,
-        #fff
-      );
-      border: 1px solid #ffe0cc;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 18px;
-    }
-
-    .editor-intro strong {
-      color: #f05a00;
-    }
-
-    .image-preview {
-      margin-top: 8px;
-      width: 110px;
-      height: 70px;
-      object-fit: contain;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      background: #fafafa;
-      padding: 5px;
-    }
-
-    .feature-editor {
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 15px;
-      background: #fafafa;
-    }
-
-    .feature-editor h3 {
-      font-size: 15px;
-      margin-bottom: 13px;
-    }
-
-    .section-toggle {
-      display: grid;
-      grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .toggle-box {
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 12px;
-      background: #fafafa;
-    }
-
-    .toggle-box label {
-      margin: 0;
-    }
-
-    /* =========================
-       BANNERS
-    ========================= */
-
-    .banner-form {
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 18px;
-      background: #fafafa;
-    }
-
-    .banner-list {
-      display: grid;
-      gap: 15px;
-    }
-
-    .banner-card {
-      border: 1px solid #eee;
-      border-radius: 12px;
-      overflow: hidden;
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      background: #fff;
-    }
-
-    .banner-image {
-      min-height: 150px;
-      background: #f5f5f5;
+    .fetch-row {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      gap: 10px;
     }
 
-    .banner-image img {
-      width: 100%;
-      height: 100%;
-      max-height: 220px;
-      object-fit: cover;
+    .fetch-row input {
+      flex: 1;
     }
 
-    .banner-content {
-      padding: 16px;
-    }
-
-    .banner-content h3 {
-      margin-bottom: 7px;
-    }
-
-    .banner-content p {
-      color: #666;
+    .fetch-status {
+      margin-top: 10px;
       font-size: 13px;
-      margin-bottom: 7px;
+      display: none;
+      padding: 10px;
+      border-radius: 6px;
     }
 
-    .banner-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
+    .fetch-status.show {
+      display: block;
     }
 
-    .status {
-      display: inline-block;
-      padding: 5px 8px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 9px;
+    .fetch-success {
+      background: #dcfce7;
+      color: #166534;
     }
 
-    .status.active {
-      background: #e8f8ee;
-      color: #168044;
+    .fetch-error {
+      background: #fee2e2;
+      color: #991b1b;
     }
 
-    .status.inactive {
-      background: #fcebec;
-      color: #b4232d;
-    }
-
-    /* =========================
-       PRODUCT TABLE
-    ========================= */
-
-    .table-tools {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .table-tools input {
-      max-width: 300px;
-    }
-
-    .table-tools select {
-      max-width: 200px;
+    .fetch-warning {
+      background: #fef3c7;
+      color: #92400e;
     }
 
     .table-wrap {
+      width: 100%;
       overflow-x: auto;
-      border: 1px solid #eee;
-      border-radius: 10px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 850px;
+      min-width: 800px;
     }
 
     th,
     td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #eee;
       text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #eee;
       font-size: 13px;
       vertical-align: middle;
     }
 
     th {
-      background: #fafafa;
-      font-size: 12px;
-      color: #555;
+      background: #f9fafb;
+      font-weight: 700;
     }
 
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .product-thumb {
+    .product-img {
       width: 55px;
       height: 55px;
       object-fit: contain;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      background: #fff;
-      padding: 3px;
-    }
-
-    .product-name {
-      font-weight: 700;
-      max-width: 220px;
-    }
-
-    .price {
-      font-weight: 800;
-      color: #111;
-    }
-
-    .old-price {
-      color: #999;
-      text-decoration: line-through;
-      font-size: 11px;
-      margin-left: 4px;
+      background: #f8f8f8;
+      border-radius: 6px;
+      padding: 4px;
     }
 
     .actions {
       display: flex;
-      gap: 5px;
       flex-wrap: wrap;
+      gap: 5px;
     }
 
-    /* =========================
-       CATEGORY / REVIEW CARDS
-    ========================= */
-
-    .category-grid {
-      display: grid;
-      grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .category-card {
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 13px;
-      background: #fff;
-    }
-
-    .category-card strong {
-      display: block;
-      margin-bottom: 7px;
-    }
-
-    .category-card small {
-      color: #777;
-    }
-
-    .review-card {
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-
-    .review-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .stars {
-      color: #ff9d00;
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 11px;
       font-weight: 700;
     }
 
-    .review-comment {
-      color: #555;
-      font-size: 13px;
-      margin: 8px 0;
+    .badge-green {
+      background: #dcfce7;
+      color: #166534;
     }
 
-    /* =========================
-       MODAL
-    ========================= */
+    .badge-red {
+      background: #fee2e2;
+      color: #991b1b;
+    }
 
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.55);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
+    .badge-orange {
+      background: #ffedd5;
+      color: #9a3412;
+    }
+
+    .badge-blue {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .banner-preview {
+      width: 100%;
+      max-width: 220px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 7px;
+      background: #eee;
+    }
+
+    .logo-preview {
+      max-width: 180px;
+      max-height: 70px;
+      object-fit: contain;
+      margin-top: 5px;
+    }
+
+    .danger-box {
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      border-radius: 8px;
       padding: 15px;
     }
 
-    .modal.show {
+    .empty {
+      text-align: center;
+      padding: 30px;
+      color: #777;
+    }
+
+    .rating {
+      color: #f59e0b;
+      font-weight: bold;
+    }
+
+    .review-card {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+    }
+
+    .review-card:last-child {
+      border-bottom: none;
+    }
+
+    .review-top {
       display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 8px;
     }
 
-    .modal-box {
-      background: #fff;
-      width: min(520px, 100%);
-      max-height: 90vh;
-      overflow-y: auto;
-      border-radius: 15px;
-      padding: 20px;
+    .review-text {
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 10px;
     }
 
-    .modal-head {
+    .help {
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .switch-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      border: 1px solid #eee;
+      padding: 12px;
+      border-radius: 7px;
+      margin-bottom: 8px;
     }
 
-    .close {
-      border: none;
-      background: #eee;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    /* =========================
-       MOBILE BOTTOM NAV
-    ========================= */
-
-    .mobile-nav {
-      display: none;
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 900px) {
-
+    @media (max-width: 1000px) {
       .stats {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
       }
 
-      .section-toggle {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-      }
-
-      .category-grid {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-      }
-
-      .banner-card {
-        grid-template-columns: 1fr;
-      }
-
-      .banner-image {
-        min-height: 180px;
+      .grid-3 {
+        grid-template-columns: 1fr 1fr;
       }
     }
 
-    @media (max-width: 650px) {
-
-      body {
-        padding-bottom: 70px;
-      }
-
+    @media (max-width: 750px) {
       .topbar {
-        padding: 10px 12px;
+        padding: 12px 15px;
       }
 
-      .brand img {
-        width: 42px;
-        height: 42px;
-      }
-
-      .brand h1 {
-        font-size: 17px;
-      }
-
-      .brand p {
-        font-size: 10px;
-      }
-
-      .top-actions {
+      .top-actions .top-btn:first-child {
         display: none;
       }
 
-      .container {
-        width: 94%;
-        margin-top: 15px;
+      .layout {
+        display: block;
       }
 
-      .stats {
-        gap: 9px;
-      }
-
-      .stat-card {
-        padding: 13px;
-      }
-
-      .stat-card .number {
-        font-size: 23px;
-      }
-
-      .section {
-        padding: 15px;
-        border-radius: 12px;
-      }
-
-      .section-title h2 {
-        font-size: 17px;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .form-group.full {
-        grid-column: auto;
-      }
-
-      .section-toggle {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .category-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .quick-nav {
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        padding-bottom: 4px;
-      }
-
-      .quick-nav a {
-        white-space: nowrap;
-      }
-
-      .mobile-nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 62px;
-        background: #fff;
-        border-top: 1px solid #ddd;
-        display: grid;
-        grid-template-columns:
-          repeat(5, 1fr);
-        z-index: 1500;
-        box-shadow: 0 -3px 15px rgba(0,0,0,.08);
-      }
-
-      .mobile-nav a {
+      .sidebar {
+        width: 100%;
+        padding: 10px;
         display: flex;
+        overflow-x: auto;
+        gap: 5px;
+      }
+
+      .sidebar h3 {
+        display: none;
+      }
+
+      .nav-link {
+        white-space: nowrap;
+        margin: 0;
+      }
+
+      .main {
+        padding: 15px;
+      }
+
+      .grid-2,
+      .grid-3,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .section-body {
+        padding: 15px;
+      }
+
+      .fetch-row {
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #555;
-        font-size: 10px;
-        gap: 3px;
       }
 
-      .mobile-nav a span {
-        font-size: 20px;
-      }
-
-      input,
-      textarea,
-      select {
-        font-size: 16px;
+      .page-title h1 {
+        font-size: 23px;
       }
     }
   </style>
@@ -794,40 +527,61 @@
 
 <body>
 
-<!-- ======================================================
-     TOPBAR
-====================================================== -->
+<%
+  const safeSettings = siteSettings || {};
+
+  function getSetting(key, fallback = "") {
+    if (safeSettings && typeof safeSettings === "object") {
+      if (safeSettings[key] !== undefined && safeSettings[key] !== null) {
+        return safeSettings[key];
+      }
+    }
+    return fallback;
+  }
+
+  const productList = products || [];
+  const categoryList = categories || [];
+  const reviewList = reviews || [];
+  const bannerList = banners || [];
+  const statData = stats || {};
+
+  const totalProducts =
+    statData.totalProducts ??
+    statData.products ??
+    productList.length;
+
+  const totalCategories =
+    statData.totalCategories ??
+    statData.categories ??
+    categoryList.length;
+
+  const totalReviews =
+    statData.totalReviews ??
+    statData.reviews ??
+    reviewList.length;
+
+  const totalClicks =
+    statData.totalClicks ??
+    statData.clicks ??
+    productList.reduce((sum, p) => sum + (Number(p.clicks) || 0), 0);
+
+  const logoValue = getSetting("logo", "/images/logo.png");
+  const heroValue = getSetting("hero_image", "");
+%>
 
 <header class="topbar">
 
   <div class="brand">
-
-    <img
-      src="<%= siteSettings && siteSettings.logo_url ? siteSettings.logo_url : '/images/logo.png' %>"
-      alt="DealBaazi"
-    >
-
-    <div>
-      <h1>DealBaazi Admin</h1>
-      <p>Manage your deals & products</p>
-    </div>
-
+    Deal<span>Baazi</span> Admin
   </div>
 
   <div class="top-actions">
 
-    <a
-      href="/"
-      target="_blank"
-    >
-      🌐 Website
+    <a href="/" target="_blank" class="top-btn">
+      🌐 View Website
     </a>
 
-    <a href="/password">
-      🔐 Password
-    </a>
-
-    <a href="/logout">
+    <a href="/logout" class="top-btn logout-btn">
       🚪 Logout
     </a>
 
@@ -836,2630 +590,1919 @@
 </header>
 
 
-<div class="container">
+<div class="layout">
 
-<!-- ======================================================
-     STATS
-====================================================== -->
+  <aside class="sidebar">
 
-<section class="stats">
+    <h3>Dashboard</h3>
 
-  <div class="stat-card">
-    <div class="number">
-      <%= stats.totalProducts %>
-    </div>
+    <a href="#dashboard" class="nav-link">
+      📊 Dashboard
+    </a>
 
-    <div class="label">
-      Total Products
-    </div>
-  </div>
+    <a href="#products" class="nav-link">
+      🛍️ Products
+    </a>
 
+    <a href="#categories" class="nav-link">
+      📂 Categories
+    </a>
 
-  <div class="stat-card">
-    <div class="number">
-      <%= stats.liveProducts %>
-    </div>
+    <a href="#homepage" class="nav-link">
+      🏠 Homepage
+    </a>
 
-    <div class="label">
-      Live Products
-    </div>
-  </div>
+    <a href="#banners" class="nav-link">
+      🖼️ Banners
+    </a>
 
+    <a href="#reviews" class="nav-link">
+      ⭐ Reviews
+    </a>
 
-  <div class="stat-card">
-    <div class="number">
-      <%= stats.categories %>
-    </div>
+<a href="#social-media" class="nav-link">
+  📱 Social Media
+</a>
 
-    <div class="label">
-      Categories
-    </div>
-  </div>
+    <a href="/password" class="nav-link">
+      🔐 Change Password
+    </a>
 
-
-  <div class="stat-card">
-    <div class="number">
-      <%= stats.reviews %>
-    </div>
-
-    <div class="label">
-      Reviews
-    </div>
-  </div>
-
-</section>
+  </aside>
 
 
-<!-- ======================================================
-     QUICK NAV
-====================================================== -->
+  <main class="main">
 
-<nav class="quick-nav">
+    <div class="page-title" id="dashboard">
 
-  <a href="#homepage">
-    🏠 Homepage
-  </a>
-
-  <a href="#add-product">
-    ➕ Add Product
-  </a>
-
-  <a href="#categories">
-    📂 Categories
-  </a>
-
-  <a href="#products">
-    🛍️ Products
-  </a>
-
-  <a href="#reviews">
-    ⭐ Reviews
-  </a>
-
-</nav>
-
-
-<!-- ======================================================
-     HOMEPAGE EDITOR
-====================================================== -->
-
-<section
-  class="section"
-  id="homepage"
->
-
-  <div class="section-title">
-
-    <div>
-      <h2>🏠 Homepage Editor</h2>
+      <h1>DealBaazi Dashboard</h1>
 
       <p>
-        Logo, hero text, features aur homepage sections yahin se change karo.
-      </p>
-    </div>
-
-  </div>
-
-
-  <div class="editor-intro">
-
-    <strong>💡 Easy Editing:</strong>
-
-    Yahan changes karne ke baad
-    <strong>Save Homepage</strong>
-    dabao. Website par changes immediately show honge.
-    Code edit karne ki zarurat nahi.
-  </div>
-
-
-  <form
-    action="/admin/homepage/save"
-    method="POST"
-    enctype="multipart/form-data"
-  >
-
-    <div class="form-grid">
-
-      <!-- LOGO -->
-
-      <div class="form-group">
-
-        <label>
-          Website Logo
-        </label>
-
-        <input
-          type="file"
-          name="logo"
-          accept="image/jpeg,image/png,image/webp"
-        >
-
-        <% if (siteSettings && siteSettings.logo_url) { %>
-
-          <img
-            class="image-preview"
-            src="<%= siteSettings.logo_url %>"
-            alt="Logo"
-          >
-
-        <% } %>
-
-      </div>
-
-
-      <!-- HERO IMAGE -->
-
-      <div class="form-group">
-
-        <label>
-          Hero Banner Image
-        </label>
-
-        <input
-          type="file"
-          name="hero_image"
-          accept="image/jpeg,image/png,image/webp"
-        >
-
-        <% if (siteSettings && siteSettings.hero_image) { %>
-
-          <img
-            class="image-preview"
-            src="<%= siteSettings.hero_image %>"
-            alt="Hero"
-          >
-
-        <% } %>
-
-      </div>
-
-
-      <!-- HERO TITLE -->
-
-      <div class="form-group full">
-
-        <label>
-          Hero Main Heading
-        </label>
-
-        <input
-          type="text"
-          name="hero_title"
-          value="<%= siteSettings.hero_title || '' %>"
-          placeholder="Best Deals. Best Prices. DealBaazi."
-        >
-
-      </div>
-
-
-      <!-- HERO DESCRIPTION -->
-
-      <div class="form-group full">
-
-        <label>
-          Hero Description
-        </label>
-
-        <textarea
-          name="hero_description"
-          placeholder="Enter homepage description"
-        ><%= siteSettings.hero_description || '' %></textarea>
-
-      </div>
-
-
-      <!-- HERO BUTTON -->
-
-      <div class="form-group">
-
-        <label>
-          Hero Button Text
-        </label>
-
-        <input
-          type="text"
-          name="hero_button_text"
-          value="<%= siteSettings.hero_button_text || '' %>"
-          placeholder="Explore Deals"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Hero Button Link
-        </label>
-
-        <input
-          type="text"
-          name="hero_button_link"
-          value="<%= siteSettings.hero_button_link || '' %>"
-          placeholder="#deals"
-        >
-
-      </div>
-
-    </div>
-
-
-    <!-- FEATURE 1 -->
-
-    <div class="feature-editor">
-
-      <h3>
-        Feature 1
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label>
-            Icon
-          </label>
-
-          <input
-            type="text"
-            name="feature1_icon"
-            value="<%= siteSettings.feature1_icon || '🔥' %>"
-          >
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            Title
-          </label>
-
-          <input
-            type="text"
-            name="feature1_title"
-            value="<%= siteSettings.feature1_title || '' %>"
-          >
-
-        </div>
-
-        <div class="form-group full">
-
-          <label>
-            Description
-          </label>
-
-          <input
-            type="text"
-            name="feature1_description"
-            value="<%= siteSettings.feature1_description || '' %>"
-          >
-
-        </div>
-
-        <label class="checkbox">
-
-          <input
-            type="checkbox"
-            name="feature1_enabled"
-            <%= siteSettings.feature1_enabled !== '0' ? 'checked' : '' %>
-          >
-
-          Show Feature 1
-
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- FEATURE 2 -->
-
-    <div class="feature-editor">
-
-      <h3>
-        Feature 2
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label>
-            Icon
-          </label>
-
-          <input
-            type="text"
-            name="feature2_icon"
-            value="<%= siteSettings.feature2_icon || '💰' %>"
-          >
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            Title
-          </label>
-
-          <input
-            type="text"
-            name="feature2_title"
-            value="<%= siteSettings.feature2_title || '' %>"
-          >
-
-        </div>
-
-        <div class="form-group full">
-
-          <label>
-            Description
-          </label>
-
-          <input
-            type="text"
-            name="feature2_description"
-            value="<%= siteSettings.feature2_description || '' %>"
-          >
-
-        </div>
-
-        <label class="checkbox">
-
-          <input
-            type="checkbox"
-            name="feature2_enabled"
-            <%= siteSettings.feature2_enabled !== '0' ? 'checked' : '' %>
-          >
-
-          Show Feature 2
-
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- FEATURE 3 -->
-
-    <div class="feature-editor">
-
-      <h3>
-        Feature 3
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label>
-            Icon
-          </label>
-
-          <input
-            type="text"
-            name="feature3_icon"
-            value="<%= siteSettings.feature3_icon || '⭐' %>"
-          >
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            Title
-          </label>
-
-          <input
-            type="text"
-            name="feature3_title"
-            value="<%= siteSettings.feature3_title || '' %>"
-          >
-
-        </div>
-
-        <div class="form-group full">
-
-          <label>
-            Description
-          </label>
-
-          <input
-            type="text"
-            name="feature3_description"
-            value="<%= siteSettings.feature3_description || '' %>"
-          >
-
-        </div>
-
-        <label class="checkbox">
-
-          <input
-            type="checkbox"
-            name="feature3_enabled"
-            <%= siteSettings.feature3_enabled !== '0' ? 'checked' : '' %>
-          >
-
-          Show Feature 3
-
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- FEATURE 4 -->
-
-    <div class="feature-editor">
-
-      <h3>
-        Feature 4
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label>
-            Icon
-          </label>
-
-          <input
-            type="text"
-            name="feature4_icon"
-            value="<%= siteSettings.feature4_icon || '⚡' %>"
-          >
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            Title
-          </label>
-
-          <input
-            type="text"
-            name="feature4_title"
-            value="<%= siteSettings.feature4_title || '' %>"
-          >
-
-        </div>
-
-        <div class="form-group full">
-
-          <label>
-            Description
-          </label>
-
-          <input
-            type="text"
-            name="feature4_description"
-            value="<%= siteSettings.feature4_description || '' %>"
-          >
-
-        </div>
-
-        <label class="checkbox">
-
-          <input
-            type="checkbox"
-            name="feature4_enabled"
-            <%= siteSettings.feature4_enabled !== '0' ? 'checked' : '' %>
-          >
-
-          Show Feature 4
-
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- HOMEPAGE SECTION VISIBILITY -->
-
-    <div class="section-toggle">
-
-      <div class="toggle-box">
-
-        <label class="checkbox">
-
-          <input
-            type="checkbox"
-            name="show_hot_deals"
-            <%= siteSettings.show_hot_deals !== '0' ? 'checked' : '' %>
-          >
-
-          🔥 Hot Deals
-
-        </label>
-
-      </div>
-
-
-      <div class="toggle-box">
-
-        <label class="checkbox">
-
-          <input
-            type="checkbox"
-            name="show_top_picks"
-            <%= siteSettings.show_top_picks !== '0' ? 'checked' : '' %>
-          >
-
-          🎯 Top Picks
-
-        </label>
-
-      </div>
-
-
-      <div class="toggle-box">
-
-        <label class="checkbox">
-
-          <input
-            type="checkbox"
-            name="show_top_rated"
-            <%= siteSettings.show_top_rated !== '0' ? 'checked' : '' %>
-          >
-
-          ⭐ Top Rated
-
-        </label>
-
-      </div>
-
-
-      <div class="toggle-box">
-
-        <label class="checkbox">
-
-          <input
-            type="checkbox"
-            name="show_all_deals"
-            <%= siteSettings.show_all_deals !== '0' ? 'checked' : '' %>
-          >
-
-          🛍️ All Deals
-
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- FOOTER -->
-
-    <div
-      class="form-group"
-      style="margin-top:18px;"
-    >
-
-      <label>
-        Footer Text
-      </label>
-
-      <textarea
-        name="footer_text"
-      ><%= siteSettings.footer_text || '' %></textarea>
-
-    </div>
-
-
-    <button
-      type="submit"
-      class="btn btn-primary"
-      style="margin-top:15px;"
-    >
-      💾 Save Homepage
-    </button>
-
-  </form>
-
-</section>
-
-
-<!-- ======================================================
-     BANNER MANAGER
-====================================================== -->
-
-<section
-  class="section"
-  id="banners"
->
-
-  <div class="section-title">
-
-    <div>
-
-      <h2>
-        🖼️ Banner Manager
-      </h2>
-
-      <p>
-        Homepage ke promotional banners yahin se add aur manage karo.
+        Manage your products, deals, homepage, categories and affiliate links.
       </p>
 
     </div>
 
-  </div>
 
+    <div class="stats">
 
-  <!-- ADD BANNER -->
-
-  <form
-    class="banner-form"
-    action="/admin/banners/add"
-    method="POST"
-    enctype="multipart/form-data"
-  >
-
-    <h3 style="margin-bottom:15px;">
-      ➕ Add New Banner
-    </h3>
-
-
-    <div class="form-grid">
-
-      <div class="form-group">
-
-        <label>
-          Banner Image
-        </label>
-
-        <input
-          type="file"
-          name="banner_image"
-          accept="image/jpeg,image/png,image/webp"
-        >
-
+      <div class="stat-card">
+        <h3><%= totalProducts %></h3>
+        <p>Total Products</p>
       </div>
 
-
-      <div class="form-group">
-
-        <label>
-          Image URL
-        </label>
-
-        <input
-          type="text"
-          name="image_url"
-          placeholder="https://example.com/banner.jpg"
-        >
-
+      <div class="stat-card">
+        <h3><%= totalCategories %></h3>
+        <p>Categories</p>
       </div>
 
-
-      <div class="form-group">
-
-        <label>
-          Heading
-        </label>
-
-        <input
-          type="text"
-          name="heading"
-          placeholder="Big Sale Today"
-        >
-
+      <div class="stat-card">
+        <h3><%= totalReviews %></h3>
+        <p>Total Reviews</p>
       </div>
 
-
-      <div class="form-group">
-
-        <label>
-          Button Text
-        </label>
-
-        <input
-          type="text"
-          name="button_text"
-          placeholder="Shop Now"
-        >
-
-      </div>
-
-
-      <div class="form-group full">
-
-        <label>
-          Description
-        </label>
-
-        <textarea
-          name="description"
-          placeholder="Banner description"
-        ></textarea>
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Button / Banner Link
-        </label>
-
-        <input
-          type="text"
-          name="link_url"
-          placeholder="https://example.com/deal"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Sort Order
-        </label>
-
-        <input
-          type="number"
-          name="sort_order"
-          value="0"
-        >
-
+      <div class="stat-card">
+        <h3><%= totalClicks %></h3>
+        <p>Affiliate Clicks</p>
       </div>
 
     </div>
 
 
-    <div class="checkbox-row">
+    <!-- ADD PRODUCT -->
+    <section class="section" id="products">
 
-      <label class="checkbox">
+      <div class="section-header">
+        <h2>➕ Add New Product</h2>
+      </div>
 
-        <input
-          type="checkbox"
-          name="active"
-          checked
-        >
+      <div class="section-body">
 
-        Active
+        <div class="form-group">
 
-      </label>
+          <label>Affiliate Product URL</label>
 
-    </div>
+          <div class="fetch-row">
 
+            <input
+              type="url"
+              id="fetchAffiliateUrl"
+              placeholder="Paste Amazon / Flipkart / Meesho affiliate link here"
+            >
 
-    <button
-      type="submit"
-      class="btn btn-primary"
-      style="margin-top:15px;"
-    >
-      ➕ Add Banner
-    </button>
-
-  </form>
-
-
-  <!-- BANNER LIST -->
-
-  <div class="banner-list">
-
-    <% if (banners && banners.length) { %>
-
-      <% banners.forEach(function(banner) { %>
-
-        <div class="banner-card">
-
-          <div class="banner-image">
-
-            <% if (banner.image_url) { %>
-
-              <img
-                src="<%= banner.image_url %>"
-                alt="<%= banner.heading || 'Banner' %>"
-              >
-
-            <% } else { %>
-
-              <span>
-                No Image
-              </span>
-
-            <% } %>
+            <button
+              type="button"
+              class="btn btn-blue"
+              onclick="fetchProduct()"
+            >
+              🔍 Auto Fetch
+            </button>
 
           </div>
 
+          <div class="help">
+            Auto Fetch available data from supported product pages.
+          </div>
 
-          <div class="banner-content">
+          <div id="fetchStatus" class="fetch-status"></div>
 
-            <span
-              class="status <%= banner.active ? 'active' : 'inactive' %>"
-            >
-              <%= banner.active ? 'ACTIVE' : 'INACTIVE' %>
-            </span>
-
-
-            <h3>
-              <%= banner.heading || 'Untitled Banner' %>
-            </h3>
+        </div>
 
 
-            <% if (banner.description) { %>
+        <form
+          action="/admin/add"
+          method="POST"
+          enctype="multipart/form-data"
+          id="addProductForm"
+        >
 
-              <p>
-                <%= banner.description %>
-              </p>
+          <div class="grid-2">
 
-            <% } %>
+            <div class="form-group">
 
+              <label>Product Name *</label>
 
-            <% if (banner.button_text) { %>
-
-              <p>
-                <strong>
-                  Button:
-                </strong>
-
-                <%= banner.button_text %>
-              </p>
-
-            <% } %>
-
-
-            <% if (banner.link_url) { %>
-
-              <p style="word-break:break-all;">
-                <strong>
-                  Link:
-                </strong>
-
-                <%= banner.link_url %>
-              </p>
-
-            <% } %>
-
-
-            <div class="banner-actions">
-
-              <button
-                type="button"
-                class="btn btn-secondary btn-small"
-                onclick="openBannerEdit(<%= banner.id %>)"
-              >
-                ✏️ Edit
-              </button>
-
-
-              <form
-                action="/admin/banners/toggle/<%= banner.id %>"
-                method="POST"
-                style="display:inline;"
+              <input
+                type="text"
+                name="name"
+                id="productName"
+                required
+                placeholder="Product name"
               >
 
-                <button
-                  class="btn btn-success btn-small"
-                  type="submit"
-                >
-                  <%= banner.active
-                    ? '⏸ Disable'
-                    : '▶ Enable'
-                  %>
-                </button>
-
-              </form>
+            </div>
 
 
-              <form
-                action="/admin/banners/delete/<%= banner.id %>"
-                method="POST"
-                style="display:inline;"
-                onsubmit="return confirm('Delete this banner?')"
+            <div class="form-group">
+
+              <label>Category *</label>
+
+              <select
+                name="category_id"
+                id="productCategory"
+                required
               >
 
-                <button
-                  class="btn btn-danger btn-small"
-                  type="submit"
-                >
-                  🗑 Delete
-                </button>
+                <option value="">
+                  Select Category
+                </option>
 
-              </form>
+                <% categoryList.forEach(category => { %>
+
+                  <option value="<%= category.id %>">
+                    <%= category.name %>
+                  </option>
+
+                <% }) %>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Sale Price *</label>
+
+              <input
+                type="number"
+                name="price"
+                id="productPrice"
+                min="0"
+                step="0.01"
+                required
+                placeholder="999"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Original Price</label>
+
+              <input
+                type="number"
+                name="original_price"
+                id="productOriginalPrice"
+                min="0"
+                step="0.01"
+                placeholder="1499"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Discount</label>
+
+              <input
+                type="text"
+                name="discount"
+                id="productDiscount"
+                placeholder="33% OFF"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Rating</label>
+
+              <input
+                type="number"
+                name="rating"
+                id="productRating"
+                min="0"
+                max="5"
+                step="0.1"
+                placeholder="4.5"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Affiliate Link *</label>
+
+              <input
+                type="url"
+                name="affiliate_url"
+                id="productAffiliateUrl"
+                required
+                placeholder="https://..."
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Product Image URL</label>
+
+              <input
+                type="url"
+                name="image_url"
+                id="productImageUrl"
+                placeholder="https://..."
+              >
 
             </div>
 
           </div>
 
-        </div>
 
+          <div class="form-group">
 
-        <!-- Hidden edit form -->
+            <label>Description</label>
 
-        <div
-          id="banner-edit-<%= banner.id %>"
-          style="display:none;"
-        >
-
-          <form
-            action="/admin/banners/edit/<%= banner.id %>"
-            method="POST"
-            enctype="multipart/form-data"
-          >
-
-            <input
-              type="hidden"
-              name="image_url"
-              value="<%= banner.image_url || '' %>"
-            >
-
-            <input
-              type="hidden"
-              name="heading"
-              value="<%= banner.heading || '' %>"
-            >
-
-            <input
-              type="hidden"
+            <textarea
               name="description"
-              value="<%= banner.description || '' %>"
-            >
+              id="productDescription"
+              placeholder="Product description..."
+            ></textarea>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Upload Product Images</label>
 
             <input
-              type="hidden"
-              name="button_text"
-              value="<%= banner.button_text || '' %>"
+              type="file"
+              name="images"
+              multiple
+              accept="image/jpeg,image/png,image/webp"
             >
+
+            <div class="help">
+              You can upload up to 5 images.
+            </div>
+
+          </div>
+
+
+          <div class="checkbox-row">
+
+            <label class="checkbox">
+
+              <input
+                type="checkbox"
+                name="featured"
+                value="1"
+              >
+
+              Featured
+
+            </label>
+
+
+            <label class="checkbox">
+
+              <input
+                type="checkbox"
+                name="trending"
+                value="1"
+              >
+
+              Trending
+
+            </label>
+
+
+            <label class="checkbox">
+
+              <input
+                type="checkbox"
+                name="hot_deal"
+                value="1"
+              >
+
+              Hot Deal
+
+            </label>
+
+
+            <label class="checkbox">
+
+              <input
+                type="checkbox"
+                name="visible"
+                value="1"
+                checked
+              >
+
+              Visible
+
+            </label>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Expiry Date</label>
 
             <input
-              type="hidden"
-              name="link_url"
-              value="<%= banner.link_url || '' %>"
+              type="date"
+              name="expiry_date"
             >
 
-            <input
-              type="hidden"
-              name="sort_order"
-              value="<%= banner.sort_order || 0 %>"
-            >
+          </div>
 
-          </form>
-
-        </div>
-
-      <% }) %>
-
-    <% } else { %>
-
-      <div
-        style="
-          padding:25px;
-          text-align:center;
-          color:#777;
-          border:1px dashed #ddd;
-          border-radius:10px;
-        "
-      >
-        Abhi koi banner add nahi kiya gaya.
-      </div>
-
-    <% } %>
-
-  </div>
-
-</section>
-
-
-<!-- ======================================================
-     ADD PRODUCT
-====================================================== -->
-
-<section
-  class="section"
-  id="add-product"
->
-
-  <div class="section-title">
-
-    <div>
-
-      <h2>
-        ➕ Add Product
-      </h2>
-
-      <p>
-        New affiliate deal add karo.
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <form
-    action="/admin/add"
-    method="POST"
-    enctype="multipart/form-data"
-  >
-
-    <div class="form-grid">
-
-      <div class="form-group full">
-
-        <label>
-          Product Name
-        </label>
-
-        <input
-          type="text"
-          name="name"
-          required
-          placeholder="Product name"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Selling Price
-        </label>
-
-        <input
-          type="number"
-          step="0.01"
-          id="sellingPrice"
-          name="sellingPrice"
-          required
-          placeholder="999"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Original Price
-        </label>
-
-        <input
-          type="number"
-          step="0.01"
-          id="originalPrice"
-          name="originalPrice"
-          placeholder="1499"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Discount
-        </label>
-
-        <input
-          type="text"
-          id="discountPreview"
-          readonly
-          placeholder="Auto calculated"
-        >
-
-        <input
-          type="hidden"
-          id="discountHidden"
-          name="discount"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Rating
-        </label>
-
-        <input
-          type="number"
-          step="0.1"
-          min="0"
-          max="5"
-          name="rating"
-          value="4.5"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Category
-        </label>
-
-        <select name="category_id">
-
-          <option value="">
-            Select Category
-          </option>
-
-          <% categories.forEach(function(category) { %>
-
-            <option
-              value="<%= category.id %>"
-            >
-              <%= category.name %>
-            </option>
-
-          <% }) %>
-
-        </select>
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Affiliate URL
-        </label>
-
-        <input
-          type="url"
-          name="affiliate_url"
-          required
-          placeholder="https://..."
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Expiry Date
-        </label>
-
-        <input
-          type="date"
-          name="expiry_date"
-        >
-
-      </div>
-
-
-      <div class="form-group full">
-
-        <label>
-          Description
-        </label>
-
-        <textarea
-          name="description"
-          placeholder="Product description"
-        ></textarea>
-
-      </div>
-
-
-      <div class="form-group full">
-
-        <label>
-          Product Images
-        </label>
-
-        <input
-          type="file"
-          name="images"
-          id="productImages"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-        >
-
-        <div
-          id="imagePreview"
-          style="
-            display:flex;
-            gap:8px;
-            flex-wrap:wrap;
-            margin-top:10px;
-          "
-        ></div>
-
-      </div>
-
-    </div>
-
-
-    <div class="checkbox-row">
-
-      <label class="checkbox">
-        <input
-          type="checkbox"
-          name="featured"
-        >
-        Featured
-      </label>
-
-      <label class="checkbox">
-        <input
-          type="checkbox"
-          name="trending"
-        >
-        Trending
-      </label>
-
-      <label class="checkbox">
-        <input
-          type="checkbox"
-          name="hot_deal"
-        >
-        Hot Deal
-      </label>
-
-      <label class="checkbox">
-        <input
-          type="checkbox"
-          name="visible"
-          checked
-        >
-        Visible
-      </label>
-
-    </div>
-
-
-    <button
-      type="submit"
-      class="btn btn-primary"
-      style="margin-top:18px;"
-    >
-      ➕ Add Product
-    </button>
-
-  </form>
-
-</section>
-
-
-<!-- ======================================================
-     CATEGORIES
-====================================================== -->
-
-<section
-  class="section"
-  id="categories"
->
-
-  <div class="section-title">
-
-    <div>
-
-      <h2>
-        📂 Categories
-      </h2>
-
-      <p>
-        Categories manage karo.
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <form
-    action="/admin/categories/add"
-    method="POST"
-    style="margin-bottom:18px;"
-  >
-
-    <div class="form-grid">
-
-      <div class="form-group">
-
-        <label>
-          Category Name
-        </label>
-
-        <input
-          type="text"
-          name="name"
-          required
-          placeholder="Example: Laptops"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Sort Order
-        </label>
-
-        <input
-          type="number"
-          name="sort_order"
-          value="0"
-        >
-
-      </div>
-
-    </div>
-
-
-    <button
-      class="btn btn-primary"
-      type="submit"
-      style="margin-top:12px;"
-    >
-      ➕ Add Category
-    </button>
-
-  </form>
-
-
-  <div class="category-grid">
-
-    <% categories.forEach(function(category) { %>
-
-      <div class="category-card">
-
-        <strong>
-          <%= category.name %>
-        </strong>
-
-        <small>
-          Order:
-          <%= category.sort_order %>
-          |
-          <%= category.active ? 'Active' : 'Inactive' %>
-        </small>
-
-        <div
-          class="actions"
-          style="margin-top:10px;"
-        >
-
-          <button
-            class="btn btn-secondary btn-small"
-            type="button"
-            onclick="openCategoryModal(
-              <%= category.id %>,
-              '<%= String(category.name).replace(/'/g, "\\'") %>',
-              <%= category.sort_order %>,
-              <%= category.active %>
-            )"
-          >
-            ✏️ Edit
-          </button>
-
-
-          <form
-            action="/admin/categories/delete/<%= category.id %>"
-            method="POST"
-            style="display:inline;"
-            onsubmit="return confirm('Delete this category?')"
-          >
-
-            <button
-              class="btn btn-danger btn-small"
-              type="submit"
-            >
-              🗑 Delete
-            </button>
-
-          </form>
-
-        </div>
-
-      </div>
-
-    <% }) %>
-
-  </div>
-
-</section>
-
-
-<!-- ======================================================
-     PRODUCTS
-====================================================== -->
-
-<section
-  class="section"
-  id="products"
->
-
-  <div class="section-title">
-
-    <div>
-
-      <h2>
-        🛍️ Products
-      </h2>
-
-      <p>
-        Existing products manage karo.
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <div class="table-tools">
-
-    <input
-      type="text"
-      id="productSearch"
-      placeholder="Search products..."
-    >
-
-
-    <select id="categoryFilter">
-
-      <option value="">
-        All Categories
-      </option>
-
-      <% categories.forEach(function(category) { %>
-
-        <option
-          value="<%= category.id %>"
-        >
-          <%= category.name %>
-        </option>
-
-      <% }) %>
-
-    </select>
-
-
-    <select id="statusFilter">
-
-      <option value="">
-        All Status
-      </option>
-
-      <option value="visible">
-        Visible
-      </option>
-
-      <option value="hidden">
-        Hidden
-      </option>
-
-      <option value="hot">
-        Hot Deals
-      </option>
-
-      <option value="featured">
-        Featured
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <div class="table-wrap">
-
-    <table id="productsTable">
-
-      <thead>
-
-        <tr>
-
-          <th>
-            Image
-          </th>
-
-          <th>
-            Product
-          </th>
-
-          <th>
-            Category
-          </th>
-
-          <th>
-            Price
-          </th>
-
-          <th>
-            Rating
-          </th>
-
-          <th>
-            Status
-          </th>
-
-          <th>
-            Actions
-          </th>
-
-        </tr>
-
-      </thead>
-
-
-      <tbody>
-
-        <% products.forEach(function(product) { %>
-
-          <tr
-            class="product-row"
-            data-name="<%= product.name.toLowerCase() %>"
-            data-category="<%= product.category_id || '' %>"
-            data-visible="<%= product.visible %>"
-            data-hot="<%= product.hot_deal %>"
-            data-featured="<%= product.featured %>"
-          >
-
-            <td>
-
-              <% if (product.image_url) { %>
-
-                <img
-                  class="product-thumb"
-                  src="<%= product.image_url %>"
-                  alt="<%= product.name %>"
-                >
-
-              <% } else { %>
-
-                <div
-                  class="product-thumb"
-                  style="
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                  "
-                >
-                  📦
-                </div>
-
-              <% } %>
-
-            </td>
-
-
-            <td>
-
-              <div class="product-name">
-                <%= product.name %>
-              </div>
-
-            </td>
-
-
-            <td>
-              <%= product.category_name || '-' %>
-            </td>
-
-
-            <td>
-
-              <span class="price">
-                ₹<%= Number(product.price || 0).toLocaleString('en-IN') %>
-              </span>
-
-              <% if (product.original_price) { %>
-
-                <span class="old-price">
-                  ₹<%= Number(product.original_price).toLocaleString('en-IN') %>
-                </span>
-
-              <% } %>
-
-            </td>
-
-
-            <td>
-
-              ⭐
-              <%= product.rating || 0 %>
-
-            </td>
-
-
-            <td>
-
-              <% if (product.visible) { %>
-
-                <span class="status active">
-                  Visible
-                </span>
-
-              <% } else { %>
-
-                <span class="status inactive">
-                  Hidden
-                </span>
-
-              <% } %>
-
-            </td>
-
-
-            <td>
-
-              <div class="actions">
-
-                <a
-                  class="btn btn-secondary btn-small"
-                  href="/product/<%= product.id %>"
-                  target="_blank"
-                >
-                  👁 View
-                </a>
-
-
-                <a
-                  class="btn btn-primary btn-small"
-                  href="/admin/edit/<%= product.id %>"
-                >
-                  ✏️ Edit
-                </a>
-
-
-                <form
-                  action="/admin/delete/<%= product.id %>"
-                  method="POST"
-                  style="display:inline;"
-                  onsubmit="return confirm('Delete this product?')"
-                >
-
-                  <button
-                    type="submit"
-                    class="btn btn-danger btn-small"
-                  >
-                    🗑 Delete
-                  </button>
-
-                </form>
-
-              </div>
-
-            </td>
-
-          </tr>
-
-        <% }) %>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-</section>
-
-
-<!-- ======================================================
-     REVIEWS
-====================================================== -->
-
-<section
-  class="section"
-  id="reviews"
->
-
-  <div class="section-title">
-
-    <div>
-
-      <h2>
-        ⭐ Reviews
-      </h2>
-
-      <p>
-        Customer reviews manage karo.
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <% if (reviews && reviews.length) { %>
-
-    <% reviews.forEach(function(review) { %>
-
-      <div class="review-card">
-
-        <div class="review-head">
-
-          <strong>
-            <%= review.name || 'Anonymous' %>
-          </strong>
-
-          <span class="stars">
-            ⭐ <%= review.rating %>
-          </span>
-
-        </div>
-
-
-        <div
-          style="
-            color:#777;
-            font-size:12px;
-            margin-top:4px;
-          "
-        >
-          <%= review.product_name || 'Product' %>
-        </div>
-
-
-        <div class="review-comment">
-          <%= review.comment || '' %>
-        </div>
-
-
-        <form
-          action="/admin/reviews/delete/<%= review.id %>"
-          method="POST"
-          onsubmit="return confirm('Delete this review?')"
-        >
 
           <button
             type="submit"
-            class="btn btn-danger btn-small"
+            class="btn btn-primary"
           >
-            🗑 Delete Review
+            ➕ Add Product
           </button>
 
         </form>
 
       </div>
 
-    <% }) %>
+    </section>
 
-  <% } else { %>
 
-    <div
-      style="
-        padding:25px;
-        text-align:center;
-        color:#777;
-      "
+    <!-- PRODUCTS LIST -->
+    <section class="section">
+
+      <div class="section-header">
+
+        <h2>🛍️ All Products</h2>
+
+        <span class="badge badge-blue">
+          <%= productList.length %> Products
+        </span>
+
+      </div>
+
+
+      <div class="table-wrap">
+
+        <% if (productList.length === 0) { %>
+
+          <div class="empty">
+            No products found.
+          </div>
+
+        <% } else { %>
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Image</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Discount</th>
+                <th>Rating</th>
+                <th>Clicks</th>
+                <th>Status</th>
+                <th>Actions</th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              <% productList.forEach(product => { %>
+
+                <tr>
+
+                  <td>
+
+                    <% if (product.image_url) { %>
+
+                      <img
+                        src="<%= product.image_url %>"
+                        class="product-img"
+                        onerror="this.style.display='none'"
+                      >
+
+                    <% } else { %>
+
+                      <div class="product-img"></div>
+
+                    <% } %>
+
+                  </td>
+
+
+                  <td>
+
+                    <strong>
+                      <%= product.name %>
+                    </strong>
+
+                    <% if (product.category_name) { %>
+
+                      <div class="help">
+                        <%= product.category_name %>
+                      </div>
+
+                    <% } %>
+
+                  </td>
+
+
+                  <td>
+
+                    <strong>
+                      ₹<%= Number(product.price || 0).toLocaleString("en-IN") %>
+                    </strong>
+
+                    <% if (product.original_price) { %>
+
+                      <div class="help">
+                        ₹<%= Number(product.original_price).toLocaleString("en-IN") %>
+                      </div>
+
+                    <% } %>
+
+                  </td>
+
+
+                  <td>
+                    <%= product.discount || "-" %>
+                  </td>
+
+
+                  <td>
+
+                    <span class="rating">
+                      ⭐ <%= product.rating || "0" %>
+                    </span>
+
+                  </td>
+
+
+                  <td>
+                    <%= product.clicks || 0 %>
+                  </td>
+
+
+                  <td>
+
+                    <% if (Number(product.visible) === 1) { %>
+
+                      <span class="badge badge-green">
+                        Visible
+                      </span>
+
+                    <% } else { %>
+
+                      <span class="badge badge-red">
+                        Hidden
+                      </span>
+
+                    <% } %>
+
+
+                    <% if (Number(product.featured) === 1) { %>
+
+                      <span class="badge badge-orange">
+                        Featured
+                      </span>
+
+                    <% } %>
+
+                  </td>
+
+
+                  <td>
+
+                    <div class="actions">
+
+                      <a
+                        href="/admin/edit/<%= product.id %>"
+                        class="btn btn-blue btn-small"
+                      >
+                        ✏️ Edit
+                      </a>
+
+
+                      <a
+                        href="/product/<%= product.id %>"
+                        target="_blank"
+                        class="btn btn-gray btn-small"
+                      >
+                        👁️ View
+                      </a>
+
+
+                      <form
+                        action="/admin/delete/<%= product.id %>"
+                        method="POST"
+                        onsubmit="return confirm('Delete this product?');"
+                        style="display:inline"
+                      >
+
+                        <button
+                          type="submit"
+                          class="btn btn-red btn-small"
+                        >
+                          🗑️ Delete
+                        </button>
+
+                      </form>
+
+                    </div>
+
+                  </td>
+
+                </tr>
+
+              <% }) %>
+
+            </tbody>
+
+          </table>
+
+        <% } %>
+
+      </div>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+    <section class="section" id="categories">
+
+      <div class="section-header">
+
+        <h2>📂 Categories</h2>
+
+      </div>
+
+
+      <div class="section-body">
+
+        <form
+          action="/admin/categories/add"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+
+          <div class="grid-2">
+
+            <div class="form-group">
+
+              <label>New Category Name *</label>
+
+              <input
+                type="text"
+                name="name"
+                placeholder="Example: Smart Watches"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Category Image</label>
+
+              <input
+                type="file"
+                name="category_image"
+                accept="image/jpeg,image/png,image/webp"
+              >
+
+              <div class="help">
+                Upload JPG, PNG or WEBP image. Max 5MB.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
+            ➕ Add Category
+          </button>
+
+        </form>
+
+
+        <div class="table-wrap">
+
+          <% if (categoryList.length === 0) { %>
+
+            <div class="empty">
+              No categories found.
+            </div>
+
+          <% } else { %>
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>Image</th>
+                  <th>ID</th>
+                  <th>Category Name</th>
+                  <th>Actions</th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                <% categoryList.forEach(category => { %>
+
+                  <tr>
+
+                    <!-- CATEGORY IMAGE -->
+                    <td>
+
+                      <% if (category.image_url) { %>
+
+                        <img
+                          src="<%= category.image_url %>"
+                          class="product-img"
+                          alt="<%= category.name %>"
+                          onerror="this.style.display='none'"
+                        >
+
+                      <% } else { %>
+
+                        <div
+                          class="product-img"
+                          style="
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            color:#999;
+                            font-size:20px;
+                          "
+                        >
+                          📂
+                        </div>
+
+                      <% } %>
+
+                    </td>
+
+
+                    <!-- ID -->
+                    <td>
+                      <%= category.id %>
+                    </td>
+
+
+                    <!-- CATEGORY NAME -->
+                    <td>
+
+                      <strong>
+                        <%= category.name %>
+                      </strong>
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+                    <td>
+
+                      <div class="actions">
+
+                        <!-- EDIT CATEGORY -->
+                        <form
+                          action="/admin/categories/edit/<%= category.id %>"
+                          method="POST"
+                          enctype="multipart/form-data"
+                          style="
+                            display:flex;
+                            flex-wrap:wrap;
+                            gap:5px;
+                            align-items:center;
+                          "
+                        >
+
+                          <input
+                            type="text"
+                            name="name"
+                            value="<%= category.name %>"
+                            required
+                            style="max-width:200px;"
+                          >
+
+
+                          <input
+                            type="file"
+                            name="category_image"
+                            accept="image/jpeg,image/png,image/webp"
+                            style="max-width:220px;"
+                          >
+
+
+                          <button
+                            type="submit"
+                            class="btn btn-blue btn-small"
+                          >
+                            💾 Save
+                          </button>
+
+                        </form>
+
+
+                        <!-- DELETE CATEGORY -->
+                        <form
+                          action="/admin/categories/delete/<%= category.id %>"
+                          method="POST"
+                          onsubmit="return confirm('Delete this category?');"
+                        >
+
+                          <button
+                            type="submit"
+                            class="btn btn-red btn-small"
+                          >
+                            🗑️ Delete
+                          </button>
+
+                        </form>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                <% }) %>
+
+              </tbody>
+
+            </table>
+
+          <% } %>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- HOMEPAGE SETTINGS -->
+    <section class="section" id="homepage">
+
+      <div class="section-header">
+
+        <h2>🏠 Homepage Settings</h2>
+
+      </div>
+
+
+      <div class="section-body">
+
+        <form
+          action="/admin/homepage/save"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+
+          <div class="grid-2">
+
+            <div>
+
+              <div class="form-group">
+
+                <label>Website Logo</label>
+
+                <input
+                  type="text"
+                  name="logo"
+                  value="<%= logoValue %>"
+                  placeholder="/images/logo.png"
+                >
+
+                <% if (logoValue) { %>
+
+                  <img
+                    src="<%= logoValue %>"
+                    class="logo-preview"
+                    onerror="this.style.display='none'"
+                  >
+
+                <% } %>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>Upload New Logo</label>
+
+                <input
+                  type="file"
+                  name="logo"
+                  accept="image/jpeg,image/png,image/webp"
+                >
+
+              </div>
+
+            </div>
+
+
+            <div>
+
+              <div class="form-group">
+
+                <label>Hero Image URL</label>
+
+                <input
+                  type="text"
+                  name="hero_image"
+                  value="<%= heroValue %>"
+                  placeholder="/images/hero.jpg"
+                >
+
+                <% if (heroValue) { %>
+
+                  <img
+                    src="<%= heroValue %>"
+                    class="banner-preview"
+                    onerror="this.style.display='none'"
+                  >
+
+                <% } %>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>Upload Hero Image</label>
+
+                <input
+                  type="file"
+                  name="hero_image"
+                  accept="image/jpeg,image/png,image/webp"
+                >
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="grid-2">
+
+            <div class="form-group">
+
+              <label>Hero Title</label>
+
+              <input
+                type="text"
+                name="hero_title"
+                value="<%= getSetting('hero_title', 'Best Deals At Best Prices') %>"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Hero Subtitle</label>
+
+              <input
+                type="text"
+                name="hero_subtitle"
+                value="<%= getSetting('hero_subtitle', 'Find the best deals and offers') %>"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div class="grid-2">
+
+            <div class="form-group">
+
+              <label>Hero Button Text</label>
+
+              <input
+                type="text"
+                name="hero_button_text"
+                value="<%= getSetting('hero_button_text', 'Shop Now') %>"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Hero Button Link</label>
+
+              <input
+                type="text"
+                name="hero_button_link"
+                value="<%= getSetting('hero_button_link', '/search') %>"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div class="grid-2">
+
+            <div class="form-group">
+
+              <label>Footer Text</label>
+
+              <textarea
+                name="footer_text"
+              ><%= getSetting('footer_text', 'DealBaazi - Find the best deals online.') %></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Contact / Footer Email</label>
+
+              <input
+                type="email"
+                name="footer_email"
+                value="<%= getSetting('footer_email', '') %>"
+                placeholder="support@example.com"
+              >
+
+            </div>
+
+          </div>
+
+
+          <h3 style="margin:20px 0 12px;">
+            Homepage Sections
+          </h3>
+
+
+          <div class="grid-2">
+
+            <div class="switch-row">
+
+              <span>
+                Show Categories
+              </span>
+
+              <input
+                type="checkbox"
+                name="show_categories"
+                value="1"
+                <%= String(getSetting('show_categories', '1')) === '1' ? 'checked' : '' %>
+              >
+
+            </div>
+
+
+            <div class="switch-row">
+
+              <span>
+                Show Featured Products
+              </span>
+
+              <input
+                type="checkbox"
+                name="show_featured"
+                value="1"
+                <%= String(getSetting('show_featured', '1')) === '1' ? 'checked' : '' %>
+              >
+
+            </div>
+
+
+            <div class="switch-row">
+
+              <span>
+                Show Trending Products
+              </span>
+
+              <input
+                type="checkbox"
+                name="show_trending"
+                value="1"
+                <%= String(getSetting('show_trending', '1')) === '1' ? 'checked' : '' %>
+              >
+
+            </div>
+
+
+            <div class="switch-row">
+
+              <span>
+                Show Hot Deals
+              </span>
+
+              <input
+                type="checkbox"
+                name="show_hot_deals"
+                value="1"
+                <%= String(getSetting('show_hot_deals', '1')) === '1' ? 'checked' : '' %>
+              >
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
+            💾 Save Homepage Settings
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+
+
+    <!-- BANNERS -->
+    <section class="section" id="banners">
+
+      <div class="section-header">
+
+        <h2>🖼️ Homepage Banners</h2>
+
+      </div>
+
+
+      <div class="section-body">
+
+        <form
+          action="/admin/banners/add"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+
+          <div class="grid-2">
+
+            <div class="form-group">
+
+              <label>Banner Title</label>
+
+              <input
+                type="text"
+                name="title"
+                placeholder="Mega Deals"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Subtitle</label>
+
+              <input
+                type="text"
+                name="subtitle"
+                placeholder="Grab amazing offers"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Image URL</label>
+
+              <input
+                type="url"
+                name="image_url"
+                placeholder="https://..."
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Upload Banner</label>
+
+              <input
+                type="file"
+                name="image"
+                accept="image/jpeg,image/png,image/webp"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Button Text</label>
+
+              <input
+                type="text"
+                name="button_text"
+                value="Shop Now"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>Button Link</label>
+
+              <input
+                type="text"
+                name="link_url"
+                placeholder="/search"
+              >
+
+            </div>
+
+          </div>
+
+
+          <label class="checkbox">
+
+            <input
+              type="checkbox"
+              name="active"
+              value="1"
+              checked
+            >
+
+            Active
+
+          </label>
+
+
+          <br>
+
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
+            ➕ Add Banner
+          </button>
+
+        </form>
+
+
+        <hr
+          style="
+            margin:25px 0;
+            border:none;
+            border-top:1px solid #eee;
+          "
+        >
+
+
+        <div class="table-wrap">
+
+          <% if (bannerList.length === 0) { %>
+
+            <div class="empty">
+              No banners added yet.
+            </div>
+
+          <% } else { %>
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>Preview</th>
+                  <th>Title</th>
+                  <th>Link</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                <% bannerList.forEach(banner => { %>
+
+                  <tr>
+
+                    <td>
+
+                      <% if (banner.image_url) { %>
+
+                        <img
+                          src="<%= banner.image_url %>"
+                          class="banner-preview"
+                          onerror="this.style.display='none'"
+                        >
+
+                      <% } %>
+
+                    </td>
+
+
+                    <td>
+
+                      <strong>
+                        <%= banner.title || "Untitled Banner" %>
+                      </strong>
+
+                      <% if (banner.subtitle) { %>
+
+                        <div class="help">
+                          <%= banner.subtitle %>
+                        </div>
+
+                      <% } %>
+
+                    </td>
+
+
+                    <td>
+
+                      <small>
+                        <%= banner.link_url || "-" %>
+                      </small>
+
+                    </td>
+
+
+                    <td>
+
+                      <% if (Number(banner.active) === 1) { %>
+
+                        <span class="badge badge-green">
+                          Active
+                        </span>
+
+                      <% } else { %>
+
+                        <span class="badge badge-red">
+                          Inactive
+                        </span>
+
+                      <% } %>
+
+                    </td>
+
+
+                    <td>
+
+                      <div class="actions">
+
+                        <a
+                          href="/admin/banners/edit/<%= banner.id %>"
+                          class="btn btn-blue btn-small"
+                        >
+                          ✏️ Edit
+                        </a>
+
+
+                        <form
+                          action="/admin/banners/toggle/<%= banner.id %>"
+                          method="POST"
+                        >
+
+                          <button
+                            type="submit"
+                            class="btn btn-gray btn-small"
+                          >
+                            Toggle
+                          </button>
+
+                        </form>
+
+
+                        <form
+                          action="/admin/banners/delete/<%= banner.id %>"
+                          method="POST"
+                          onsubmit="return confirm('Delete this banner?');"
+                        >
+
+                          <button
+                            type="submit"
+                            class="btn btn-red btn-small"
+                          >
+                            Delete
+                          </button>
+
+                        </form>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                <% }) %>
+
+              </tbody>
+
+            </table>
+
+          <% } %>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- REVIEWS -->
+    <section class="section" id="reviews">
+
+      <div class="section-header">
+
+        <h2>⭐ Customer Reviews</h2>
+
+        <span class="badge badge-blue">
+          <%= reviewList.length %>
+        </span>
+
+      </div>
+
+
+      <div class="section-body">
+
+        <% if (reviewList.length === 0) { %>
+
+          <div class="empty">
+            No reviews available.
+          </div>
+
+        <% } else { %>
+
+          <% reviewList.forEach(review => { %>
+
+            <div class="review-card">
+
+              <div class="review-top">
+
+                <div>
+
+                  <strong>
+                    <%= review.name || review.username || "Customer" %>
+                  </strong>
+
+                  <% if (review.product_name) { %>
+
+                    <div class="help">
+                      Product: <%= review.product_name %>
+                    </div>
+
+                  <% } %>
+
+                </div>
+
+
+                <div class="rating">
+
+                  ⭐ <%= review.rating || 0 %>/5
+
+                </div>
+
+              </div>
+
+
+              <div class="review-text">
+
+                <%= review.comment || review.review || review.text || "" %>
+
+              </div>
+
+
+              <form
+                action="/admin/reviews/delete/<%= review.id %>"
+                method="POST"
+                onsubmit="return confirm('Delete this review?');"
+              >
+
+                <button
+                  type="submit"
+                  class="btn btn-red btn-small"
+                >
+                  🗑️ Delete Review
+                </button>
+
+              </form>
+
+            </div>
+
+          <% }) %>
+
+        <% } %>
+
+      </div>
+
+    </section>
+
+<!-- SOCIAL MEDIA SETTINGS -->
+<section class="section" id="social-media">
+
+  <div class="section-header">
+
+    <h2>📱 Social Media Settings</h2>
+
+  </div>
+
+  <div class="section-body">
+
+    <form
+      action="/admin/social-settings/save"
+      method="POST"
     >
-      No reviews yet.
-    </div>
 
-  <% } %>
+      <div class="form-group">
+
+        <label>Common Reel / Story Line</label>
+
+        <textarea
+          name="social_common_line"
+          placeholder="🔥 PRODUCT KE LIYE HUMEIN DM KRE YA LINK BIO MEIN H 🔥"
+        ><%= getSetting('social_common_line', '🔥 PRODUCT KE LIYE HUMEIN DM KRE YA LINK BIO MEIN H 🔥') %></textarea>
+
+        <div class="help">
+          Ye line har product ke Reel / Story content mein automatically use hogi.
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Default Hashtags</label>
+
+        <textarea
+          name="social_hashtags"
+          placeholder="#DealBaazi #Deals #Offers #Shopping"
+        ><%= getSetting('social_hashtags', '#DealBaazi #Deals #Offers #Shopping') %></textarea>
+
+        <div class="help">
+          Har product ke social post ke saath ye hashtags automatically add honge.
+        </div>
+
+      </div>
+
+
+      <div class="grid-2">
+
+        <div class="switch-row">
+
+          <span>
+            🤖 Auto Social Content
+          </span>
+
+          <input
+            type="checkbox"
+            name="social_auto_content"
+            value="1"
+            <%= String(getSetting('social_auto_content', '1')) === '1' ? 'checked' : '' %>
+          >
+
+        </div>
+
+
+        <div class="switch-row">
+
+          <span>
+            📸 Instagram
+          </span>
+
+          <input
+            type="checkbox"
+            name="social_instagram_enabled"
+            value="1"
+            <%= String(getSetting('social_instagram_enabled', '0')) === '1' ? 'checked' : '' %>
+          >
+
+        </div>
+
+
+        <div class="switch-row">
+
+          <span>
+            📘 Facebook
+          </span>
+
+          <input
+            type="checkbox"
+            name="social_facebook_enabled"
+            value="1"
+            <%= String(getSetting('social_facebook_enabled', '0')) === '1' ? 'checked' : '' %>
+          >
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        💾 Save Social Media Settings
+      </button>
+
+    </form>
+
+  </div>
 
 </section>
 
-</div>
+    <!-- PASSWORD -->
+    <section class="section">
+
+      <div class="section-header">
+
+        <h2>🔐 Admin Password</h2>
+
+      </div>
 
 
-<!-- ======================================================
-     CATEGORY MODAL
-====================================================== -->
+      <div class="section-body">
 
-<div
-  class="modal"
-  id="categoryModal"
->
+        <p style="color:#666;margin-bottom:15px;">
+          Change your DealBaazi admin password from here.
+        </p>
 
-  <div class="modal-box">
+        <a
+          href="/password"
+          class="btn btn-primary"
+        >
+          🔑 Change Password
+        </a>
 
-    <div class="modal-head">
+      </div>
 
-      <h3>
-        Edit Category
-      </h3>
+    </section>
 
-      <button
-        class="close"
-        type="button"
-        onclick="closeCategoryModal()"
-      >
-        ×
-      </button>
+
+    <!-- FOOTER -->
+    <div
+      style="
+        text-align:center;
+        color:#888;
+        padding:20px 0;
+        font-size:13px;
+      "
+    >
+
+      DealBaazi Admin Panel © <%= new Date().getFullYear() %>
 
     </div>
 
-
-    <form
-      id="categoryEditForm"
-      method="POST"
-    >
-
-      <div class="form-group">
-
-        <label>
-          Category Name
-        </label>
-
-        <input
-          type="text"
-          id="editCategoryName"
-          name="name"
-          required
-        >
-
-      </div>
-
-
-      <div
-        class="form-group"
-        style="margin-top:12px;"
-      >
-
-        <label>
-          Sort Order
-        </label>
-
-        <input
-          type="number"
-          id="editCategoryOrder"
-          name="sort_order"
-        >
-
-      </div>
-
-
-      <label
-        class="checkbox"
-        style="margin-top:12px;"
-      >
-
-        <input
-          type="checkbox"
-          id="editCategoryActive"
-          name="active"
-        >
-
-        Active
-
-      </label>
-
-
-      <button
-        type="submit"
-        class="btn btn-primary"
-        style="margin-top:18px;"
-      >
-        💾 Save Category
-      </button>
-
-    </form>
-
-  </div>
+  </main>
 
 </div>
-
-
-<!-- ======================================================
-     BANNER EDIT MODAL
-====================================================== -->
-
-<div
-  class="modal"
-  id="bannerModal"
->
-
-  <div class="modal-box">
-
-    <div class="modal-head">
-
-      <h3>
-        Edit Banner
-      </h3>
-
-      <button
-        class="close"
-        type="button"
-        onclick="closeBannerModal()"
-      >
-        ×
-      </button>
-
-    </div>
-
-
-    <form
-      id="bannerEditForm"
-      method="POST"
-      enctype="multipart/form-data"
-    >
-
-      <div class="form-group">
-
-        <label>
-          Replace Image
-        </label>
-
-        <input
-          type="file"
-          name="banner_image"
-          accept="image/jpeg,image/png,image/webp"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Image URL
-        </label>
-
-        <input
-          type="text"
-          id="editBannerImageUrl"
-          name="image_url"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Heading
-        </label>
-
-        <input
-          type="text"
-          id="editBannerHeading"
-          name="heading"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Description
-        </label>
-
-        <textarea
-          id="editBannerDescription"
-          name="description"
-        ></textarea>
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Button Text
-        </label>
-
-        <input
-          type="text"
-          id="editBannerButton"
-          name="button_text"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Link URL
-        </label>
-
-        <input
-          type="text"
-          id="editBannerLink"
-          name="link_url"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Sort Order
-        </label>
-
-        <input
-          type="number"
-          id="editBannerOrder"
-          name="sort_order"
-        >
-
-      </div>
-
-
-      <label class="checkbox">
-
-        <input
-          type="checkbox"
-          id="editBannerActive"
-          name="active"
-        >
-
-        Active
-
-      </label>
-
-
-      <button
-        type="submit"
-        class="btn btn-primary"
-        style="margin-top:18px;"
-      >
-        💾 Save Banner
-      </button>
-
-    </form>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     MOBILE NAV
-====================================================== -->
-
-<nav class="mobile-nav">
-
-  <a href="#homepage">
-    <span>🏠</span>
-    Home
-  </a>
-
-  <a href="#add-product">
-    <span>➕</span>
-    Add
-  </a>
-
-  <a href="#products">
-    <span>🛍️</span>
-    Products
-  </a>
-
-  <a href="#categories">
-    <span>📂</span>
-    Categories
-  </a>
-
-  <a href="/logout">
-    <span>🚪</span>
-    Logout
-  </a>
-
-</nav>
 
 
 <script>
 
-  /* =====================================================
-     DISCOUNT CALCULATOR
-  ===================================================== */
+  async function fetchProduct() {
 
-  const sellingPrice =
-    document.getElementById(
-      "sellingPrice"
-    );
+    const urlInput =
+      document.getElementById("fetchAffiliateUrl");
 
-  const originalPrice =
-    document.getElementById(
-      "originalPrice"
-    );
+    const status =
+      document.getElementById("fetchStatus");
 
-  const discountPreview =
-    document.getElementById(
-      "discountPreview"
-    );
-
-  const discountHidden =
-    document.getElementById(
-      "discountHidden"
-    );
+    const affiliateUrl =
+      urlInput.value.trim();
 
 
-  function calculateDiscount() {
+    if (!affiliateUrl) {
 
-    if (
-      !sellingPrice ||
-      !originalPrice
-    ) {
+      showFetchStatus(
+        "Please paste an affiliate/product URL first.",
+        false
+      );
+
       return;
     }
 
-    const selling =
-      Number(
-        sellingPrice.value || 0
-      );
 
-    const original =
-      Number(
-        originalPrice.value || 0
-      );
+    status.className =
+      "fetch-status show";
 
-    if (
-      original > selling &&
-      selling > 0
-    ) {
+    status.textContent =
+      "⏳ Fetching product information...";
 
-      const percent =
-        Math.round(
-          ((original - selling) /
-            original) *
-          100
+
+    try {
+
+      const response =
+        await fetch(
+          "/admin/fetch-product",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              affiliate_url: affiliateUrl
+            })
+          }
         );
 
-      const text =
-        percent + "% OFF";
 
-      discountPreview.value =
-        text;
+      /*
+        IMPORTANT:
+        Response ko sirf ek baar read karna hai.
+        Isse JSON / 403 response par JS error nahi aayega.
+      */
+      const responseText =
+        await response.text();
 
-      discountHidden.value =
-        text;
+
+      let data;
+
+      try {
+
+        data =
+          JSON.parse(responseText);
+
+      } catch (parseError) {
+
+        throw new Error(
+          `Server returned an invalid response (HTTP ${response.status}).`
+        );
+
+      }
+
+
+      /*
+        MEESHO 403
+      */
+      if (
+        data.store === "Meesho" &&
+        data.success === false &&
+        (
+          response.status === 403 ||
+          String(data.error || "")
+            .toLowerCase()
+            .includes("403")
+        )
+      ) {
+
+        showFetchStatus(
+          "⚠️ Meesho automatic fetching is blocked (HTTP 403). Please enter the product details manually.",
+          "warning"
+        );
+
+        return;
+      }
+
+
+      /*
+        Other server errors
+      */
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          `Unable to fetch product (HTTP ${response.status}).`
+        );
+
+      }
+
+
+      if (!data.success) {
+
+        throw new Error(
+          data.error ||
+          "Product information could not be fetched."
+        );
+
+      }
+
+
+      /*
+        FILL PRODUCT DETAILS
+      */
+      document.getElementById("productName").value =
+        data.name || "";
+
+
+      document.getElementById("productPrice").value =
+        data.price || "";
+
+
+      document.getElementById("productOriginalPrice").value =
+        data.original_price || "";
+
+
+      document.getElementById("productDiscount").value =
+        data.discount || "";
+
+
+      document.getElementById("productRating").value =
+        data.rating || "";
+
+
+      document.getElementById("productImageUrl").value =
+        data.image_url || "";
+
+
+      document.getElementById("productDescription").value =
+        data.description || "";
+
+
+      document.getElementById("productAffiliateUrl").value =
+        data.affiliate_url ||
+        data.original_url ||
+        affiliateUrl;
+
+
+      showFetchStatus(
+        "✅ Product information fetched successfully. Please check the details before adding.",
+        true
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Affiliate fetch error:",
+        error
+      );
+
+
+      showFetchStatus(
+        "❌ " +
+        (
+          error.message ||
+          "Unable to fetch product."
+        ),
+        false
+      );
+
+    }
+
+  }
+
+
+  function showFetchStatus(message, type) {
+
+    const status =
+      document.getElementById("fetchStatus");
+
+
+    status.className =
+      "fetch-status show";
+
+
+    if (type === true || type === "success") {
+
+      status.classList.add(
+        "fetch-success"
+      );
+
+    } else if (type === "warning") {
+
+      status.classList.add(
+        "fetch-warning"
+      );
 
     } else {
 
-      discountPreview.value =
-        "";
-
-      discountHidden.value =
-        "";
+      status.classList.add(
+        "fetch-error"
+      );
 
     }
 
+
+    status.textContent =
+      message;
+
   }
 
 
-  if (sellingPrice) {
-    sellingPrice.addEventListener(
-      "input",
-      calculateDiscount
-    );
-  }
+  document
+    .getElementById("addProductForm")
+    .addEventListener(
+      "submit",
+      function() {
 
-  if (originalPrice) {
-    originalPrice.addEventListener(
-      "input",
-      calculateDiscount
-    );
-  }
-
-
-  /* =====================================================
-     IMAGE PREVIEW
-  ===================================================== */
-
-  const productImages =
-    document.getElementById(
-      "productImages"
-    );
-
-  const imagePreview =
-    document.getElementById(
-      "imagePreview"
-    );
-
-
-  if (productImages) {
-
-    productImages.addEventListener(
-      "change",
-      function () {
-
-        imagePreview.innerHTML = "";
-
-        Array.from(
-          productImages.files
-        ).forEach(file => {
-
-          const reader =
-            new FileReader();
-
-          reader.onload =
-            function (event) {
-
-              const img =
-                document.createElement(
-                  "img"
-                );
-
-              img.src =
-                event.target.result;
-
-              img.style.width =
-                "75px";
-
-              img.style.height =
-                "75px";
-
-              img.style.objectFit =
-                "contain";
-
-              img.style.border =
-                "1px solid #ddd";
-
-              img.style.borderRadius =
-                "8px";
-
-              img.style.padding =
-                "3px";
-
-              imagePreview.appendChild(
-                img
-              );
-
-            };
-
-          reader.readAsDataURL(
-            file
+        const button =
+          this.querySelector(
+            'button[type="submit"]'
           );
 
-        });
+
+        if (button) {
+
+          button.disabled = true;
+
+          button.textContent =
+            "⏳ Adding Product...";
+
+        }
 
       }
     );
 
-  }
 
+  // Smooth scrolling
+  document
+    .querySelectorAll(
+      '.nav-link[href^="#"]'
+    )
+    .forEach(
+      link => {
 
-  /* =====================================================
-     PRODUCT SEARCH
-  ===================================================== */
+        link.addEventListener(
+          "click",
+          function(e) {
 
-  const productSearch =
-    document.getElementById(
-      "productSearch"
-    );
+            const target =
+              document.querySelector(
+                this.getAttribute("href")
+              );
 
-  const categoryFilter =
-    document.getElementById(
-      "categoryFilter"
-    );
 
-  const statusFilter =
-    document.getElementById(
-      "statusFilter"
-    );
+            if (target) {
 
+              e.preventDefault();
 
-  function filterProducts() {
 
-    const search =
-      (
-        productSearch.value || ""
-      )
-      .toLowerCase()
-      .trim();
+              target.scrollIntoView({
+                behavior: "smooth"
+              });
 
-    const category =
-      categoryFilter.value;
+            }
 
-    const status =
-      statusFilter.value;
-
-
-    document
-      .querySelectorAll(
-        ".product-row"
-      )
-      .forEach(row => {
-
-        const name =
-          row.dataset.name || "";
-
-        const rowCategory =
-          row.dataset.category || "";
-
-        const visible =
-          row.dataset.visible === "1";
-
-        const hot =
-          row.dataset.hot === "1";
-
-        const featured =
-          row.dataset.featured === "1";
-
-
-        let show = true;
-
-
-        if (
-          search &&
-          !name.includes(search)
-        ) {
-          show = false;
-        }
-
-
-        if (
-          category &&
-          rowCategory !== category
-        ) {
-          show = false;
-        }
-
-
-        if (
-          status === "visible" &&
-          !visible
-        ) {
-          show = false;
-        }
-
-
-        if (
-          status === "hidden" &&
-          visible
-        ) {
-          show = false;
-        }
-
-
-        if (
-          status === "hot" &&
-          !hot
-        ) {
-          show = false;
-        }
-
-
-        if (
-          status === "featured" &&
-          !featured
-        ) {
-          show = false;
-        }
-
-
-        row.style.display =
-          show ? "" : "none";
-
-      });
-
-  }
-
-
-  if (productSearch) {
-
-    productSearch.addEventListener(
-      "input",
-      filterProducts
-    );
-
-  }
-
-
-  if (categoryFilter) {
-
-    categoryFilter.addEventListener(
-      "change",
-      filterProducts
-    );
-
-  }
-
-
-  if (statusFilter) {
-
-    statusFilter.addEventListener(
-      "change",
-      filterProducts
-    );
-
-  }
-
-
-  /* =====================================================
-     CATEGORY MODAL
-  ===================================================== */
-
-  function openCategoryModal(
-    id,
-    name,
-    sortOrder,
-    active
-  ) {
-
-    document.getElementById(
-      "categoryModal"
-    ).classList.add("show");
-
-
-    document.getElementById(
-      "categoryEditForm"
-    ).action =
-      "/admin/categories/edit/" +
-      id;
-
-
-    document.getElementById(
-      "editCategoryName"
-    ).value = name;
-
-
-    document.getElementById(
-      "editCategoryOrder"
-    ).value = sortOrder;
-
-
-    document.getElementById(
-      "editCategoryActive"
-    ).checked =
-      Number(active) === 1;
-
-  }
-
-
-  function closeCategoryModal() {
-
-    document.getElementById(
-      "categoryModal"
-    ).classList.remove("show");
-
-  }
-
-
-  /* =====================================================
-     BANNER DATA
-  ===================================================== */
-
-  const bannerData = {
-
-    <% if (banners && banners.length) { %>
-
-      <% banners.forEach(function(banner, index) { %>
-
-        "<%= banner.id %>": {
-
-          image_url:
-            <%- JSON.stringify(banner.image_url || '') %>,
-
-          heading:
-            <%- JSON.stringify(banner.heading || '') %>,
-
-          description:
-            <%- JSON.stringify(banner.description || '') %>,
-
-          button_text:
-            <%- JSON.stringify(banner.button_text || '') %>,
-
-          link_url:
-            <%- JSON.stringify(banner.link_url || '') %>,
-
-          sort_order:
-            <%= Number(banner.sort_order || 0) %>,
-
-          active:
-            <%= Number(banner.active || 0) %>
-
-        }<%= index < banners.length - 1 ? ',' : '' %>
-
-      <% }) %>
-
-    <% } %>
-
-  };
-
-
-  function openBannerEdit(id) {
-
-    const banner =
-      bannerData[String(id)];
-
-    if (!banner) {
-      return;
-    }
-
-
-    document.getElementById(
-      "bannerModal"
-    ).classList.add("show");
-
-
-    document.getElementById(
-      "bannerEditForm"
-    ).action =
-      "/admin/banners/edit/" +
-      id;
-
-
-    document.getElementById(
-      "editBannerImageUrl"
-    ).value =
-      banner.image_url;
-
-
-    document.getElementById(
-      "editBannerHeading"
-    ).value =
-      banner.heading;
-
-
-    document.getElementById(
-      "editBannerDescription"
-    ).value =
-      banner.description;
-
-
-    document.getElementById(
-      "editBannerButton"
-    ).value =
-      banner.button_text;
-
-
-    document.getElementById(
-      "editBannerLink"
-    ).value =
-      banner.link_url;
-
-
-    document.getElementById(
-      "editBannerOrder"
-    ).value =
-      banner.sort_order;
-
-
-    document.getElementById(
-      "editBannerActive"
-    ).checked =
-      Number(banner.active) === 1;
-
-  }
-
-
-  function closeBannerModal() {
-
-    document.getElementById(
-      "bannerModal"
-    ).classList.remove("show");
-
-  }
-
-
-  /* =====================================================
-     CLOSE MODALS ON BACKDROP
-  ===================================================== */
-
-  window.addEventListener(
-    "click",
-    function(event) {
-
-      const categoryModal =
-        document.getElementById(
-          "categoryModal"
+          }
         );
 
-      const bannerModal =
-        document.getElementById(
-          "bannerModal"
-        );
-
-
-      if (
-        event.target ===
-        categoryModal
-      ) {
-        closeCategoryModal();
       }
-
-
-      if (
-        event.target ===
-        bannerModal
-      ) {
-        closeBannerModal();
-      }
-
-    }
-  );
+    );
 
 </script>
 

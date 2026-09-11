@@ -2455,104 +2455,6 @@ app.post(
   }
 );
 
-// =========================
-// SOCIAL MEDIA POSTS
-// =========================
-
-// View generated social posts
-app.get("/admin/social-posts", (req, res) => {
-  if (!isLoggedIn(req)) {
-    return res.redirect("/login");
-  }
-
-  const posts = db.prepare(`
-    SELECT
-      social_posts.*,
-      products.name AS product_name,
-      products.price,
-      products.discount,
-      products.image_url,
-      products.affiliate_url
-    FROM social_posts
-    LEFT JOIN products
-      ON products.id = social_posts.product_id
-    ORDER BY social_posts.id DESC
-  `).all();
-
-  res.render("social-posts", {
-    posts
-  });
-});
-
-
-// Copy / update social post content
-app.post("/admin/social-posts/update/:id", (req, res) => {
-  if (!isLoggedIn(req)) {
-    return res.redirect("/login");
-  }
-
-  const id = Number(req.params.id);
-
-  db.prepare(`
-    UPDATE social_posts
-    SET
-      reel_caption = ?,
-      story_text = ?,
-      updated_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `).run(
-    String(req.body.reel_caption || "").trim(),
-    String(req.body.story_text || "").trim(),
-    id
-  );
-
-  res.redirect("/admin/social-posts");
-});
-
-
-// Regenerate social content
-app.post("/admin/social-posts/regenerate/:id", (req, res) => {
-  if (!isLoggedIn(req)) {
-    return res.redirect("/login");
-  }
-
-  const id = Number(req.params.id);
-
-  const post = db.prepare(`
-    SELECT
-      social_posts.*,
-      products.*
-    FROM social_posts
-    JOIN products
-      ON products.id = social_posts.product_id
-    WHERE social_posts.id = ?
-  `).get(id);
-
-  if (!post) {
-    return res.redirect("/admin/social-posts");
-  }
-
-  const content = generateSocialContent(post);
-
-  db.prepare(`
-    UPDATE social_posts
-    SET
-      reel_caption = ?,
-      story_text = ?,
-      image_url = ?,
-      status = 'draft',
-      updated_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `).run(
-    content.reel_caption,
-    content.story_text,
-    post.image_url || "",
-    id
-  );
-
-  res.redirect("/admin/social-posts");
-});
-
 /* =========================================================
    BANNER ADD
 ========================================================= */
@@ -3752,7 +3654,6 @@ app.post(
     );
   }
 );
-
 
 /* =========================================================
    ERROR HANDLER
